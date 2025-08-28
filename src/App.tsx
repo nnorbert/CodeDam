@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import TestPage from './pages/test//TestPage';
+import Playground from './pages/playground/Page';
 
 
 function HomePage() {
@@ -16,12 +16,12 @@ function App() {
     <Router>
       <nav className="bg-gray-800 p-4 text-white flex gap-4">
         <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/about" className="hover:underline">About</Link>
+        <Link to="/playground" className="hover:underline">Start building</Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<TestPage />} />
+        <Route path="/playground" element={<Playground />} />
       </Routes>
     </Router>
   );
