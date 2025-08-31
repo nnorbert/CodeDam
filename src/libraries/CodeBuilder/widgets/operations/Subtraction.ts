@@ -1,7 +1,7 @@
 import { ExecutableWidgetBase } from "../../types/ExecutableWidgetBase";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class AdditionWidget extends ExecutableWidgetBase {
+export class SubtractionWidget extends ExecutableWidgetBase {
     protected nrA: NumberVarWidget | undefined;
     protected nrB: NumberVarWidget | undefined;
     protected result: NumberVarWidget | undefined;
@@ -17,9 +17,9 @@ export class AdditionWidget extends ExecutableWidgetBase {
 
     execute() {
         if (!this.nrA || !this.nrB || !this.result) {
-            throw new Error("Addition widget is not configured properly");
+            throw new Error("Subtraction widget is not configured properly");
         }
 
-        this.result.value = this.nrA.value + this.nrB.value;
+        this.result.value = this.nrA.value - this.nrB.value;
     }
 }
