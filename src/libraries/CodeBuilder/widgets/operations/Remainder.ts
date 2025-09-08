@@ -1,7 +1,7 @@
-import { ExecutableWidgetBase } from "../../types/ExecutableWidgetBase";
+import type { IExecutableWidget } from "../../interfaces/IExecutableWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class RemainderWidget extends ExecutableWidgetBase {
+export class RemainderWidget implements IExecutableWidget {
     protected dividend: NumberVarWidget | undefined;
     protected divisor: NumberVarWidget | undefined;
     protected result: NumberVarWidget | undefined;

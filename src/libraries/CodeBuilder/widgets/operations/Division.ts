@@ -1,8 +1,8 @@
-import { ExecutableWidgetBase } from "../../types/ExecutableWidgetBase";
+import type { IExecutableWidget } from "../../interfaces/IExecutableWidget";
 import type { BooleanVarWidget } from "../variables/BooleanVarWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class DivisionWidget extends ExecutableWidgetBase {
+export class DivisionWidget implements IExecutableWidget {
     protected dividend: NumberVarWidget | undefined;
     protected divisor: NumberVarWidget | undefined;
     protected truncResult: BooleanVarWidget | undefined;

@@ -1,7 +1,7 @@
-import { ExecutableWidgetBase } from "../../types/ExecutableWidgetBase";
+import type { IExecutableWidget } from "../../interfaces/IExecutableWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class AdditionWidget extends ExecutableWidgetBase {
+export class AdditionWidget implements IExecutableWidget {
     protected nrA: NumberVarWidget | undefined;
     protected nrB: NumberVarWidget | undefined;
     protected result: NumberVarWidget | undefined;

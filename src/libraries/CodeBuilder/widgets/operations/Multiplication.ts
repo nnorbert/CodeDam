@@ -1,7 +1,7 @@
-import { ExecutableWidgetBase } from "../../types/ExecutableWidgetBase";
+import type { IExecutableWidget } from "../../interfaces/IExecutableWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class MultiplicationWidget extends ExecutableWidgetBase {
+export class MultiplicationWidget implements IExecutableWidget {
     protected multiplicand: NumberVarWidget | undefined;
     protected multiplier: NumberVarWidget | undefined;
     protected result: NumberVarWidget | undefined;

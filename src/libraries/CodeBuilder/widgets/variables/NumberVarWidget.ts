@@ -1,4 +1,4 @@
-import { PrimitiveVarWidgetBase } from "../../types/PrimitiveVarWidgetBase";
+import { PrimitiveVarWidgetBase } from "../../baseClasses/PrimitiveVarWidgetBase";
 
 export class NumberVarWidget extends PrimitiveVarWidgetBase<number> {
 
