@@ -1,4 +1,6 @@
-export class PrimitiveVarWidgetBase<T = unknown> {
+import type { IPrimitiveVarWidget } from "../interfaces/IPrimitiveVarWidget";
+
+export class PrimitiveVarWidgetBase<T = unknown> implements IPrimitiveVarWidget {
 
     protected _name: string = "";
     protected _value: T;

@@ -1,8 +1,9 @@
-import type { IExecutableWidget } from "../../interfaces/IExecutableWidget";
-import type { BooleanVarWidget } from "../variables/BooleanVarWidget";
-import type { NumberVarWidget } from "../variables/NumberVarWidget";
+import { ExecutableWidgetBase } from "../../../baseClasses/ExecutableWidgetBase";
+import type { IExecutableWidget } from "../../../interfaces/IExecutableWidget";
+import type { BooleanVarWidget } from "../../variables/BooleanVarWidget";
+import type { NumberVarWidget } from "../../variables/NumberVarWidget";
 
-export class DivisionWidget implements IExecutableWidget {
+export class DivisionWidget extends ExecutableWidgetBase implements IExecutableWidget {
     protected dividend: NumberVarWidget | undefined;
     protected divisor: NumberVarWidget | undefined;
     protected truncResult: BooleanVarWidget | undefined;
@@ -11,7 +12,7 @@ export class DivisionWidget implements IExecutableWidget {
     setParameters(
         dividend: NumberVarWidget,
         divisor: NumberVarWidget,
-        truncResult: BooleanVarWidget
+        truncResult?: BooleanVarWidget
     ) {
         this.dividend = dividend;
         this.divisor = divisor;

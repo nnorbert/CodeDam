@@ -1,6 +1,7 @@
+import type { IConditionWidget } from "../../interfaces/IConditionWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class GreaterThanOrEqualConditionWidget {
+export class GreaterThanOrEqualConditionWidget implements IConditionWidget {
     protected valueA: NumberVarWidget | undefined;
     protected valueB: NumberVarWidget | undefined;
 
