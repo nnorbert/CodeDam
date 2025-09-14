@@ -3,13 +3,15 @@ import { Executor } from "../../../Executor";
 import type { IConditionWidget } from "../../../interfaces/IConditionWidget";
 import type { IExecutableWidget } from "../../../interfaces/IExecutableWidget";
 
-export class IfWidget extends ExecutableWidgetBase implements IExecutableWidget {
+export class IfElseWidget extends ExecutableWidgetBase implements IExecutableWidget {
     protected condition: IConditionWidget | undefined;
     protected executorThen: Executor;
+    protected executorElse: Executor;
 
     constructor() {
         super();
         this.executorThen = new Executor();
+        this.executorElse = new Executor();
     }
 
     setParameters(condition: IConditionWidget) {
@@ -22,14 +24,23 @@ export class IfWidget extends ExecutableWidgetBase implements IExecutableWidget 
     ) {
         this.executorThen.registerWidget(widget, afterId);
     }
+    
+    registerElseWidget(
+        widget: IExecutableWidget,
+        afterId?: string
+    ) {
+        this.executorElse.registerWidget(widget, afterId);
+    }
 
     execute() {
         if (!this.condition) {
-            throw new Error("If widget is not configured properly");
+            throw new Error("If-else widget is not configured properly");
         }
         
         if (this.condition.evaluate()) {
             this.executorThen.execute();
+        } else {
+            this.executorElse.execute();
         }
     }
 }

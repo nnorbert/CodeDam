@@ -1,12 +1,11 @@
 import { ExecutableWidgetBase } from "../../../baseClasses/ExecutableWidgetBase";
-import type { PrimitiveVarWidgetBase } from "../../../baseClasses/PrimitiveVarWidgetBase";
 import type { IExecutableWidget } from "../../../interfaces/IExecutableWidget";
-import type { NumberVarWidget } from "../../variables/NumberVarWidget";
+import type { IPrimitiveVarWidget } from "../../../interfaces/IPrimitiveVarWidget";
 
 export class PrintVarWidget extends ExecutableWidgetBase implements IExecutableWidget {
-    protected variable: PrimitiveVarWidgetBase | undefined;
+    protected variable: IPrimitiveVarWidget | undefined;
 
-    setParameters(variable: NumberVarWidget) {
+    setParameters(variable: IPrimitiveVarWidget) {
         this.variable = variable;
     }
 

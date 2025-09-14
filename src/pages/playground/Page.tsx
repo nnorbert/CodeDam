@@ -8,6 +8,10 @@ import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { MultiplicationWidget } from "../../libraries/CodeBuilder/widgets/executables/operations/Multiplication";
 import { PrintVarWidget } from "../../libraries/CodeBuilder/widgets/executables/interactions/PrintVar";
 import { ReadVarWidget } from "../../libraries/CodeBuilder/widgets/executables/interactions/ReadVar";
+import { IfWidget } from "../../libraries/CodeBuilder/widgets/executables/conditionals/IfWidget";
+import { GreaterThanOrEqualConditionWidget } from "../../libraries/CodeBuilder/widgets/conditions/GreaterThanOrEqualCondition";
+import { TextVarWidget } from "../../libraries/CodeBuilder/widgets/variables/TextVarWidget";
+import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/executables/conditionals/IfElseWidget";
 
 export default function Playground() {
   const isInitialized = useRef(false);
@@ -19,32 +23,18 @@ export default function Playground() {
 
     const nrA = new NumberVarWidget('a');
     const nrB = new NumberVarWidget('b');
-    const nrC = new NumberVarWidget('c', 4);
-    const nrD = new NumberVarWidget('d', 2);
     const result = new NumberVarWidget('result');
 
     const w1 = new MultiplicationWidget();
     w1.setParameters(nrA, nrB); // 2 * 3
     w1.setResultVar(result);    // 6
 
-    const w2 = new AdditionWidget();
-    w2.setParameters(result, nrC); // 6 + 4
-    w2.setResultVar(result);       // 10
-
-    const w3 = new DivisionWidget();
-    w3.setParameters(result, nrD); // 6 / 2
-    w3.setResultVar(result);       // 5
-
-
-    const w4 = new PrintVarWidget();
-    w4.setParameters(result);
+    const w2 = new PrintVarWidget();
+    w2.setParameters(result);
 
     executor.current = new Executor();
     executor.current.registerWidget(w1);
     executor.current.registerWidget(w2, w1.id);
-    executor.current.registerWidget(w3, w2.id);
-    executor.current.registerWidget(w4, w3.id);
-
     
     const readValue1 = new ReadVarWidget();
     readValue1.setResult(nrA);
@@ -54,6 +44,24 @@ export default function Playground() {
     readValue2.setResult(nrB);
     executor.current.registerWidget(readValue2, readValue1.id);
 
+    const nrC = new NumberVarWidget("c", 50);
+    const condA = new GreaterThanOrEqualConditionWidget();
+    condA.setParameters(result, nrC);
+
+    const ifW = new IfElseWidget();
+    ifW.setParameters(condA);
+
+    const str1 = new TextVarWidget('t', "Greater than 50");
+    const str2 = new TextVarWidget('t', "Less than 50");
+    const showText1 = new PrintVarWidget();
+    showText1.setParameters(str1);
+    const showText2 = new PrintVarWidget();
+    showText2.setParameters(str2);
+
+    ifW.registerThenWidget(showText1);
+    ifW.registerElseWidget(showText2);
+
+    executor.current.registerWidget(ifW, w2.id);
     
     console.log(result.value);
   }, []);

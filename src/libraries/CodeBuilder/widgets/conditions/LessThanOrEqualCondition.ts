@@ -1,7 +1,7 @@
 import type { IConditionWidget } from "../../interfaces/IConditionWidget";
 import type { NumberVarWidget } from "../variables/NumberVarWidget";
 
-export class SmallerThanConditionWidget implements IConditionWidget {
+export class LessThanOrEqualConditionWidget implements IConditionWidget {
     protected valueA: NumberVarWidget | undefined;
     protected valueB: NumberVarWidget | undefined;
 
@@ -15,9 +15,9 @@ export class SmallerThanConditionWidget implements IConditionWidget {
 
     evaluate(): boolean {
         if (!this.valueA || !this.valueB) {
-            throw new Error("Smaller than condition widget is not configured properly");
+            throw new Error("Less than or equal condition widget is not configured properly");
         }
 
-        return this.valueA.value < this.valueB.value;
+        return this.valueA.value <= this.valueB.value;
     }
 }
