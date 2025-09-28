@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-
 import {
   DndContext,
   PointerSensor,
@@ -17,10 +15,6 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-
-
-
 
 // ------------------ Widget templates (toolbox) ------------------
 const WIDGETS = [
@@ -41,13 +35,13 @@ function ToolboxItem({
     useDraggable({
       id: `tool-${widget.type}`,
       disabled: isOverlay, // overlay should not be draggable
+      data: {
+        type: widget.type,
+      },
     });
 
   const style: React.CSSProperties = {
-    // Only apply transform for overlay clone, not for original toolbox item
-    transform: isOverlay
-      ? CSS.Translate.toString(transform)
-      : undefined,
+    transform: isOverlay ? CSS.Translate.toString(transform) : undefined,
     opacity: isOverlay ? 1 : isDragging ? 0.5 : 1,
   };
 
@@ -64,7 +58,6 @@ function ToolboxItem({
   );
 }
 
-
 // ------------------ Sortable Canvas Item ------------------
 function SortableItem({
   id,
@@ -75,21 +68,19 @@ function SortableItem({
   label: string;
   activeRegion?: string | null;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: transition ?? "transform 200ms ease", // fallback
+    transition:
+      transition && transition.includes("0ms")
+        ? "transform 200ms ease"
+        : transition ?? "transform 200ms ease",
     height: "120px",
-    zIndex: isDragging ? 50 : "auto", // ensure dragged item is on top
-    border: isDragging ? "2px solid red" : "none"
+    width: "140px",
+    zIndex: isDragging ? 50 : "auto",
+    outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
   };
 
   const shadow =
@@ -105,7 +96,7 @@ function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors ${shadow}`}
+      className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors box-border ${shadow}`}
     >
       {label}
     </div>
@@ -119,26 +110,27 @@ function DroppableCanvas({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={setNodeRef}
-      className={`flex-1 border p-4 rounded ${
+      className={`border p-4 rounded ${
         isOver ? "bg-blue-50" : "bg-white"
       }`}
+      style={{
+        width: "600px",           // fixed width
+        overflowX: "auto",        // enable horizontal scroll
+        whiteSpace: "nowrap",     // keep children in one row
+      }}
     >
       <h2 className="font-bold mb-2">Canvas</h2>
-      {children}
+      <div className="flex gap-2">{children}</div>
     </div>
   );
 }
 
-
-
-
-
-
+// ------------------ Playground ------------------
 export default function Playground() {
   const [canvasWidgets, setCanvasWidgets] = useState<
     { id: string; type: string; label: string }[]
   >([]);
-  const [overId, setOverId] = useState<string | null>(null);
+  const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
   const [activeWidget, setActiveWidget] = useState<{ type: string; label: string } | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
@@ -146,104 +138,82 @@ export default function Playground() {
   const sensors = useSensors(useSensor(PointerSensor));
 
   function handleDragStart(event: any) {
-    setOverId(event.active.id);
+    setActiveOverId(event.active.id);
 
     if (event.active.id.startsWith("tool-")) {
-      setIsToolboxDrag(true); // toolbox → canvas
+      setIsToolboxDrag(true);
       const type = event.active.id.replace("tool-", "");
       const widget = WIDGETS.find((w) => w.type === type);
       setActiveWidget(widget || null);
     } else {
-      setIsToolboxDrag(false); // reordering in canvas
+      setIsToolboxDrag(false);
     }
-  }
-
-  function handleDragOver(event: any) {
-    setOverId(event.over?.id || null);
   }
 
   function handleDragMove(event: any) {
-    if (!event.over) return null;
+    if (!event.over) return;
 
     const activeRect = event.active.rect.current.translated;
     if (activeRect) {
-      const pointerX = activeRect.left + activeRect.right / 2; // middle of dragged item
-      const middleX = event.over.rect.left + event.over.rect.right / 2;
+      const pointerX = activeRect.left + activeRect.width / 2;
+      const middleX = event.over.rect.left + event.over.rect.width / 2;
       setOverPosition(pointerX < middleX ? "left" : "right");
     }
 
+    setActiveOverId(event.over?.id || null);
   }
 
-  function handleDragCancel(event: any) {
+  function handleDragCancel() {
     setActiveWidget(null);
     setIsToolboxDrag(false);
   }
 
   function handleDragEnd(event: any) {
-    console.log("handleDragEvent", event);
-
-    
     const { active, over } = event;
-    setOverId(null);
+    setActiveOverId(null);
     setActiveWidget(null);
     setIsToolboxDrag(false);
+    setOverPosition(null);
+
     if (!over) return;
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    // Case 1: Toolbox → Canvas
+    // Toolbox → Canvas
     if (activeId.startsWith("tool-")) {
       const widgetType = activeId.replace("tool-", "");
       const newWidget = {
         id: `${widgetType}-${Date.now()}`,
         type: widgetType,
-        label:
-          WIDGETS.find((w) => w.type === widgetType)?.label || widgetType,
+        label: WIDGETS.find((w) => w.type === widgetType)?.label || widgetType,
       };
 
       if (overId === "canvas") {
-        // Drop on empty canvas or after last
         setCanvasWidgets((prev) => [...prev, newWidget]);
       } else {
         const overIndex = canvasWidgets.findIndex((w) => w.id === overId);
+        if (overIndex < 0) return;
 
-        if (overIndex < 0) {
-          return;
-        }
-
-        if (overPosition === "left") {
-          // Insert before target          
-            setCanvasWidgets((prev) => [
-              ...prev.slice(0, overIndex),
-              newWidget,
-              ...prev.slice(overIndex),
-            ]);
-        } else if (overPosition === "right") {
-          // Insert after target
-          
-            setCanvasWidgets((prev) => [
-              ...prev.slice(0, overIndex + 1),
-              newWidget,
-              ...prev.slice(overIndex + 1),
-            ]);
-        }
+        setCanvasWidgets((prev) =>
+          overPosition === "left"
+            ? [...prev.slice(0, overIndex), newWidget, ...prev.slice(overIndex)]
+            : [...prev.slice(0, overIndex + 1), newWidget, ...prev.slice(overIndex + 1)]
+        );
       }
       return;
     }
 
-    // Case 2: Reordering inside canvas
-    if (!activeId.startsWith("tool-") && !overId.startsWith("tool-")) {
-      if (activeId !== overId) {
-        const oldIndex = canvasWidgets.findIndex((w) => w.id === activeId);
-        const newIndex =
-          overId === "canvas"
-            ? canvasWidgets.length - 1
-            : canvasWidgets.findIndex((w) => w.id === overId);
+    // Reordering inside canvas
+    if (!activeId.startsWith("tool-") && !overId.startsWith("tool-") && activeId !== overId) {
+      const oldIndex = canvasWidgets.findIndex((w) => w.id === activeId);
+      const newIndex =
+        overId === "canvas"
+          ? canvasWidgets.length - 1
+          : canvasWidgets.findIndex((w) => w.id === overId);
 
-        if (oldIndex >= 0 && newIndex >= 0) {
-          setCanvasWidgets((items) => arrayMove(items, oldIndex, newIndex));
-        }
+      if (oldIndex >= 0 && newIndex >= 0) {
+        setCanvasWidgets((items) => arrayMove(items, oldIndex, newIndex));
       }
     }
   }
@@ -252,7 +222,6 @@ export default function Playground() {
     <DndContext
       sensors={sensors}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragMove={handleDragMove}
       onDragCancel={handleDragCancel}
@@ -271,18 +240,17 @@ export default function Playground() {
             items={canvasWidgets.map((w) => w.id)}
             strategy={horizontalListSortingStrategy}
           >
-             {canvasWidgets.length === 0 ? (
+            {canvasWidgets.length === 0 ? (
               <div className="text-gray-400">Drag a widget here</div>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-nowrap pr-6">
                 {canvasWidgets.map((w) => (
-                  <React.Fragment key={w.id}>
-                    <SortableItem
-                      id={w.id}
-                      label={w.label}
-                      activeRegion={isToolboxDrag && overId === w.id ? overPosition : null}
-                    />
-                  </React.Fragment>
+                  <SortableItem
+                    key={w.id}
+                    id={w.id}
+                    label={w.label}
+                    activeRegion={isToolboxDrag && activeOverId === w.id ? overPosition : null}
+                  />
                 ))}
               </div>
             )}
@@ -291,9 +259,7 @@ export default function Playground() {
       </div>
 
       <DragOverlay>
-        {activeWidget ? (
-          <ToolboxItem widget={activeWidget} isOverlay />
-        ) : null}
+        {activeWidget ? <ToolboxItem widget={activeWidget} isOverlay /> : null}
       </DragOverlay>
     </DndContext>
   );
