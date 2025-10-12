@@ -10,53 +10,13 @@ import {
 } from "@dnd-kit/core";
 import {
   arrayMove,
-  horizontalListSortingStrategy,
   SortableContext,
   useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-// ------------------ Widget templates (toolbox) ------------------
-const WIDGETS = [
-  { type: "log", label: "Log 🪵" },
-  { type: "array", label: "Array 📦" },
-  { type: "object", label: "Object 🪵" },
-];
-
-// ------------------ Toolbox Item ------------------
-function ToolboxItem({
-  widget,
-  isOverlay = false,
-}: {
-  widget: { type: string; label: string };
-  isOverlay?: boolean;
-}) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: `tool-${widget.type}`,
-      disabled: isOverlay, // overlay should not be draggable
-      data: {
-        type: widget.type,
-      },
-    });
-
-  const style: React.CSSProperties = {
-    transform: isOverlay ? CSS.Translate.toString(transform) : undefined,
-    opacity: isOverlay ? 1 : isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={isOverlay ? undefined : setNodeRef}
-      style={style}
-      {...(!isOverlay ? attributes : {})}
-      {...(!isOverlay ? listeners : {})}
-      className="w-20 h-20 m-2 flex items-center justify-center text-center bg-yellow-200 rounded-lg shadow cursor-grab"
-    >
-      {widget.label}
-    </div>
-  );
-}
+import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
+import ToolBox from "../../components/ToolBox/ToolBox";
 
 // ------------------ Sortable Canvas Item ------------------
 function SortableItem({
@@ -72,6 +32,7 @@ function SortableItem({
     useSortable({ id });
 
   const style: React.CSSProperties = {
+    flexShrink: 0,
     transform: CSS.Transform.toString(transform),
     transition:
       transition && transition.includes("0ms")
@@ -84,11 +45,11 @@ function SortableItem({
   };
 
   const shadow =
-    activeRegion === "left"
-      ? "shadow-[-4px_0_6px_rgba(59,130,246,0.6)]"
-      : activeRegion === "right"
-      ? "shadow-[4px_0_6px_rgba(59,130,246,0.6)]"
-      : "";
+    activeRegion === "top"
+      ? "shadow-[0_-4px_6px_rgba(59,130,246,0.6)]"
+      : activeRegion === "bottom"
+        ? "shadow-[0_4px_6px_rgba(59,130,246,0.6)]"
+        : "";
 
   return (
     <div
@@ -110,17 +71,18 @@ function DroppableCanvas({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={setNodeRef}
-      className={`border p-4 rounded ${
+      className={`border p-4 rounded flex flex-col ${
         isOver ? "bg-blue-50" : "bg-white"
       }`}
       style={{
-        width: "600px",           // fixed width
-        overflowX: "auto",        // enable horizontal scroll
-        whiteSpace: "nowrap",     // keep children in one row
+        height: "100%",
+        overflow: "hidden",
       }}
     >
       <h2 className="font-bold mb-2">Canvas</h2>
-      <div className="flex gap-2">{children}</div>
+      <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-2">
+        {children}
+      </div>
     </div>
   );
 }
@@ -132,10 +94,20 @@ export default function Playground() {
   >([]);
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
-  const [activeWidget, setActiveWidget] = useState<{ type: string; label: string } | null>(null);
+  const [activeWidget, setActiveWidget] = useState<ToolboxItemData | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
+
+
+  const WIDGETS = [
+    { type: "log", label: "Log 🪵", category: "variables" },
+    { type: "array", label: "Array 📦", category: "logical" },
+    { type: "object", label: "Object 🪵", category: "variables" },
+  ];
+
+
+
 
   function handleDragStart(event: any) {
     setActiveOverId(event.active.id);
@@ -155,9 +127,9 @@ export default function Playground() {
 
     const activeRect = event.active.rect.current.translated;
     if (activeRect) {
-      const pointerX = activeRect.left + activeRect.width / 2;
-      const middleX = event.over.rect.left + event.over.rect.width / 2;
-      setOverPosition(pointerX < middleX ? "left" : "right");
+      const pointerY = activeRect.top + activeRect.height / 2;
+      const middleY = event.over.rect.top + event.over.rect.height / 2;
+      setOverPosition(pointerY < middleY ? "top" : "bottom");
     }
 
     setActiveOverId(event.over?.id || null);
@@ -196,7 +168,7 @@ export default function Playground() {
         if (overIndex < 0) return;
 
         setCanvasWidgets((prev) =>
-          overPosition === "left"
+          overPosition === "top"
             ? [...prev.slice(0, overIndex), newWidget, ...prev.slice(overIndex)]
             : [...prev.slice(0, overIndex + 1), newWidget, ...prev.slice(overIndex + 1)]
         );
@@ -226,40 +198,56 @@ export default function Playground() {
       onDragMove={handleDragMove}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex gap-6 p-6">
+      <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
         {/* Toolbox */}
-        <div className="grid grid-cols-2 gap-2">
-          {WIDGETS.map((w) => (
-            <ToolboxItem key={w.type} widget={w} />
-          ))}
-        </div>
+        <aside className="w-64 border-r bg-yellow-50 p-4 overflow-y-auto">
+          <ToolBox widgets={WIDGETS}></ToolBox>
+        </aside>
 
         {/* Canvas */}
-        <DroppableCanvas>
-          <SortableContext
-            items={canvasWidgets.map((w) => w.id)}
-            strategy={horizontalListSortingStrategy}
-          >
-            {canvasWidgets.length === 0 ? (
-              <div className="text-gray-400">Drag a widget here</div>
-            ) : (
-              <div className="flex gap-2 flex-nowrap pr-6">
-                {canvasWidgets.map((w) => (
-                  <SortableItem
-                    key={w.id}
-                    id={w.id}
-                    label={w.label}
-                    activeRegion={isToolboxDrag && activeOverId === w.id ? overPosition : null}
-                  />
-                ))}
-              </div>
-            )}
-          </SortableContext>
-        </DroppableCanvas>
+        <main className="flex-1 flex flex-col p-4 overflow-hidden">
+          <h2 className="font-bold text-lg mb-2">Canvas</h2>
+
+          {/* The droppable area now expands to fill available height */}
+          <div className="flex-1 min-h-0">
+            <DroppableCanvas>
+              <SortableContext
+                items={canvasWidgets.map((w) => w.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {canvasWidgets.length === 0 ? (
+                  <div className="text-gray-400">Drag a widget here</div>
+                ) : (
+                  <div className="flex flex-col gap-2 overflow-y-auto max-h-full p-1">
+                    {canvasWidgets.map((w) => (
+                      <SortableItem
+                        key={w.id}
+                        id={w.id}
+                        label={w.label}
+                        activeRegion={
+                          isToolboxDrag && activeOverId === w.id ? overPosition : null
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+              </SortableContext>
+            </DroppableCanvas>
+          </div>
+        </main>
+
+        {/* Code Preview */}
+        <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
+          <h2 className="font-bold text-lg mb-4">Code Preview</h2>
+          <pre className="text-sm whitespace-pre-wrap font-mono text-gray-700">
+            {/* Here you’ll render the generated code later */}
+            {JSON.stringify(canvasWidgets, null, 2)}
+          </pre>
+        </aside>
       </div>
 
       <DragOverlay>
-        {activeWidget ? <ToolboxItem widget={activeWidget} isOverlay /> : null}
+        {activeWidget ? <ToolBoxItem widget={activeWidget} disabled /> : null}
       </DragOverlay>
     </DndContext>
   );
