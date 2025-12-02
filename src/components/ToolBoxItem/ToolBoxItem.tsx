@@ -1,10 +1,12 @@
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import type { GenericWidgetBase } from "../../libraries/CodeBuilder/baseClasses/GenericWidgetBase";
 
 export type ToolboxItemData = {
   type: string;
   category: string;
   label: string;
+  className?: typeof GenericWidgetBase;
 };
 
 type Props = {
@@ -19,6 +21,8 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
       disabled,
       data: {
         type: widget.type,
+        isToolboxItem: true,
+        className: widget.className,
       },
     });
 

@@ -4,7 +4,6 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  useDraggable,
   useDroppable,
   DragOverlay,
 } from "@dnd-kit/core";
@@ -17,19 +16,22 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
 import ToolBox from "../../components/ToolBox/ToolBox";
+import CodePreview from "../../components/CodePreview/CodePreview";
+import { Executor } from "../../libraries/CodeBuilder/Executor";
+import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget";
 
 // ------------------ Sortable Canvas Item ------------------
 function SortableItem({
   id,
-  label,
+  children,
   activeRegion,
 }: {
   id: string;
-  label: string;
+  children: React.ReactNode;
   activeRegion?: string | null;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+    useSortable({ id, data: { xxx: "yyy" } });
 
   const style: React.CSSProperties = {
     flexShrink: 0,
@@ -38,8 +40,8 @@ function SortableItem({
       transition && transition.includes("0ms")
         ? "transform 200ms ease"
         : transition ?? "transform 200ms ease",
-    height: "120px",
-    width: "140px",
+    minHeight: "60px",
+    width: "fit-content",
     zIndex: isDragging ? 50 : "auto",
     outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
   };
@@ -57,9 +59,9 @@ function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors box-border ${shadow}`}
+      className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors box-border flex flex-col items-start justify-center ${shadow}`}
     >
-      {label}
+      {children}
     </div>
   );
 }
@@ -99,13 +101,17 @@ export default function Playground() {
 
   const sensors = useSensors(useSensor(PointerSensor));
 
+  const [mainExecutor] = useState<Executor>(new Executor());
 
   const WIDGETS = [
-    { type: "log", label: "Log 🪵", category: "variables" },
+    { type: "log", label: "Log 🪵", category: "variables", className: CreateVarWidget },
     { type: "array", label: "Array 📦", category: "logical" },
     { type: "object", label: "Object 🪵", category: "variables" },
   ];
 
+  const widgets = [
+    CreateVarWidget
+  ];
 
 
 
@@ -153,13 +159,22 @@ export default function Playground() {
     const overId = String(over.id);
 
     // Toolbox → Canvas
-    if (activeId.startsWith("tool-")) {
-      const widgetType = activeId.replace("tool-", "");
+    if (active.data.current?.isToolboxItem === true) {
+      const widgetType = active.data.current?.type;
       const newWidget = {
         id: `${widgetType}-${Date.now()}`,
         type: widgetType,
         label: WIDGETS.find((w) => w.type === widgetType)?.label || widgetType,
       };
+
+      if (active.data.current?.className) {
+        const test = new active.data.current.className();
+        console.log(test.id);
+      }
+      
+
+
+
 
       if (overId === "canvas") {
         setCanvasWidgets((prev) => [...prev, newWidget]);
@@ -177,7 +192,7 @@ export default function Playground() {
     }
 
     // Reordering inside canvas
-    if (!activeId.startsWith("tool-") && !overId.startsWith("tool-") && activeId !== overId) {
+    if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
       const oldIndex = canvasWidgets.findIndex((w) => w.id === activeId);
       const newIndex =
         overId === "canvas"
@@ -223,11 +238,12 @@ export default function Playground() {
                       <SortableItem
                         key={w.id}
                         id={w.id}
-                        label={w.label}
                         activeRegion={
                           isToolboxDrag && activeOverId === w.id ? overPosition : null
                         }
-                      />
+                      >
+                        {w.label}
+                      </SortableItem>
                     ))}
                   </div>
                 )}
@@ -238,11 +254,7 @@ export default function Playground() {
 
         {/* Code Preview */}
         <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
-          <h2 className="font-bold text-lg mb-4">Code Preview</h2>
-          <pre className="text-sm whitespace-pre-wrap font-mono text-gray-700">
-            {/* Here you’ll render the generated code later */}
-            {JSON.stringify(canvasWidgets, null, 2)}
-          </pre>
+          <CodePreview widgets={canvasWidgets} />
         </aside>
       </div>
 
