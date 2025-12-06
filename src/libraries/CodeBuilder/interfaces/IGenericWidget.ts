@@ -1,4 +1,6 @@
 export interface IGenericWidget {
     readonly id: string;
-    // getType(): string;
+    render(): React.ReactNode;
+    renderCode(): string;
+    execute(): void;
 }

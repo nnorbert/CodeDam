@@ -1,25 +1,28 @@
-import type { IExecutableWidget } from "./interfaces/IExecutableWidget";
+import type { IGenericWidget } from "./interfaces/IGenericWidget";
 
 export class Executor {
 
-    private widgets: IExecutableWidget[] = [];
-    private widgetMap = new Map<string, IExecutableWidget>();
-    private executionPionter: number = 0;
+    widgets: IGenericWidget[] = [];
+    widgetMap = new Map<string, IGenericWidget>();
 
     registerWidget(
-        widget: IExecutableWidget,
-        afterId?: string
+        widget: IGenericWidget,
+        overId: string,
+        overPosition: string
     ) {
-        if (!afterId) {
-            this.widgets.unshift(widget);
-        } else {
-            const position = 1 + this.widgets.findIndex((widget) => {
-                return widget.id === afterId;
-            });
-            this.widgets.splice(position, 0, widget);
-        }
-        
         this.widgetMap.set(widget.id, widget);
+        if (overId === "canvas") {
+            this.widgets.push(widget);
+          } else {
+            const overIndex = this.widgets.findIndex((w) => w.id === overId);
+            if (overIndex < 0) return;
+    
+            if (overPosition === "top") {
+                this.widgets.splice(overIndex, 0, widget);
+            } else {
+                this.widgets.splice(overIndex + 1, 0, widget);
+            }
+          }
     }
 
     execute() {

@@ -1,11 +1,7 @@
-type CanvasWidget = {
-  id: string;
-  type: string;
-  label: string;
-};
+import type { IGenericWidget } from "../../libraries/CodeBuilder/interfaces/IGenericWidget";
 
 type Props = {
-  widgets: CanvasWidget[];
+  widgets: IGenericWidget[];
 };
 
 const CodePreview = ({ widgets }: Props) => {
@@ -14,7 +10,8 @@ const CodePreview = ({ widgets }: Props) => {
       <h2 className="font-bold text-lg mb-4">Code Preview</h2>
       <pre className="text-sm whitespace-pre-wrap font-mono text-gray-700">
         {/* Here you'll render the generated code later */}
-        {JSON.stringify(widgets, null, 2)}
+        {/* {JSON.stringify(widgets, null, 2)} */}
+        {widgets.map((w) => w.renderCode())}
       </pre>
     </>
   );

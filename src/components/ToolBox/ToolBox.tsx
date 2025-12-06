@@ -19,7 +19,7 @@ const ToolBox = ({ widgets }: { widgets: ToolboxItemData[] }) => {
 
           <DisclosurePanel className="p-2 bg-yellow-50 grid grid-cols-2 gap-2">
             {widgets.map((w) => (
-              <ToolBoxItem key={`tool-${w.type}`} widget={w} />
+              <ToolBoxItem key={`tool-${w.getType()}`} widget={w} />
             ))}
           </DisclosurePanel>
         </div>

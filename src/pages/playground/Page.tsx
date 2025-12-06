@@ -18,7 +18,8 @@ import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/
 import ToolBox from "../../components/ToolBox/ToolBox";
 import CodePreview from "../../components/CodePreview/CodePreview";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
-import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget";
+import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
+import type { IGenericWidget } from "../../libraries/CodeBuilder/interfaces/IGenericWidget";
 
 // ------------------ Sortable Canvas Item ------------------
 function SortableItem({
@@ -73,9 +74,8 @@ function DroppableCanvas({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={setNodeRef}
-      className={`border p-4 rounded flex flex-col ${
-        isOver ? "bg-blue-50" : "bg-white"
-      }`}
+      className={`border p-4 rounded flex flex-col ${isOver ? "bg-blue-50" : "bg-white"
+        }`}
       style={{
         height: "100%",
         overflow: "hidden",
@@ -91,12 +91,12 @@ function DroppableCanvas({ children }: { children: React.ReactNode }) {
 
 // ------------------ Playground ------------------
 export default function Playground() {
-  const [canvasWidgets, setCanvasWidgets] = useState<
-    { id: string; type: string; label: string }[]
-  >([]);
+  // const [canvasWidgets, setCanvasWidgets] = useState<
+  //   IGenericWidget[]
+  // >([]);
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
-  const [activeWidget, setActiveWidget] = useState<ToolboxItemData | null>(null);
+  const [activeWidget, setActiveWidget] = useState<{widget: ToolboxItemData} | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -104,25 +104,16 @@ export default function Playground() {
   const [mainExecutor] = useState<Executor>(new Executor());
 
   const WIDGETS = [
-    { type: "log", label: "Log 🪵", category: "variables", className: CreateVarWidget },
-    { type: "array", label: "Array 📦", category: "logical" },
-    { type: "object", label: "Object 🪵", category: "variables" },
-  ];
-
-  const widgets = [
     CreateVarWidget
   ];
-
 
 
   function handleDragStart(event: any) {
     setActiveOverId(event.active.id);
 
-    if (event.active.id.startsWith("tool-")) {
+    if (event.active.data.current?.isToolboxItem) {
       setIsToolboxDrag(true);
-      const type = event.active.id.replace("tool-", "");
-      const widget = WIDGETS.find((w) => w.type === type);
-      setActiveWidget(widget || null);
+      setActiveWidget({widget: event.active.data.current.className});
     } else {
       setIsToolboxDrag(false);
     }
@@ -160,47 +151,22 @@ export default function Playground() {
 
     // Toolbox → Canvas
     if (active.data.current?.isToolboxItem === true) {
-      const widgetType = active.data.current?.type;
-      const newWidget = {
-        id: `${widgetType}-${Date.now()}`,
-        type: widgetType,
-        label: WIDGETS.find((w) => w.type === widgetType)?.label || widgetType,
-      };
-
-      if (active.data.current?.className) {
-        const test = new active.data.current.className();
-        console.log(test.id);
-      }
-      
-
-
-
-
-      if (overId === "canvas") {
-        setCanvasWidgets((prev) => [...prev, newWidget]);
-      } else {
-        const overIndex = canvasWidgets.findIndex((w) => w.id === overId);
-        if (overIndex < 0) return;
-
-        setCanvasWidgets((prev) =>
-          overPosition === "top"
-            ? [...prev.slice(0, overIndex), newWidget, ...prev.slice(overIndex)]
-            : [...prev.slice(0, overIndex + 1), newWidget, ...prev.slice(overIndex + 1)]
-        );
-      }
+      const newWidget = new active.data.current.className();
+      mainExecutor.registerWidget(newWidget, overId, overPosition || "bottom");
       return;
     }
 
     // Reordering inside canvas
     if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
-      const oldIndex = canvasWidgets.findIndex((w) => w.id === activeId);
+      const oldIndex = mainExecutor.widgets.findIndex((w) => w.id === activeId);
       const newIndex =
         overId === "canvas"
-          ? canvasWidgets.length - 1
-          : canvasWidgets.findIndex((w) => w.id === overId);
+          ? mainExecutor.widgets.length - 1
+          : mainExecutor.widgets.findIndex((w) => w.id === overId);
 
       if (oldIndex >= 0 && newIndex >= 0) {
-        setCanvasWidgets((items) => arrayMove(items, oldIndex, newIndex));
+        
+        mainExecutor.widgets = arrayMove(mainExecutor.widgets, oldIndex, newIndex);
       }
     }
   }
@@ -227,14 +193,14 @@ export default function Playground() {
           <div className="flex-1 min-h-0">
             <DroppableCanvas>
               <SortableContext
-                items={canvasWidgets.map((w) => w.id)}
+                items={mainExecutor.widgets.map((w) => w.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {canvasWidgets.length === 0 ? (
+                {mainExecutor.widgets.length === 0 ? (
                   <div className="text-gray-400">Drag a widget here</div>
                 ) : (
                   <div className="flex flex-col gap-2 overflow-y-auto max-h-full p-1">
-                    {canvasWidgets.map((w) => (
+                    {mainExecutor.widgets.map((w) => (
                       <SortableItem
                         key={w.id}
                         id={w.id}
@@ -242,7 +208,7 @@ export default function Playground() {
                           isToolboxDrag && activeOverId === w.id ? overPosition : null
                         }
                       >
-                        {w.label}
+                        {w.render()}
                       </SortableItem>
                     ))}
                   </div>
@@ -254,12 +220,12 @@ export default function Playground() {
 
         {/* Code Preview */}
         <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
-          <CodePreview widgets={canvasWidgets} />
+          <CodePreview widgets={mainExecutor.widgets} />
         </aside>
       </div>
 
       <DragOverlay>
-        {activeWidget ? <ToolBoxItem widget={activeWidget} disabled /> : null}
+        {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
       </DragOverlay>
     </DndContext>
   );
