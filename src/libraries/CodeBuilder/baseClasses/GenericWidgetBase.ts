@@ -8,6 +8,11 @@ export abstract class GenericWidgetBase implements IGenericWidget {
     }
 
     // Static method - called on the class itself, not instances
+    static getCategory(): string {
+        throw new Error("getCategory() must be implemented by subclass");
+    }
+
+    // Static method - called on the class itself, not instances
     static getToolboxItemElement(): React.ReactNode {
         throw new Error("getToolboxItemElement() must be implemented by subclass");
     }
@@ -23,4 +28,5 @@ export abstract class GenericWidgetBase implements IGenericWidget {
     abstract render(): React.ReactNode;
     abstract renderCode(): string;
     abstract execute(): void;
+    abstract initWidget(): Promise<void>;
 }

@@ -3,4 +3,5 @@ export interface IGenericWidget {
     render(): React.ReactNode;
     renderCode(): string;
     execute(): void;
+    initWidget(): Promise<void>;
 }

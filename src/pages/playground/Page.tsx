@@ -1,112 +1,42 @@
-import React, { useState } from "react";
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   useSensor,
-  useSensors,
-  useDroppable,
-  DragOverlay,
+  useSensors
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
-import ToolBox from "../../components/ToolBox/ToolBox";
+import { useRef, useState, useCallback } from "react";
 import CodePreview from "../../components/CodePreview/CodePreview";
+import DroppableCanvas from "../../components/DroppableCanvas/DroppableCanvas";
+import SortableItem from "../../components/SortableItem/SortableItem";
+import ToolBox from "../../components/ToolBox/ToolBox";
+import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
+import { UserInputModal } from "../../components/UserInputModal";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
-import type { IGenericWidget } from "../../libraries/CodeBuilder/interfaces/IGenericWidget";
-
-// ------------------ Sortable Canvas Item ------------------
-function SortableItem({
-  id,
-  children,
-  activeRegion,
-}: {
-  id: string;
-  children: React.ReactNode;
-  activeRegion?: string | null;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id, data: { xxx: "yyy" } });
-
-  const style: React.CSSProperties = {
-    flexShrink: 0,
-    transform: CSS.Transform.toString(transform),
-    transition:
-      transition && transition.includes("0ms")
-        ? "transform 200ms ease"
-        : transition ?? "transform 200ms ease",
-    minHeight: "60px",
-    width: "fit-content",
-    zIndex: isDragging ? 50 : "auto",
-    outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
-  };
-
-  const shadow =
-    activeRegion === "top"
-      ? "shadow-[0_-4px_6px_rgba(59,130,246,0.6)]"
-      : activeRegion === "bottom"
-        ? "shadow-[0_4px_6px_rgba(59,130,246,0.6)]"
-        : "";
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors box-border flex flex-col items-start justify-center ${shadow}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-// ------------------ Droppable Canvas ------------------
-function DroppableCanvas({ children }: { children: React.ReactNode }) {
-  const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`border p-4 rounded flex flex-col ${isOver ? "bg-blue-50" : "bg-white"
-        }`}
-      style={{
-        height: "100%",
-        overflow: "hidden",
-      }}
-    >
-      <h2 className="font-bold mb-2">Canvas</h2>
-      <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-2">
-        {children}
-      </div>
-    </div>
-  );
-}
 
 // ------------------ Playground ------------------
 export default function Playground() {
-  // const [canvasWidgets, setCanvasWidgets] = useState<
-  //   IGenericWidget[]
-  // >([]);
+  const activeWidgets = [
+    CreateVarWidget
+  ];
+  const mainExecutorRef = useRef<Executor>(null);
+
+  if (!mainExecutorRef.current) {
+    mainExecutorRef.current = new Executor();
+  }
+
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
   const [activeWidget, setActiveWidget] = useState<{widget: ToolboxItemData} | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
+  const [, forceUpdate] = useState(0);
 
   const sensors = useSensors(useSensor(PointerSensor));
-
-  const [mainExecutor] = useState<Executor>(new Executor());
-
-  const WIDGETS = [
-    CreateVarWidget
-  ];
-
 
   function handleDragStart(event: any) {
     setActiveOverId(event.active.id);
@@ -137,8 +67,12 @@ export default function Playground() {
     setIsToolboxDrag(false);
   }
 
-  function handleDragEnd(event: any) {
+  const handleDragEnd = useCallback(async (event: any) => {
+    if (!mainExecutorRef.current) return;
+
     const { active, over } = event;
+    const currentOverPosition = overPosition;
+    
     setActiveOverId(null);
     setActiveWidget(null);
     setIsToolboxDrag(false);
@@ -151,25 +85,17 @@ export default function Playground() {
 
     // Toolbox → Canvas
     if (active.data.current?.isToolboxItem === true) {
-      const newWidget = new active.data.current.className();
-      mainExecutor.registerWidget(newWidget, overId, overPosition || "bottom");
+      await mainExecutorRef.current.registerWidget(active.data.current.className, overId, currentOverPosition || "bottom");
+      // Force re-render after initWidget completes (widget may have been updated)
+      forceUpdate(n => n + 1);
       return;
     }
 
     // Reordering inside canvas
     if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
-      const oldIndex = mainExecutor.widgets.findIndex((w) => w.id === activeId);
-      const newIndex =
-        overId === "canvas"
-          ? mainExecutor.widgets.length - 1
-          : mainExecutor.widgets.findIndex((w) => w.id === overId);
-
-      if (oldIndex >= 0 && newIndex >= 0) {
-        
-        mainExecutor.widgets = arrayMove(mainExecutor.widgets, oldIndex, newIndex);
-      }
+      mainExecutorRef.current.reorderWidgets(activeId, overId);
     }
-  }
+  }, [overPosition]);
 
   return (
     <DndContext
@@ -182,25 +108,23 @@ export default function Playground() {
       <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
         {/* Toolbox */}
         <aside className="w-64 border-r bg-yellow-50 p-4 overflow-y-auto">
-          <ToolBox widgets={WIDGETS}></ToolBox>
+          <ToolBox widgets={activeWidgets}></ToolBox>
         </aside>
 
         {/* Canvas */}
         <main className="flex-1 flex flex-col p-4 overflow-hidden">
-          <h2 className="font-bold text-lg mb-2">Canvas</h2>
-
           {/* The droppable area now expands to fill available height */}
           <div className="flex-1 min-h-0">
-            <DroppableCanvas>
+            <DroppableCanvas title="Canvas">
               <SortableContext
-                items={mainExecutor.widgets.map((w) => w.id)}
+                items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {mainExecutor.widgets.length === 0 ? (
+                {mainExecutorRef.current.getWidgets().length === 0 ? (
                   <div className="text-gray-400">Drag a widget here</div>
                 ) : (
                   <div className="flex flex-col gap-2 overflow-y-auto max-h-full p-1">
-                    {mainExecutor.widgets.map((w) => (
+                    {mainExecutorRef.current.getWidgets().map((w) => (
                       <SortableItem
                         key={w.id}
                         id={w.id}
@@ -220,13 +144,16 @@ export default function Playground() {
 
         {/* Code Preview */}
         <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
-          <CodePreview widgets={mainExecutor.widgets} />
+          <CodePreview widgets={mainExecutorRef.current.getWidgets()} />
         </aside>
       </div>
 
       <DragOverlay>
         {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
       </DragOverlay>
+
+      {/* Global modal for user input requests */}
+      <UserInputModal />
     </DndContext>
   );
 }
