@@ -2,12 +2,13 @@ import { userInputModal } from "../../../../../components/UserInputModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
+import UseVarComponent from "./component";
 import CreaveVarComponent from "./component";
 
-export class CreateVarWidget extends GenericWidgetBase {
+export class UseVarWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "createVar";
+        return "useVar";
     }
 
     public static getCategory(): WidgetCategoryType {
@@ -15,14 +16,13 @@ export class CreateVarWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div>Use Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {
-        return WidgetRoles.STATEMENT;
+        return WidgetRoles.EXPRESSION;
     }
 
-    private name: string = "";
     private value: GenericWidgetBase | null = null;
 
 
@@ -30,33 +30,19 @@ export class CreateVarWidget extends GenericWidgetBase {
         super(executor);
     }
 
-    getName(): string {
-        return this.name;
-    }
-
     render(): React.ReactNode {
-        return <CreaveVarComponent widget={this}></CreaveVarComponent>;
+        return <UseVarComponent widget={this}></UseVarComponent>;
     }
 
     renderCode(): string {
-        return `let ${this.name || "unnamed"}`;
+        return `TEST`;
     }
 
     execute(): void {
-        console.log("CreateVarWidget execute");
+        console.log("UseVarWidget execute");
     }
 
     async initWidget(): Promise<void> {
-        const result = await userInputModal.open(
-            "Enter Variable Name",
-            { placeholder: "e.g. myVariable" }
-        );
-        
-        if (result) {
-            this.name = result;
-        }
-
-        // Register itself as a variable
-        this.executor.registerVariable(this.id);
+        // Nothing to do
     }
 }

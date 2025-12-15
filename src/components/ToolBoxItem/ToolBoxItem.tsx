@@ -18,6 +18,7 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
         type: widget.getType(),
         isToolboxItem: true,
         className: widget,
+        role: widget.getRole(),
       },
     });
 

@@ -1,24 +1,28 @@
 import { arrayMove } from "@dnd-kit/sortable";
 import { CANVAS_ID } from "../../utils/constants";
 import type { IGenericWidget } from "./interfaces/IGenericWidget";
-import { CreateVarWidget } from "./widgets/variables/CreateVarWidget/CreateVarWidget";
 
 export class Executor {
 
+    private readonly containerId: string;
     private widgets: IGenericWidget[] = [];
     private widgetMap = new Map<string, IGenericWidget>();
     private variableStack: string[] = [];
 
+    constructor(containerId: string) {
+        this.containerId = containerId;
+    }
+
     async registerWidget(
-        widgetClass: new () => IGenericWidget,
+        widgetClass: new (executor: Executor) => IGenericWidget,
         overId: string,
         overPosition: string
     ): Promise<void> {
-        const widget = new widgetClass();
+        const widget = new widgetClass(this);
 
         this.widgetMap.set(widget.id, widget);
 
-        if (overId === CANVAS_ID) {
+        if (overId === this.containerId) {
             this.widgets.push(widget);
         } else {
             const overIndex = this.widgets.findIndex((w) => w.id === overId);
@@ -31,11 +35,6 @@ export class Executor {
             }
         }
 
-        // Register variable to the stack
-        if (widgetClass === CreateVarWidget) {
-            this.variableStack.push(widget.id);
-        }
-
         // Initialize the widget (may show modal, etc.)
         await widget.initWidget();
     }
@@ -43,7 +42,7 @@ export class Executor {
     reorderWidgets(activeId: string, overId: string) {
         const oldIndex = this.widgets.findIndex((w) => w.id === activeId);
         const newIndex =
-            overId === CANVAS_ID
+            overId === this.containerId
                 ? this.widgets.length - 1
                 : this.widgets.findIndex((w) => w.id === overId);
 
@@ -54,6 +53,12 @@ export class Executor {
 
     getWidgets() {
         return [...this.widgets];
+    }
+
+
+
+    registerVariable(id: string) {
+        this.variableStack.push(id);
     }
 
     execute() {

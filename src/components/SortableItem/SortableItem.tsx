@@ -1,17 +1,25 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { PropsWithChildren } from "react";
+import type { Executor } from "../../libraries/CodeBuilder/Executor";
+import { WidgetRoles } from "../../utils/constants";
 
 type Props = PropsWithChildren<{
     id: string;
     activeRegion?: string | null;
+    executor: Executor;
 }>;
 
 const SortableItem = (props: Props) => {
-    const { id, activeRegion, children } = props;
+    const { id, activeRegion, children, executor } = props;
 
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-        useSortable({ id, data: { xxx: "yyy" } });
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging, active } =
+        useSortable({
+            id, data: {
+                isSortableItem: true,
+                executor: executor,
+            }
+        });
 
     const style: React.CSSProperties = {
         flexShrink: 0,
@@ -26,12 +34,13 @@ const SortableItem = (props: Props) => {
         outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
     };
 
-    const shadow =
+    const shadow = active?.data.current?.role === WidgetRoles.STATEMENT ? (
         activeRegion === "top"
             ? "shadow-[0_-4px_6px_rgba(59,130,246,0.6)]"
             : activeRegion === "bottom"
                 ? "shadow-[0_4px_6px_rgba(59,130,246,0.6)]"
-                : "";
+                : ""
+    ) : "";
 
     return (
         <div

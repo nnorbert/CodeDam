@@ -9,30 +9,34 @@ import {
   SortableContext,
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import { useRef, useState, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import CodePreview from "../../components/CodePreview/CodePreview";
 import DroppableCanvas from "../../components/DroppableCanvas/DroppableCanvas";
 import SortableItem from "../../components/SortableItem/SortableItem";
 import ToolBox from "../../components/ToolBox/ToolBox";
 import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
 import { UserInputModal } from "../../components/UserInputModal";
+import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollisionDetector";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
+import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseVarWidget/UseVarWidget";
+import { CANVAS_ID, DroppableTypes } from "../../utils/constants";
 
 // ------------------ Playground ------------------
 export default function Playground() {
   const activeWidgets = [
-    CreateVarWidget
+    CreateVarWidget,
+    UseVarWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
 
   if (!mainExecutorRef.current) {
-    mainExecutorRef.current = new Executor();
+    mainExecutorRef.current = new Executor(CANVAS_ID);
   }
 
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
-  const [activeWidget, setActiveWidget] = useState<{widget: ToolboxItemData} | null>(null);
+  const [activeWidget, setActiveWidget] = useState<{ widget: ToolboxItemData } | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
   const [, forceUpdate] = useState(0);
 
@@ -43,7 +47,7 @@ export default function Playground() {
 
     if (event.active.data.current?.isToolboxItem) {
       setIsToolboxDrag(true);
-      setActiveWidget({widget: event.active.data.current.className});
+      setActiveWidget({ widget: event.active.data.current.className });
     } else {
       setIsToolboxDrag(false);
     }
@@ -51,7 +55,7 @@ export default function Playground() {
 
   function handleDragMove(event: any) {
     if (!event.over) return;
-
+    
     const activeRect = event.active.rect.current.translated;
     if (activeRect) {
       const pointerY = activeRect.top + activeRect.height / 2;
@@ -72,29 +76,47 @@ export default function Playground() {
 
     const { active, over } = event;
     const currentOverPosition = overPosition;
-    
+
     setActiveOverId(null);
     setActiveWidget(null);
     setIsToolboxDrag(false);
     setOverPosition(null);
+    
 
     if (!over) return;
+
+
+
+    const executor = over.data.current?.executor;
+    console.log(executor)
+
+
+
 
     const activeId = String(active.id);
     const overId = String(over.id);
 
-    // Toolbox → Canvas
-    if (active.data.current?.isToolboxItem === true) {
-      await mainExecutorRef.current.registerWidget(active.data.current.className, overId, currentOverPosition || "bottom");
-      // Force re-render after initWidget completes (widget may have been updated)
-      forceUpdate(n => n + 1);
-      return;
+    if (over.data.current?.type === DroppableTypes.SLOT) {
+
+    } else {
+      // Toolbox → Canvas
+      if (active.data.current?.isToolboxItem === true
+        && over.data.current?.accepts.includes(active.data.current?.role)
+      ) {
+        await mainExecutorRef.current.registerWidget(active.data.current.className, overId, currentOverPosition || "bottom");
+        // Force re-render after initWidget completes (widget may have been updated)
+        forceUpdate(n => n + 1);
+        return;
+      }
+
+      // Reordering inside canvas
+      if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
+        console.log("Reordering inside canvas", activeId, overId);
+        mainExecutorRef.current.reorderWidgets(activeId, overId);
+      }
     }
 
-    // Reordering inside canvas
-    if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
-      mainExecutorRef.current.reorderWidgets(activeId, overId);
-    }
+
   }, [overPosition]);
 
   return (
@@ -104,6 +126,7 @@ export default function Playground() {
       onDragEnd={handleDragEnd}
       onDragMove={handleDragMove}
       onDragCancel={handleDragCancel}
+      collisionDetection={CustomCollisionDetector}
     >
       <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
         {/* Toolbox */}
@@ -115,7 +138,7 @@ export default function Playground() {
         <main className="flex-1 flex flex-col p-4 overflow-hidden">
           {/* The droppable area now expands to fill available height */}
           <div className="flex-1 min-h-0">
-            <DroppableCanvas title="Canvas">
+            <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
               <SortableContext
                 items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
                 strategy={verticalListSortingStrategy}
@@ -131,6 +154,7 @@ export default function Playground() {
                         activeRegion={
                           isToolboxDrag && activeOverId === w.id ? overPosition : null
                         }
+                        executor={w.getExecutor()}
                       >
                         {w.render()}
                       </SortableItem>

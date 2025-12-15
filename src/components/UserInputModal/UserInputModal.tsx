@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 interface ModalRequest {
   title: string;
   placeholder?: string;
+  defaultValue?: string;
   resolve: (value: string | null) => void;
 }
 
@@ -27,10 +28,10 @@ class ModalManager {
     };
   }
 
-  open(title: string, placeholder?: string): Promise<string | null> {
+  open(title: string, options?: { placeholder?: string; defaultValue?: string }): Promise<string | null> {
     return new Promise((resolve) => {
       if (this.listener) {
-        this.listener({ title, placeholder, resolve });
+        this.listener({ title, placeholder: options?.placeholder, defaultValue: options?.defaultValue, resolve });
       } else {
         // No listener registered, resolve with null
         resolve(null);
@@ -53,11 +54,19 @@ export default function UserInputModal() {
   const [request, setRequest] = useState<ModalRequest | null>(null);
   const [inputValue, setInputValue] = useState("");
 
+  // Callback ref that focuses the input when it's mounted
+  const inputRefCallback = useCallback((node: HTMLInputElement | null) => {
+    if (node) {
+      // Small delay to ensure the dialog transition has started
+      setTimeout(() => node.focus(), 50);
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = userInputModal.subscribe((req) => {
       setRequest(req);
       if (req) {
-        setInputValue("");
+        setInputValue(req.defaultValue ?? "");
       }
     });
     return unsubscribe;
@@ -107,12 +116,12 @@ export default function UserInputModal() {
           </DialogTitle>
 
           <input
+            ref={inputRefCallback}
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={request?.placeholder ?? "Enter value..."}
-            autoFocus
             className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
           />
 
