@@ -16,7 +16,8 @@ const IfComponent = ({ widget }: { widget: IfWidget }) => {
         <span className="text-gray-600">(</span>
         {!widget.slots.conditionSlot && (
           <DroppableSlot
-            id="conditionSlot"
+            id={`${widget.id}-conditionSlot`}
+            slotName="conditionSlot"
             widgetId={widget.id}
             accepts={[WidgetRoles.EXPRESSION]}
             executor={widget.executor}
