@@ -41,8 +41,13 @@ export abstract class GenericWidgetBase implements IGenericWidget {
         return this.executor;
     }
 
+    // Placeholder for slot registration
+    registerSlot(_widget: IGenericWidget, _slotId: string): void {
+        // Override in subclass with implementation if it is needed
+    }
+
     abstract render(): React.ReactNode;
     abstract renderCode(): string;
-    abstract execute(): void;
+    abstract execute(): unknown;
     abstract initWidget(): Promise<void>;
 }

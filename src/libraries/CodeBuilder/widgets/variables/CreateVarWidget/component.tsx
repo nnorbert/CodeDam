@@ -7,9 +7,19 @@ const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
       <div className="flex items-center gap-1 font-medium">
         <span className="text-indigo-600">{widget.getName() || "unnamed"}</span>
         <span className="text-gray-500">=</span>
-        <DroppableSlot id={`slot-${widget.id}`} accepts={[WidgetRoles.EXPRESSION]}>
-          TEST
-        </DroppableSlot>
+        {!widget.slots.valueSlot && (
+          <DroppableSlot
+            id="valueSlot"
+            widgetId={widget.id}
+            accepts={[WidgetRoles.EXPRESSION]}
+            executor={widget.executor}
+          >
+            value
+          </DroppableSlot>
+        )}
+        {widget.slots.valueSlot && (
+          widget.slots.valueSlot.render()
+        )}
       </div>
     );
   };

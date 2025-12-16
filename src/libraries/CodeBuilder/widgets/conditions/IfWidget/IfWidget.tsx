@@ -3,20 +3,20 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { IGenericWidget } from "../../../interfaces/IGenericWidget";
-import CreaveVarComponent from "./component";
+import IfComponent from "./component";
 
-export class CreateVarWidget extends GenericWidgetBase {
+export class IfWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "createVar";
+        return "if";
     }
 
     public static getCategory(): WidgetCategoryType {
-        return WidgetCategory.VARIABLES;
+        return WidgetCategory.CONDITIONS;
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div>If Condition</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -25,49 +25,28 @@ export class CreateVarWidget extends GenericWidgetBase {
 
     // ------------------------------
 
-    private name: string = "";
-    private value: unknown | null = null;
-
     public slots: Record<string, GenericWidgetBase | null> = {
-        valueSlot: null
+        conditionSlot: null
     };
 
     constructor(executor: Executor) {
         super(executor);
     }
 
-    getName(): string {
-        return this.name;
-    }
-
-    getValue(): unknown | null {
-        return this.value;
-    }
-
     render(): React.ReactNode {
-        return <CreaveVarComponent widget={this}></CreaveVarComponent>;
+        return <IfComponent widget={this}></IfComponent>;
     }
 
     renderCode(): string {
-        return `let ${this.name || "unnamed"}`;
+        return `if () ...`;
     }
 
     execute(): void {
-        this.value = this.slots.valueSlot?.execute();
+        // Execute
     }
 
     async initWidget(): Promise<void> {
-        const result = await userInputModal.open(
-            "Enter Variable Name",
-            { placeholder: "e.g. myVariable" }
-        );
-        
-        if (result) {
-            this.name = result;
-        }
-
-        // Register itself as a variable
-        this.executor.registerVariable(this.id);
+        // Nothing to do
     }
 
     registerSlot(widget: GenericWidgetBase, slotId: string): void {

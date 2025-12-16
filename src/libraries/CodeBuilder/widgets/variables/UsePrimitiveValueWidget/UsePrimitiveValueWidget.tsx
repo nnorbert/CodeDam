@@ -1,12 +1,13 @@
+import { userInputModal } from "../../../../../components/UserInputModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
-import UseVarComponent from "./component";
+import UsePrimitiveValueComponent from "./component";
 
-export class UseVarWidget extends GenericWidgetBase {
+export class UsePrimitiveValueWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "useVar";
+        return "usePrimitiveValue";
     }
 
     public static getCategory(): WidgetCategoryType {
@@ -14,14 +15,14 @@ export class UseVarWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Use Variable</div>;
+        return <div>Use Value</div>;
     }
 
     public static getRole(): WidgetRoleType {
         return WidgetRoles.EXPRESSION;
     }
 
-    private value: GenericWidgetBase | null = null;
+    private value: string | number | boolean | null = null;
 
 
     constructor(executor: Executor) {
@@ -29,18 +30,25 @@ export class UseVarWidget extends GenericWidgetBase {
     }
 
     render(): React.ReactNode {
-        return <UseVarComponent widget={this}></UseVarComponent>;
+        return <UsePrimitiveValueComponent widget={this} value={this.value}></UsePrimitiveValueComponent>;
     }
 
     renderCode(): string {
         return `TEST`;
     }
 
-    execute(): void {
-        console.log("UseVarWidget execute");
+    execute(): string | number | boolean | null {
+        return this.value;
     }
 
     async initWidget(): Promise<void> {
-        // Nothing to do
+        const result = await userInputModal.open(
+            "Enter Value",
+            {  }
+        );
+        
+        if (result) {
+            this.value = result;
+        }
     }
 }

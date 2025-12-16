@@ -20,13 +20,17 @@ import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollision
 import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
 import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseVarWidget/UseVarWidget";
-import { CANVAS_ID, DroppableTypes } from "../../utils/constants";
+import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
+import { UsePrimitiveValueWidget } from "../../libraries/CodeBuilder/widgets/variables/UsePrimitiveValueWidget/UsePrimitiveValueWidget";
+import { IfWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfWidget/IfWidget";
 
 // ------------------ Playground ------------------
 export default function Playground() {
   const activeWidgets = [
     CreateVarWidget,
-    UseVarWidget
+    UsePrimitiveValueWidget,
+    UseVarWidget,
+    IfWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
 
@@ -55,7 +59,7 @@ export default function Playground() {
 
   function handleDragMove(event: any) {
     if (!event.over) return;
-    
+
     const activeRect = event.active.rect.current.translated;
     if (activeRect) {
       const pointerY = activeRect.top + activeRect.height / 2;
@@ -81,42 +85,43 @@ export default function Playground() {
     setActiveWidget(null);
     setIsToolboxDrag(false);
     setOverPosition(null);
-    
+
 
     if (!over) return;
 
-
-
-    const executor = over.data.current?.executor;
-    console.log(executor)
-
-
-
-
     const activeId = String(active.id);
     const overId = String(over.id);
+    const executor = over.data.current?.executor;
 
-    if (over.data.current?.type === DroppableTypes.SLOT) {
+    if (active.data.current?.isToolboxItem === true) {
+      if (over.data.current?.type === DroppableTypes.SLOT) {
+        if (active.data.current?.role !== WidgetRoles.EXPRESSION) {
+          return;
+        }
 
-    } else {
-      // Toolbox → Canvas
-      if (active.data.current?.isToolboxItem === true
-        && over.data.current?.accepts.includes(active.data.current?.role)
-      ) {
-        await mainExecutorRef.current.registerWidget(active.data.current.className, overId, currentOverPosition || "bottom");
+        // Handle register slot
+        await executor.registerSlot(active.data.current.className, over.data.current.widgetId, overId);
         // Force re-render after initWidget completes (widget may have been updated)
         forceUpdate(n => n + 1);
         return;
       }
 
-      // Reordering inside canvas
-      if (!active.data.current?.isToolboxItem === true && !over.data.current?.isToolboxItem === true && activeId !== overId) {
-        console.log("Reordering inside canvas", activeId, overId);
-        mainExecutorRef.current.reorderWidgets(activeId, overId);
+      // Toolbox → Canvas
+      if (active.data.current?.role === WidgetRoles.STATEMENT) {
+        await executor.registerWidget(active.data.current.className, overId, currentOverPosition || "bottom");
+        // Force re-render after initWidget completes (widget may have been updated)
+        forceUpdate(n => n + 1);
+        return;
       }
+
+      return;
     }
 
-
+    // Reordering inside canvas
+    if (active.data.current?.isSortableItem === true && over.data.current?.isSortableItem === true) {
+      executor.reorderWidgets(activeId, overId);
+      return;
+    }
   }, [overPosition]);
 
   return (
@@ -146,7 +151,7 @@ export default function Playground() {
                 {mainExecutorRef.current.getWidgets().length === 0 ? (
                   <div className="text-gray-400">Drag a widget here</div>
                 ) : (
-                  <div className="flex flex-col gap-2 overflow-y-auto max-h-full p-1">
+                  <div className="flex flex-col overflow-y-auto max-h-full p-1">
                     {mainExecutorRef.current.getWidgets().map((w) => (
                       <SortableItem
                         key={w.id}

@@ -1,5 +1,4 @@
 import { arrayMove } from "@dnd-kit/sortable";
-import { CANVAS_ID } from "../../utils/constants";
 import type { IGenericWidget } from "./interfaces/IGenericWidget";
 
 export class Executor {
@@ -13,14 +12,18 @@ export class Executor {
         this.containerId = containerId;
     }
 
+    createWidget(widgetClass: new (executor: Executor) => IGenericWidget): IGenericWidget {
+        const widget = new widgetClass(this);
+        this.widgetMap.set(widget.id, widget);
+        return widget;
+    }
+
     async registerWidget(
         widgetClass: new (executor: Executor) => IGenericWidget,
         overId: string,
         overPosition: string
     ): Promise<void> {
-        const widget = new widgetClass(this);
-
-        this.widgetMap.set(widget.id, widget);
+        const widget = this.createWidget(widgetClass);
 
         if (overId === this.containerId) {
             this.widgets.push(widget);
@@ -35,7 +38,7 @@ export class Executor {
             }
         }
 
-        // Initialize the widget (may show modal, etc.)
+        // Initialize the widget
         await widget.initWidget();
     }
 
@@ -55,7 +58,22 @@ export class Executor {
         return [...this.widgets];
     }
 
+    async registerSlot(
+        widgetClass: new (executor: Executor) => IGenericWidget,
+        widgetId: string,
+        slotId: string
+    ): Promise<void> {
+        if (!this.widgetMap.has(widgetId)) {
+            return;
+        }
 
+        const widget = this.createWidget(widgetClass);
+
+        this.widgetMap.get(widgetId)?.registerSlot(widget, slotId);
+
+        // Initialize the widget
+        await widget.initWidget();
+    }
 
     registerVariable(id: string) {
         this.variableStack.push(id);

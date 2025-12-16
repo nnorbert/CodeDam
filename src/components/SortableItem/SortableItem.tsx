@@ -21,16 +21,24 @@ const SortableItem = (props: Props) => {
             }
         });
 
-    const style: React.CSSProperties = {
+    // Outer wrapper style - includes padding for spacing (no gap needed in parent)
+    const wrapperStyle: React.CSSProperties = {
         flexShrink: 0,
         transform: CSS.Transform.toString(transform),
         transition:
             transition && transition.includes("0ms")
                 ? "transform 200ms ease"
                 : transition ?? "transform 200ms ease",
+        zIndex: isDragging ? 50 : "auto",
+        // Padding creates visual gap but remains part of this element's hit area
+        paddingTop: "4px",
+        paddingBottom: "4px",
+    };
+
+    // Inner content style
+    const contentStyle: React.CSSProperties = {
         minHeight: "60px",
         width: "fit-content",
-        zIndex: isDragging ? 50 : "auto",
         outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
     };
 
@@ -45,12 +53,17 @@ const SortableItem = (props: Props) => {
     return (
         <div
             ref={setNodeRef}
-            style={style}
+            style={wrapperStyle}
             {...attributes}
             {...listeners}
-            className={`p-3 bg-green-200 rounded shadow cursor-move transition-colors box-border flex flex-col items-start justify-center ${shadow}`}
+            className="cursor-move"
         >
-            {children}
+            <div
+                style={contentStyle}
+                className={`p-3 bg-green-200 rounded shadow transition-colors box-border flex flex-col items-start justify-center ${shadow}`}
+            >
+                {children}
+            </div>
         </div>
     );
 }

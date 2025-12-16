@@ -6,6 +6,7 @@ export interface IGenericWidget {
     getExecutor(): Executor;
     render(): React.ReactNode;
     renderCode(): string;
-    execute(): void;
+    execute(): unknown;
     initWidget(): Promise<void>;
+    registerSlot(widget: IGenericWidget, slotId: string): void;
 }
