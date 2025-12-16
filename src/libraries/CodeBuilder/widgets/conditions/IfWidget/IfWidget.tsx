@@ -1,8 +1,6 @@
-import { userInputModal } from "../../../../../components/UserInputModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
-import type { Executor } from "../../../Executor";
-import type { IGenericWidget } from "../../../interfaces/IGenericWidget";
+import { Executor } from "../../../Executor";
 import IfComponent from "./component";
 
 export class IfWidget extends GenericWidgetBase {
@@ -29,8 +27,18 @@ export class IfWidget extends GenericWidgetBase {
         conditionSlot: null
     };
 
+    /** Internal executor for managing body widgets */
+    public bodyExecutor: Executor;
+
     constructor(executor: Executor) {
         super(executor);
+        // Create internal executor with canvas ID based on widget ID
+        this.bodyExecutor = new Executor(`canvas-${this.id}`);
+    }
+
+    /** Returns the canvas ID for the body droppable area */
+    getBodyCanvasId(): string {
+        return this.bodyExecutor.getContainerId();
     }
 
     render(): React.ReactNode {

@@ -12,6 +12,10 @@ export class Executor {
         this.containerId = containerId;
     }
 
+    getContainerId(): string {
+        return this.containerId;
+    }
+
     createWidget(widgetClass: new (executor: Executor) => IGenericWidget): IGenericWidget {
         const widget = new widgetClass(this);
         this.widgetMap.set(widget.id, widget);

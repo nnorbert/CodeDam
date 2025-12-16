@@ -1,17 +1,18 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { PropsWithChildren } from "react";
+import { useDragContext } from "../../contexts/DragContext";
 import type { Executor } from "../../libraries/CodeBuilder/Executor";
 import { WidgetRoles } from "../../utils/constants";
 
 type Props = PropsWithChildren<{
     id: string;
-    activeRegion?: string | null;
     executor: Executor;
 }>;
 
 const SortableItem = (props: Props) => {
-    const { id, activeRegion, children, executor } = props;
+    const { id, children, executor } = props;
+    const { activeOverId, overPosition, isToolboxDrag } = useDragContext();
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging, active } =
         useSortable({
@@ -20,6 +21,9 @@ const SortableItem = (props: Props) => {
                 executor: executor,
             }
         });
+
+    // Calculate activeRegion from context - only show shadow if this item is being hovered
+    const activeRegion = isToolboxDrag && activeOverId === id ? overPosition : null;
 
     // Outer wrapper style - includes padding for spacing (no gap needed in parent)
     const wrapperStyle: React.CSSProperties = {

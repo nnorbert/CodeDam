@@ -9,13 +9,14 @@ import {
   SortableContext,
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import CodePreview from "../../components/CodePreview/CodePreview";
 import DroppableCanvas from "../../components/DroppableCanvas/DroppableCanvas";
 import SortableItem from "../../components/SortableItem/SortableItem";
 import ToolBox from "../../components/ToolBox/ToolBox";
 import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
 import { UserInputModal } from "../../components/UserInputModal";
+import { DragProvider } from "../../contexts/DragContext";
 import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollisionDetector";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
@@ -99,8 +100,9 @@ export default function Playground() {
           return;
         }
 
-        // Handle register slot
-        await executor.registerSlot(active.data.current.className, over.data.current.widgetId, overId);
+        // Handle register slot - use slotName from data (not overId which is now unique)
+        const slotName = over.data.current.slotName;
+        await executor.registerSlot(active.data.current.className, over.data.current.widgetId, slotName);
         // Force re-render after initWidget completes (widget may have been updated)
         forceUpdate(n => n + 1);
         return;
@@ -124,6 +126,13 @@ export default function Playground() {
     }
   }, [overPosition]);
 
+  // Memoize context value to avoid unnecessary re-renders
+  const dragContextValue = useMemo(() => ({
+    activeOverId,
+    overPosition,
+    isToolboxDrag,
+  }), [activeOverId, overPosition, isToolboxDrag]);
+
   return (
     <DndContext
       sensors={sensors}
@@ -133,56 +142,55 @@ export default function Playground() {
       onDragCancel={handleDragCancel}
       collisionDetection={CustomCollisionDetector}
     >
-      <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
-        {/* Toolbox */}
-        <aside className="w-64 border-r bg-yellow-50 p-4 overflow-y-auto">
-          <ToolBox widgets={activeWidgets}></ToolBox>
-        </aside>
+      <DragProvider value={dragContextValue}>
+        <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
+          {/* Toolbox */}
+          <aside className="w-64 border-r bg-yellow-50 p-4 overflow-y-auto">
+            <ToolBox widgets={activeWidgets}></ToolBox>
+          </aside>
 
-        {/* Canvas */}
-        <main className="flex-1 flex flex-col p-4 overflow-hidden">
-          {/* The droppable area now expands to fill available height */}
-          <div className="flex-1 min-h-0">
-            <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
-              <SortableContext
-                items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {mainExecutorRef.current.getWidgets().length === 0 ? (
-                  <div className="text-gray-400">Drag a widget here</div>
-                ) : (
-                  <div className="flex flex-col overflow-y-auto max-h-full p-1">
-                    {mainExecutorRef.current.getWidgets().map((w) => (
-                      <SortableItem
-                        key={w.id}
-                        id={w.id}
-                        activeRegion={
-                          isToolboxDrag && activeOverId === w.id ? overPosition : null
-                        }
-                        executor={w.getExecutor()}
-                      >
-                        {w.render()}
-                      </SortableItem>
-                    ))}
-                  </div>
-                )}
-              </SortableContext>
-            </DroppableCanvas>
-          </div>
-        </main>
+          {/* Canvas */}
+          <main className="flex-1 flex flex-col p-4 overflow-hidden">
+            {/* The droppable area now expands to fill available height */}
+            <div className="flex-1 min-h-0">
+              <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
+                <SortableContext
+                  items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {mainExecutorRef.current.getWidgets().length === 0 ? (
+                    <div className="text-gray-400">Drag a widget here</div>
+                  ) : (
+                    <div className="flex flex-col overflow-y-auto max-h-full p-1">
+                      {mainExecutorRef.current.getWidgets().map((w) => (
+                        <SortableItem
+                          key={w.id}
+                          id={w.id}
+                          executor={w.getExecutor()}
+                        >
+                          {w.render()}
+                        </SortableItem>
+                      ))}
+                    </div>
+                  )}
+                </SortableContext>
+              </DroppableCanvas>
+            </div>
+          </main>
 
-        {/* Code Preview */}
-        <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
-          <CodePreview widgets={mainExecutorRef.current.getWidgets()} />
-        </aside>
-      </div>
+          {/* Code Preview */}
+          <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
+            <CodePreview widgets={mainExecutorRef.current.getWidgets()} />
+          </aside>
+        </div>
 
-      <DragOverlay>
-        {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
-      </DragOverlay>
+        <DragOverlay>
+          {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
+        </DragOverlay>
 
-      {/* Global modal for user input requests */}
-      <UserInputModal />
+        {/* Global modal for user input requests */}
+        <UserInputModal />
+      </DragProvider>
     </DndContext>
   );
 }

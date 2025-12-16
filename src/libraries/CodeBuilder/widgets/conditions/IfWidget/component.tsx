@@ -1,8 +1,13 @@
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import DroppableCanvas from "../../../../../components/DroppableCanvas/DroppableCanvas";
 import DroppableSlot from "../../../../../components/DroppableSlot/DroppableSlot";
+import SortableItem from "../../../../../components/SortableItem/SortableItem";
 import { WidgetRoles } from "../../../../../utils/constants";
 import type { IfWidget } from "./IfWidget";
 
 const IfComponent = ({ widget }: { widget: IfWidget }) => {
+  const bodyWidgets = widget.bodyExecutor.getWidgets();
+
   return (
     <div className="font-mono">
       {/* Header: if (condition) */}
@@ -23,9 +28,30 @@ const IfComponent = ({ widget }: { widget: IfWidget }) => {
         <span className="text-gray-600">)</span>
       </div>
 
-      {/* Body: { content } */}
+      {/* Body: { content } - Droppable canvas for statement widgets */}
       <div className="text-gray-600">{`{`}</div>
-      <div className="ml-4 min-h-16 border-2 border-dashed border-gray-300 rounded bg-gray-50/50"></div>
+      <div className="ml-4 min-h-16">
+        <DroppableCanvas id={widget.getBodyCanvasId()} executor={widget.bodyExecutor}>
+          <SortableContext
+            items={bodyWidgets.map((w) => w.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {bodyWidgets.length === 0 ? (
+              <div className="text-gray-400 text-sm">Drop widget here</div>
+            ) : (
+              bodyWidgets.map((w) => (
+                <SortableItem
+                  key={w.id}
+                  id={w.id}
+                  executor={widget.bodyExecutor}
+                >
+                  {w.render()}
+                </SortableItem>
+              ))
+            )}
+          </SortableContext>
+        </DroppableCanvas>
+      </div>
       <div className="text-gray-600">{`}`}</div>
     </div>
   );
