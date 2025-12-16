@@ -1,9 +1,11 @@
 import DroppableSlot from "../../../../../components/DroppableSlot/DroppableSlot";
+import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
 import { WidgetRoles } from "../../../../../utils/constants";
 import { CreateVarWidget } from "./CreateVarWidget";
 
 const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
-    return (
+  return (
+    <WidgetWrapper onDelete={() => { console.log("delete"); }} onSettings={() => { console.log("settings"); }}>
       <div className="flex items-center gap-1 font-medium">
         <span className="text-indigo-600">let {widget.getName() || "unnamed"}</span>
         <span className="text-gray-500">=</span>
@@ -19,10 +21,13 @@ const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
           </DroppableSlot>
         )}
         {widget.slots.valueSlot && (
-          widget.slots.valueSlot.render()
+          <div className="flex items-center justify-center pl-2 pr-2 rounded-md border border-gray-300">
+            {widget.slots.valueSlot.render()}
+          </div>
         )}
       </div>
-    );
-  };
-  
-  export default CreaveVarComponent;
+    </WidgetWrapper>
+  );
+};
+
+export default CreaveVarComponent;

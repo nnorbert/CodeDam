@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Playground from './pages/playground/Page';
+import { ConfirmationModal } from './components/ConfirmationModal';
 
 
 function HomePage() {
@@ -23,6 +24,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/playground" element={<Playground />} />
       </Routes>
+
+      <ConfirmationModal />
     </Router>
   );
 }

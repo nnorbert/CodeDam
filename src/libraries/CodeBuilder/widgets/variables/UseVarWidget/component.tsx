@@ -1,11 +1,14 @@
+import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
 import { UseVarWidget } from "./UseVarWidget";
 
 
 const UseVarComponent = ({ widget }: { widget: UseVarWidget }) => {
     return (
-      <div>
-        TEST
-      </div>
+      <WidgetWrapper onDelete={() => { console.log("delete"); }} onSettings={() => { console.log("settings"); }}>
+        <div>
+          TEST
+        </div>
+      </WidgetWrapper>
     );
   };
   
