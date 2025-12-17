@@ -5,7 +5,7 @@ import { confirmationModal } from "../ConfirmationModal";
 
 type Props = PropsWithChildren<{
     onDelete: () => void;
-    onSettings: () => void;
+    onSettings?: () => void;
 }>;
 
 const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
@@ -44,6 +44,7 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                     onPointerDown={stopDrag}
                     onMouseDown={stopDrag}
                 >
+                    {onSettings && (
                     <MenuItem>
                         <button
                             type="button"
@@ -53,12 +54,13 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                                 e.stopPropagation();
                                 onSettings();
                             }}
-                            className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                            className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"
                         >
                             <Cog6ToothIcon className="w-4 h-4 text-gray-400 group-data-[focus]:text-gray-600" />
                             Settings
                         </button>
                     </MenuItem>
+                    )}
                     <MenuItem>
                         <button
                             type="button"
@@ -68,7 +70,7 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                                 e.stopPropagation();
                                 handleDelete();
                             }}
-                            className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-red-50 data-[focus]:text-red-600"
+                            className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-red-50 data-[focus]:text-red-600 cursor-pointer"
                         >
                             <TrashIcon className="w-4 h-4 text-gray-400 group-data-[focus]:text-red-500" />
                             Delete

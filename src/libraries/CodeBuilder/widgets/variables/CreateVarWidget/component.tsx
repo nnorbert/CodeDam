@@ -8,8 +8,15 @@ const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
     widget.getExecutor().deleteWidget(widget.id); 
   };
 
+  const settingsHandler = async () => {
+    const changed = await widget.openConfig();
+    if (changed) {
+      widget.getExecutor().notifyChange();
+    }
+  };
+
   return (
-    <WidgetWrapper onDelete={deleteHandler} onSettings={() => { console.log("settings"); }}>
+    <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
       <div className="flex items-center gap-1 font-medium">
         <span className="text-indigo-600">let {widget.getName() || "unnamed"}</span>
         <span className="text-gray-500">=</span>

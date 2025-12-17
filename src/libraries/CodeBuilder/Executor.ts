@@ -125,6 +125,23 @@ export class Executor {
         this.variableStack.push(id);
     }
 
+    getVariableNames(excludeWidgetId?: string): string[] {
+        const names: string[] = [];
+        for (const widgetId of this.variableStack) {
+            if (excludeWidgetId && widgetId === excludeWidgetId) continue;
+            const widget = this.widgetMap.get(widgetId);
+            if (widget && "getName" in widget && typeof widget.getName === "function") {
+                const name = (widget as { getName: () => string }).getName();
+                if (name) names.push(name);
+            }
+        }
+        return names;
+    }
+
+    isVariableNameTaken(name: string, excludeWidgetId?: string): boolean {
+        return this.getVariableNames(excludeWidgetId).includes(name);
+    }
+
     execute() {
         console.log(this.widgets);
 

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Playground from './pages/playground/Page';
 import { ConfirmationModal } from './components/ConfirmationModal';
+import { ConfigModal } from './components/ConfigModal';
 
 
 function HomePage() {
@@ -26,6 +27,7 @@ function App() {
       </Routes>
 
       <ConfirmationModal />
+      <ConfigModal />
     </Router>
   );
 }

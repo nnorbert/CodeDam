@@ -14,7 +14,7 @@ const IfComponent = ({ widget }: { widget: IfWidget }) => {
   };
 
   return (
-    <WidgetWrapper onDelete={deleteHandler} onSettings={() => { console.log("settings"); }}>
+    <WidgetWrapper onDelete={deleteHandler}>
       <div className="font-mono">
         {/* Header: if (condition) */}
         <div className="flex items-center gap-1">

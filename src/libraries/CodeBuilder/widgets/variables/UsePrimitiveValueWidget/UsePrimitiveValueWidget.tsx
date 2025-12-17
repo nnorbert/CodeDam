@@ -1,8 +1,14 @@
-import { userInputModal } from "../../../../../components/UserInputModal";
+import { configModal } from "../../../../../components/ConfigModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import UsePrimitiveValueComponent from "./component";
+import {
+    UsePrimitiveValueConfigForm,
+    validateUsePrimitiveValueConfig,
+    getConfigFromValue,
+    getValueFromConfig,
+} from "./UsePrimitiveValueConfigForm";
 
 export class UsePrimitiveValueWidget extends GenericWidgetBase {
 
@@ -22,11 +28,14 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
         return WidgetRoles.EXPRESSION;
     }
 
-    private value: string | number | boolean | null = null;
-
+    private value: string | number | boolean | null | undefined = null;
 
     constructor(executor: Executor) {
         super(executor);
+    }
+
+    getValue(): string | number | boolean | null | undefined {
+        return this.value;
     }
 
     render(): React.ReactNode {
@@ -34,22 +43,33 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
     }
 
     renderCode(): string {
-        return `TEST`;
+        if (this.value === null) return "null";
+        if (this.value === undefined) return "undefined";
+        if (typeof this.value === "string") return `"${this.value}"`;
+        return String(this.value);
     }
 
-    execute(): string | number | boolean | null {
+    execute(): string | number | boolean | null | undefined {
         return this.value;
     }
 
-    async initWidget(): Promise<void> {
-        const result = await userInputModal.open(
-            "Enter Value",
-            {  }
-        );
-        
+    async openConfig(isEditing = false): Promise<boolean> {
+        const result = await configModal.open({
+            title: "Configure Value",
+            initialValues: getConfigFromValue(this.value, isEditing),
+            validate: validateUsePrimitiveValueConfig,
+            renderContent: (props) => <UsePrimitiveValueConfigForm {...props} />,
+        });
+
         if (result) {
-            this.value = result;
+            this.value = getValueFromConfig(result);
+            return true;
         }
+        return false;
+    }
+
+    async initWidget(): Promise<void> {
+        await this.openConfig(false);
     }
 
     cleanup(): void {

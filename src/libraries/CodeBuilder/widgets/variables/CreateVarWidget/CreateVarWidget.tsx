@@ -1,9 +1,9 @@
-import { userInputModal } from "../../../../../components/UserInputModal";
+import { configModal } from "../../../../../components/ConfigModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
-import type { IGenericWidget } from "../../../interfaces/IGenericWidget";
 import CreaveVarComponent from "./component";
+import { CreateVarConfigForm, createValidator } from "./CreateVarConfigForm";
 
 export class CreateVarWidget extends GenericWidgetBase {
 
@@ -56,15 +56,26 @@ export class CreateVarWidget extends GenericWidgetBase {
         this.value = this.slots.valueSlot?.execute();
     }
 
-    async initWidget(): Promise<void> {
-        const result = await userInputModal.open(
-            "Enter Variable Name",
-            { placeholder: "e.g. myVariable" }
-        );
-        
+    async openConfig(): Promise<boolean> {
+        // Get existing variable names, excluding this widget's current name (for editing)
+        const existingNames = this.executor.getVariableNames(this.id);
+
+        const result = await configModal.open({
+            title: "Configure Variable",
+            initialValues: { name: this.name },
+            validate: createValidator(existingNames),
+            renderContent: (props) => <CreateVarConfigForm {...props} />,
+        });
+
         if (result) {
-            this.name = result;
+            this.name = result.name.trim();
+            return true;
         }
+        return false;
+    }
+
+    async initWidget(): Promise<void> {
+        await this.openConfig();
 
         // Register itself as a variable
         this.executor.registerVariable(this.id);
