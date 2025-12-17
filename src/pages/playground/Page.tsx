@@ -9,7 +9,7 @@ import {
   SortableContext,
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CodePreview from "../../components/CodePreview/CodePreview";
 import DroppableCanvas from "../../components/DroppableCanvas/DroppableCanvas";
 import SortableItem from "../../components/SortableItem/SortableItem";
@@ -39,11 +39,18 @@ export default function Playground() {
     mainExecutorRef.current = new Executor(CANVAS_ID);
   }
 
+  const [, forceUpdate] = useState(0);
+
+  // Subscribe to executor changes for re-rendering
+  useEffect(() => {
+    mainExecutorRef.current?.setOnChange(() => forceUpdate(n => n + 1));
+    return () => mainExecutorRef.current?.setOnChange(null);
+  }, []);
+
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
   const [activeWidget, setActiveWidget] = useState<{ widget: ToolboxItemData } | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
-  const [, forceUpdate] = useState(0);
 
   const sensors = useSensors(useSensor(PointerSensor));
 

@@ -4,8 +4,12 @@ import { WidgetRoles } from "../../../../../utils/constants";
 import { CreateVarWidget } from "./CreateVarWidget";
 
 const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
+  const deleteHandler = () => {
+    widget.getExecutor().deleteWidget(widget.id); 
+  };
+
   return (
-    <WidgetWrapper onDelete={() => { console.log("delete"); }} onSettings={() => { console.log("settings"); }}>
+    <WidgetWrapper onDelete={deleteHandler} onSettings={() => { console.log("settings"); }}>
       <div className="flex items-center gap-1 font-medium">
         <span className="text-indigo-600">let {widget.getName() || "unnamed"}</span>
         <span className="text-gray-500">=</span>

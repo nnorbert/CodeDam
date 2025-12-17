@@ -34,6 +34,9 @@ export class IfWidget extends GenericWidgetBase {
         super(executor);
         // Create internal executor with canvas ID based on widget ID
         this.bodyExecutor = new Executor(`canvas-${this.id}`);
+        this.bodyExecutor.setOnChange(() => {
+            this.getExecutor().notifyChange();
+        });
     }
 
     /** Returns the canvas ID for the body droppable area */
@@ -59,5 +62,19 @@ export class IfWidget extends GenericWidgetBase {
 
     registerSlot(widget: GenericWidgetBase, slotId: string): void {
         this.slots[slotId] = widget;
+    }
+
+    unregisterSlot(slotId: string): void {
+        this.slots[slotId] = null;
+    }
+
+    cleanup(): void {
+        if (this.slots.conditionSlot) {
+            this.executor.deleteWidget(this.slots.conditionSlot.id, true);
+        }
+
+        this.bodyExecutor.getWidgets().forEach((w) => {
+            this.bodyExecutor.deleteWidget(w.id, true);
+        });
     }
 }

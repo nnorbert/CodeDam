@@ -9,8 +9,12 @@ import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
 const IfComponent = ({ widget }: { widget: IfWidget }) => {
   const bodyWidgets = widget.bodyExecutor.getWidgets();
 
+  const deleteHandler = () => {
+    widget.getExecutor().deleteWidget(widget.id); 
+  };
+
   return (
-    <WidgetWrapper onDelete={() => { console.log("delete"); }} onSettings={() => { console.log("settings"); }}>
+    <WidgetWrapper onDelete={deleteHandler} onSettings={() => { console.log("settings"); }}>
       <div className="font-mono">
         {/* Header: if (condition) */}
         <div className="flex items-center gap-1">

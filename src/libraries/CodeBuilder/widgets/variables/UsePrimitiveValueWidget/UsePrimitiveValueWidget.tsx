@@ -51,4 +51,8 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
             this.value = result;
         }
     }
+
+    cleanup(): void {
+        // Nothing to do
+    }
 }

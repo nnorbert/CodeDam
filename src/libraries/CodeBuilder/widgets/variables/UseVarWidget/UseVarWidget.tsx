@@ -43,4 +43,11 @@ export class UseVarWidget extends GenericWidgetBase {
     async initWidget(): Promise<void> {
         // Nothing to do
     }
+
+    cleanup(): void {
+        if (this.value) {
+            this.executor.deleteWidget(this.value.id);
+            this.value = null;
+        }
+    }
 }

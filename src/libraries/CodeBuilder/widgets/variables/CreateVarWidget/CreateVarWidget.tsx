@@ -73,4 +73,14 @@ export class CreateVarWidget extends GenericWidgetBase {
     registerSlot(widget: GenericWidgetBase, slotId: string): void {
         this.slots[slotId] = widget;
     }
+
+    unregisterSlot(slotId: string): void {
+        this.slots[slotId] = null;
+    }
+
+    cleanup(): void {
+        if (this.slots.valueSlot) {
+            this.executor.deleteWidget(this.slots.valueSlot.id);
+        }
+    }
 }

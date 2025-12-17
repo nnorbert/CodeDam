@@ -9,4 +9,6 @@ export interface IGenericWidget {
     execute(): unknown;
     initWidget(): Promise<void>;
     registerSlot(widget: IGenericWidget, slotId: string): void;
+    unregisterSlot(slotId: string): void;
+    cleanup(): void;
 }

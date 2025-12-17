@@ -7,9 +7,22 @@ export class Executor {
     private widgets: IGenericWidget[] = [];
     private widgetMap = new Map<string, IGenericWidget>();
     private variableStack: string[] = [];
+    private slotMap = new Map<string, {
+        widgetId: string;
+        slotId: string;
+    }>();
+    private onChange: (() => void) | null = null;
 
     constructor(containerId: string) {
         this.containerId = containerId;
+    }
+
+    setOnChange(callback: (() => void) | null) {
+        this.onChange = callback;
+    }
+
+    notifyChange() {
+        this.onChange?.();
     }
 
     getContainerId(): string {
@@ -20,6 +33,32 @@ export class Executor {
         const widget = new widgetClass(this);
         this.widgetMap.set(widget.id, widget);
         return widget;
+    }
+
+    deleteWidget(widgetId: string, silent: boolean = false) {
+        const widget = this.widgetMap.get(widgetId);
+        if (!widget) return; // Early exit if widget doesn't exist
+
+        try {
+            widget.cleanup();
+        } catch (e) {
+            console.error(`Error cleaning up widget ${widgetId}:`, e);
+            // Continue with deletion even if cleanup fails
+        }
+
+        const slotInfo = this.slotMap.get(widgetId);
+        if (slotInfo) {
+            this.widgetMap.get(slotInfo.widgetId)?.unregisterSlot(slotInfo.slotId);
+            this.slotMap.delete(widgetId);
+        }
+
+        this.widgetMap.delete(widgetId);
+        this.widgets = this.widgets.filter((w) => w.id !== widgetId);
+        this.variableStack = this.variableStack.filter((v) => v !== widgetId);
+
+        if (!silent) {
+            this.notifyChange();
+        }
     }
 
     async registerWidget(
@@ -74,9 +113,12 @@ export class Executor {
         const widget = this.createWidget(widgetClass);
 
         this.widgetMap.get(widgetId)?.registerSlot(widget, slotId);
+        this.slotMap.set(widget.id, { widgetId, slotId });
 
         // Initialize the widget
         await widget.initWidget();
+
+        this.notifyChange();
     }
 
     registerVariable(id: string) {
