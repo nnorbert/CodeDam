@@ -1,21 +1,50 @@
-import type { IGenericWidget } from "../../libraries/CodeBuilder/interfaces/IGenericWidget";
-
 type Props = {
-  widgets: IGenericWidget[];
+  code: React.ReactNode[];
 };
 
-const CodePreview = ({ widgets }: Props) => {
+const CodePreview = ({ code }: Props) => {
   return (
-    <>
-      <h2 className="font-bold text-lg mb-4">Code Preview</h2>
-      <pre className="text-sm whitespace-pre-wrap font-mono text-gray-700">
-        {/* Here you'll render the generated code later */}
-        {/* {JSON.stringify(widgets, null, 2)} */}
-        {widgets.map((w) => w.renderCode())}
-      </pre>
-    </>
+    <div className="flex flex-col h-full">
+      {/* Title bar */}
+      <div
+        className="flex items-center px-4 py-2 text-sm font-medium"
+        style={{ backgroundColor: "#252526", color: "#CCCCCC" }}
+      >
+        <span>Code Preview</span>
+      </div>
+
+      {/* Editor area */}
+      <div
+        className="flex-1 overflow-auto font-mono text-sm"
+        style={{ backgroundColor: "#1E1E1E" }}
+      >
+        {code.map((codeLine, index) => (
+          <div
+            key={index}
+            className="flex hover:bg-white/5 transition-colors"
+            style={{ minHeight: "1.5rem" }}
+          >
+            {/* Line number gutter */}
+            <div
+              className="select-none text-right pr-4 pl-2"
+              style={{
+                color: "#858585",
+                minWidth: "3rem",
+                backgroundColor: "#1E1E1E",
+              }}
+            >
+              {index + 1}
+            </div>
+
+            {/* Code content */}
+            <div className="flex-1 pr-4" style={{ color: "#D4D4D4" }}>
+              {codeLine}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
 export default CodePreview;
-

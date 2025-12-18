@@ -4,8 +4,9 @@ import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import CreaveVarComponent from "./component";
 import { CreateVarConfigForm, createValidator } from "./CreateVarConfigForm";
+import type { IVariable } from "../../../interfaces/IVariable";
 
-export class CreateVarWidget extends GenericWidgetBase {
+export class CreateVarWidget extends GenericWidgetBase implements IVariable {
 
     public static getType(): string {
         return "createVar";
@@ -32,6 +33,8 @@ export class CreateVarWidget extends GenericWidgetBase {
         valueSlot: null
     };
 
+    public inExecution: boolean = false;
+
     constructor(executor: Executor) {
         super(executor);
     }
@@ -48,8 +51,21 @@ export class CreateVarWidget extends GenericWidgetBase {
         return <CreaveVarComponent widget={this}></CreaveVarComponent>;
     }
 
-    renderCode(): string {
-        return `let ${this.name || "unnamed"}`;
+    renderCode(): React.ReactNode {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)", display: "block" }
+            : { display: "block" };
+
+        return (
+            <div style={highlightStyle}>
+                <span style={{ color: "#569CD6", fontStyle: "normal" }}>let</span>
+                <span style={{ color: "#D4D4D4" }}> </span>
+                <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
+                <span style={{ color: "#D4D4D4" }}> = </span>
+                {this.slots.valueSlot?.renderCode() ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>undefined</span>}
+                <span style={{ color: "#D4D4D4" }}>;</span>
+            </div>
+        );
     }
 
     execute(): void {
@@ -78,7 +94,7 @@ export class CreateVarWidget extends GenericWidgetBase {
         await this.openConfig();
 
         // Register itself as a variable
-        this.executor.registerVariable(this.id);
+        this.executor.registerVariable(this);
     }
 
     registerSlot(widget: GenericWidgetBase, slotId: string): void {

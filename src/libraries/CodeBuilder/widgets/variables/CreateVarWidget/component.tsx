@@ -1,11 +1,26 @@
+import { confirmationModal } from "../../../../../components/ConfirmationModal";
 import DroppableSlot from "../../../../../components/DroppableSlot/DroppableSlot";
 import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
 import { WidgetRoles } from "../../../../../utils/constants";
 import { CreateVarWidget } from "./CreateVarWidget";
 
 const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
-  const deleteHandler = () => {
-    widget.getExecutor().deleteWidget(widget.id); 
+  const deleteHandler = async () => {
+    const executor = widget.getExecutor();
+    const { inUse, usageCount } = executor.isVariableInUse(widget.id);
+
+    if (inUse) {
+      // Show error message - variable is in use
+      await confirmationModal.confirm("Cannot Delete Variable", {
+        message: `This variable "${widget.getName()}" is being used in ${usageCount} place${usageCount > 1 ? 's' : ''}. Remove all usages before deleting.`,
+        confirmLabel: "OK",
+        cancelLabel: "Cancel",
+        variant: "warning",
+      });
+      return;
+    }
+
+    executor.deleteWidget(widget.id); 
   };
 
   const settingsHandler = async () => {

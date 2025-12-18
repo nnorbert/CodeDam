@@ -186,8 +186,8 @@ export default function Playground() {
           </main>
 
           {/* Code Preview */}
-          <aside className="w-80 border-l bg-gray-50 p-4 overflow-y-auto">
-            <CodePreview widgets={mainExecutorRef.current.getWidgets()} />
+          <aside className="w-1/3 border-l bg-gray-50 p-4 overflow-y-auto">
+            <CodePreview code={mainExecutorRef.current.getCodePreview()} />
           </aside>
         </div>
 

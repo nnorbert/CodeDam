@@ -30,10 +30,13 @@ export class IfWidget extends GenericWidgetBase {
     /** Internal executor for managing body widgets */
     public bodyExecutor: Executor;
 
+    public inExecution: boolean = false;
+
     constructor(executor: Executor) {
         super(executor);
         // Create internal executor with canvas ID based on widget ID
-        this.bodyExecutor = new Executor(`canvas-${this.id}`);
+        // Pass parent executor so nested widgets can access parent's variable stack
+        this.bodyExecutor = new Executor(`canvas-${this.id}`, executor);
         this.bodyExecutor.setOnChange(() => {
             this.getExecutor().notifyChange();
         });
@@ -44,12 +47,64 @@ export class IfWidget extends GenericWidgetBase {
         return this.bodyExecutor.getContainerId();
     }
 
+    getNestedExecutors(): Executor[] {
+        return [this.bodyExecutor];
+    }
+
     render(): React.ReactNode {
         return <IfComponent widget={this}></IfComponent>;
     }
 
-    renderCode(): string {
-        return `if () ...`;
+    renderCode(): React.ReactNode[] {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
+
+        const bodyWidgets = this.bodyExecutor.getWidgets();
+        const indentStyle = { paddingLeft: "2ch" };
+
+        const lines: React.ReactNode[] = [];
+
+        // if (condition) {
+        lines.push(
+            <div key={`${this.id}-if`} style={highlightStyle}>
+                <span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
+                <span style={{ color: "#D4D4D4" }}> (</span>
+                {this.slots.conditionSlot?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* condition */</span>}
+                <span style={{ color: "#D4D4D4" }}>) {"{"}</span>
+            </div>
+        );
+
+        // Body widgets - each line indented
+        if (bodyWidgets.length > 0) {
+            bodyWidgets.forEach((widget) => {
+                const widgetCode = widget.renderCode();
+                // Handle both single nodes and arrays of nodes
+                const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
+                widgetLines.forEach((line, index) => {
+                    lines.push(
+                        <div key={`${widget.id}-${index}`} style={indentStyle}>
+                            {line}
+                        </div>
+                    );
+                });
+            });
+        } else {
+            lines.push(
+                <div key={`${this.id}-empty`} style={{ ...indentStyle, color: "#6A9955", fontStyle: "italic" }}>
+                    {"// empty body"}
+                </div>
+            );
+        }
+
+        // Closing brace
+        lines.push(
+            <div key={`${this.id}-close`}>
+                <span style={{ color: "#D4D4D4" }}>{"}"}</span>
+            </div>
+        );
+
+        return lines;
     }
 
     execute(): void {

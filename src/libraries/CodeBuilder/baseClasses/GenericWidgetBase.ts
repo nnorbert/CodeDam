@@ -29,6 +29,8 @@ export abstract class GenericWidgetBase implements IGenericWidget {
     readonly executor: Executor;
     readonly id: string;
 
+    public inExecution: boolean = false;
+
     constructor(executor: Executor) {
         this.id = nanoid();
         this.executor = executor;
@@ -50,8 +52,18 @@ export abstract class GenericWidgetBase implements IGenericWidget {
         // Override in subclass with implementation if it is needed
     }
 
+    /** Returns IDs of variables this widget references. Override in subclasses that reference variables. */
+    getReferencedVariableIds(): string[] {
+        return [];
+    }
+
+    /** Returns nested executors contained in this widget. Override in subclasses with nested blocks (e.g., if/else). */
+    getNestedExecutors(): Executor[] {
+        return [];
+    }
+
     abstract render(): React.ReactNode;
-    abstract renderCode(): string;
+    abstract renderCode(): React.ReactNode | React.ReactNode[];
     abstract execute(): unknown;
     abstract initWidget(): Promise<void>;
     abstract cleanup(): void;
