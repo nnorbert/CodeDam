@@ -1,6 +1,7 @@
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import { Executor } from "../../../Executor";
+import type { ExecutionGenerator } from "../../../ExecutionTypes";
 import IfComponent from "./component";
 
 export class IfWidget extends GenericWidgetBase {
@@ -36,7 +37,7 @@ export class IfWidget extends GenericWidgetBase {
         super(executor);
         // Create internal executor with canvas ID based on widget ID
         // Pass parent executor so nested widgets can access parent's variable stack
-        this.bodyExecutor = new Executor(`canvas-${this.id}`, executor);
+        this.bodyExecutor = new Executor(`canvas-${this.id}`, executor, "If Block");
         this.bodyExecutor.setOnChange(() => {
             this.getExecutor().notifyChange();
         });
@@ -107,8 +108,16 @@ export class IfWidget extends GenericWidgetBase {
         return lines;
     }
 
-    execute(): void {
-        // Execute
+    async *execute(): ExecutionGenerator {
+        yield { type: 'step', widget: this };
+        
+        // Evaluate the condition from the slot
+        const condition = this.slots.conditionSlot?.evaluate();
+        
+        // If condition is truthy, execute the body
+        if (condition) {
+            yield* this.bodyExecutor.execute();
+        }
     }
 
     async initWidget(): Promise<void> {

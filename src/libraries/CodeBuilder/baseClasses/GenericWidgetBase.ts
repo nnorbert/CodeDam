@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 import type { IGenericWidget } from "../interfaces/IGenericWidget";
 import type { Executor } from "../Executor";
 import type { WidgetRoleType } from "../../../utils/constants";
+import type { ExecutionGenerator } from "../ExecutionTypes";
 
 export abstract class GenericWidgetBase implements IGenericWidget {
     // Static method - called on the class itself, not instances
@@ -62,9 +63,22 @@ export abstract class GenericWidgetBase implements IGenericWidget {
         return [];
     }
 
+    /**
+     * Evaluate the widget and return its computed value.
+     * Override in expression widgets that provide values.
+     * Statement widgets can leave the default implementation.
+     */
+    evaluate(): unknown {
+        return undefined;
+    }
+
     abstract render(): React.ReactNode;
     abstract renderCode(): React.ReactNode | React.ReactNode[];
-    abstract execute(): unknown;
+    /** 
+     * Execute the widget. Returns an async generator that yields step points.
+     * Subclasses should implement their execution logic here.
+     */
+    abstract execute(): ExecutionGenerator;
     abstract initWidget(): Promise<void>;
     abstract cleanup(): void;
 }

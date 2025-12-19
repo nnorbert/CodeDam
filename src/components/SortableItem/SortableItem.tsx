@@ -8,15 +8,18 @@ import { WidgetRoles } from "../../utils/constants";
 type Props = PropsWithChildren<{
     id: string;
     executor: Executor;
+    inExecution: boolean;
 }>;
 
 const SortableItem = (props: Props) => {
-    const { id, children, executor } = props;
-    const { activeOverId, overPosition, isToolboxDrag } = useDragContext();
+    const { id, children, executor, inExecution } = props;
+    const { activeOverId, overPosition, isToolboxDrag, isEditingLocked } = useDragContext();
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging, active } =
         useSortable({
-            id, data: {
+            id,
+            disabled: isEditingLocked,
+            data: {
                 isSortableItem: true,
                 executor: executor,
             }
@@ -46,7 +49,8 @@ const SortableItem = (props: Props) => {
         outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
     };
 
-    const shadow = active?.data.current?.role === WidgetRoles.STATEMENT ? (
+    // Drag indicator shadow
+    const dragShadow = active?.data.current?.role === WidgetRoles.STATEMENT ? (
         activeRegion === "top"
             ? "shadow-[0_-4px_6px_rgba(59,130,246,0.6)]"
             : activeRegion === "bottom"
@@ -54,17 +58,25 @@ const SortableItem = (props: Props) => {
                 : ""
     ) : "";
 
+    // Execution highlight shadow
+    const executionShadow = inExecution
+        ? "shadow-[0_0_0_3px_rgba(251,191,36,0.8),0_0_12px_rgba(251,191,36,0.6)]"
+        : "";
+
+    // Combine shadows - execution shadow takes priority
+    const shadow = executionShadow || dragShadow;
+
     return (
         <div
             ref={setNodeRef}
             style={wrapperStyle}
             {...attributes}
-            {...listeners}
-            className="cursor-move"
+            {...(isEditingLocked ? {} : listeners)}
+            className={isEditingLocked ? "cursor-default" : "cursor-move"}
         >
             <div
                 style={contentStyle}
-                className={`p-3 bg-green-200 rounded shadow transition-colors box-border flex flex-col items-start justify-center ${shadow}`}
+                className={`p-3 bg-green-200 rounded shadow transition-all duration-200 box-border flex flex-col items-start justify-center ${shadow}`}
             >
                 {children}
             </div>

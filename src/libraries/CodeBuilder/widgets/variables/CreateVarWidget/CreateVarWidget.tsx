@@ -2,6 +2,7 @@ import { configModal } from "../../../../../components/ConfigModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
+import type { ExecutionGenerator } from "../../../ExecutionTypes";
 import CreaveVarComponent from "./component";
 import { CreateVarConfigForm, createValidator } from "./CreateVarConfigForm";
 import type { IVariable } from "../../../interfaces/IVariable";
@@ -68,8 +69,15 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
         );
     }
 
-    execute(): void {
-        this.value = this.slots.valueSlot?.execute();
+    async *execute(): ExecutionGenerator {
+        yield { type: 'step', widget: this };
+        // Evaluate the value from the slot
+        this.value = this.slots.valueSlot?.evaluate();
+        
+        // Update the execution stack with this variable's name and value
+        if (this.name) {
+            this.executor.setExecutionVariable(this.name, this.value);
+        }
     }
 
     async openConfig(): Promise<boolean> {

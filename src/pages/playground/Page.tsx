@@ -11,6 +11,8 @@ import {
 } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CodePreview from "../../components/CodePreview/CodePreview";
+import ControlPanel from "../../components/ControlPanel/ControlPanel";
+import VariableStack from "../../components/VariableStack/VariableStack";
 import DroppableCanvas from "../../components/DroppableCanvas/DroppableCanvas";
 import SortableItem from "../../components/SortableItem/SortableItem";
 import ToolBox from "../../components/ToolBox/ToolBox";
@@ -19,6 +21,8 @@ import { UserInputModal } from "../../components/UserInputModal";
 import { DragProvider } from "../../contexts/DragContext";
 import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollisionDetector";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
+import { ExecutionController, type ExecutionState } from "../../libraries/CodeBuilder/ExecutionController";
+import type { ExecutionStackSnapshot } from "../../libraries/CodeBuilder/ExecutionTypes";
 import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
 import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseVarWidget/UseVarWidget";
 import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
@@ -34,12 +38,19 @@ export default function Playground() {
     IfWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
+  const executionControllerRef = useRef<ExecutionController>(null);
 
   if (!mainExecutorRef.current) {
     mainExecutorRef.current = new Executor(CANVAS_ID);
   }
 
+  if (!executionControllerRef.current) {
+    executionControllerRef.current = new ExecutionController();
+  }
+
   const [, forceUpdate] = useState(0);
+  const [executionState, setExecutionState] = useState<ExecutionState>('idle');
+  const [executionStack, setExecutionStack] = useState<ExecutionStackSnapshot>([]);
 
   // Subscribe to executor changes for re-rendering
   useEffect(() => {
@@ -47,10 +58,62 @@ export default function Playground() {
     return () => mainExecutorRef.current?.setOnChange(null);
   }, []);
 
+  // Subscribe to execution controller state changes
+  useEffect(() => {
+    executionControllerRef.current?.setOnStateChange((state) => {
+      setExecutionState(state);
+    });
+    return () => executionControllerRef.current?.setOnStateChange(null);
+  }, []);
+
+  // Subscribe to widget changes to trigger re-render for highlighting
+  useEffect(() => {
+    executionControllerRef.current?.setOnWidgetChange(() => {
+      forceUpdate(n => n + 1);
+    });
+    return () => executionControllerRef.current?.setOnWidgetChange(null);
+  }, []);
+
+  // Subscribe to execution stack changes
+  useEffect(() => {
+    executionControllerRef.current?.setOnExecutionStackChange(() => {
+      const snapshot = executionControllerRef.current?.getExecutionStackSnapshot() ?? [];
+      setExecutionStack(snapshot);
+    });
+    return () => executionControllerRef.current?.setOnExecutionStackChange(null);
+  }, []);
+
   const [activeOverId, setActiveOverId] = useState<string | null>(null);
   const [overPosition, setOverPosition] = useState<string | null>(null);
   const [activeWidget, setActiveWidget] = useState<{ widget: ToolboxItemData } | null>(null);
   const [isToolboxDrag, setIsToolboxDrag] = useState(false);
+
+  // Execution control handlers
+  const handlePlay = useCallback(() => {
+    if (!mainExecutorRef.current || !executionControllerRef.current) return;
+    
+    const controller = executionControllerRef.current;
+    
+    if (controller.getState() === 'idle' || controller.getState() === 'finished') {
+      // Start fresh execution
+      controller.start(mainExecutorRef.current);
+    }
+    
+    // Start auto-play mode
+    controller.play(1000);
+  }, []);
+
+  const handlePause = useCallback(() => {
+    executionControllerRef.current?.pause();
+  }, []);
+
+  const handleStop = useCallback(() => {
+    executionControllerRef.current?.stop();
+  }, []);
+
+  const handleStep = useCallback(async () => {
+    await executionControllerRef.current?.step();
+  }, []);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -133,12 +196,16 @@ export default function Playground() {
     }
   }, [overPosition]);
 
+  // Editing is locked when execution is running or paused
+  const isEditingLocked = executionState === 'running' || executionState === 'paused';
+
   // Memoize context value to avoid unnecessary re-renders
   const dragContextValue = useMemo(() => ({
     activeOverId,
     overPosition,
     isToolboxDrag,
-  }), [activeOverId, overPosition, isToolboxDrag]);
+    isEditingLocked,
+  }), [activeOverId, overPosition, isToolboxDrag, isEditingLocked]);
 
   return (
     <DndContext
@@ -174,6 +241,7 @@ export default function Playground() {
                           key={w.id}
                           id={w.id}
                           executor={w.getExecutor()}
+                          inExecution={w.inExecution}
                         >
                           {w.render()}
                         </SortableItem>
@@ -185,9 +253,29 @@ export default function Playground() {
             </div>
           </main>
 
-          {/* Code Preview */}
-          <aside className="w-1/3 border-l bg-gray-50 p-4 overflow-y-auto">
-            <CodePreview code={mainExecutorRef.current.getCodePreview()} />
+          {/* Variable Stack, Code Preview & Control Panel */}
+          <aside className="w-1/3 border-l bg-gray-50 flex flex-col">
+            {/* Variable Stack & Code Preview - each takes 50% of available space */}
+            <div className="flex-1 min-h-0 flex flex-col">
+              {/* Variable Stack - 50% */}
+              <div className="flex-1 min-h-0 p-4 overflow-hidden">
+                <VariableStack executionStack={executionStack} />
+              </div>
+              
+              {/* Code Preview - 50% */}
+              <div className="flex-1 min-h-0 p-4 pt-0 overflow-hidden">
+                <CodePreview code={mainExecutorRef.current.getCodePreview()} />
+              </div>
+            </div>
+            
+            {/* Control Panel - fixed height */}
+            <ControlPanel
+              executionState={executionState}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onStop={handleStop}
+              onStep={handleStep}
+            />
           </aside>
         </div>
 

@@ -1,6 +1,7 @@
 import { arrayMove } from "@dnd-kit/sortable";
 import type { IGenericWidget } from "./interfaces/IGenericWidget";
 import type { IVariable } from "./interfaces/IVariable";
+import type { ExecutionGenerator, ExecutionVariable, ExecutionScope, ExecutionStackSnapshot } from "./ExecutionTypes";
 
 export class Executor {
 
@@ -13,11 +14,20 @@ export class Executor {
         slotId: string;
     }>();
     private onChange: (() => void) | null = null;
+    private onExecutionStackChange: (() => void) | null = null;
     private parentExecutor: Executor | undefined;
 
-    constructor(containerId: string, parentExecutor?: Executor) {
+    // Execution stack for runtime variable tracking
+    private executionVariables: Map<string, ExecutionVariable> = new Map();
+    private scopeId: string;
+    private scopeName: string;
+    private isScopeActive: boolean = false;
+
+    constructor(containerId: string, parentExecutor?: Executor, scopeName?: string) {
         this.parentExecutor = parentExecutor;
         this.containerId = containerId;
+        this.scopeId = containerId;
+        this.scopeName = scopeName ?? (parentExecutor ? "Block" : "Global");
     }
 
     setOnChange(callback: (() => void) | null) {
@@ -26,6 +36,143 @@ export class Executor {
 
     notifyChange() {
         this.onChange?.();
+    }
+
+    setOnExecutionStackChange(callback: (() => void) | null) {
+        this.onExecutionStackChange = callback;
+        // Propagate to nested executors
+        for (const widget of this.widgetMap.values()) {
+            for (const nestedExecutor of widget.getNestedExecutors()) {
+                nestedExecutor.setOnExecutionStackChange(callback);
+            }
+        }
+    }
+
+    private notifyExecutionStackChange() {
+        // Always notify through the root executor's callback
+        if (this.parentExecutor) {
+            this.parentExecutor.notifyExecutionStackChange();
+        } else {
+            this.onExecutionStackChange?.();
+        }
+    }
+
+    // ========== Execution Stack Methods ==========
+
+    /**
+     * Set or update a variable's value in the execution stack.
+     */
+    setExecutionVariable(name: string, value: unknown): void {
+        this.executionVariables.set(name, { name, value });
+        this.notifyExecutionStackChange();
+    }
+
+    /**
+     * Get a variable's value from the execution stack.
+     * Searches current scope first, then parent scopes.
+     */
+    getExecutionVariable(name: string): ExecutionVariable | undefined {
+        const local = this.executionVariables.get(name);
+        if (local) return local;
+        return this.parentExecutor?.getExecutionVariable(name);
+    }
+
+    /**
+     * Enter this scope - marks it as active for display purposes.
+     */
+    enterScope(): void {
+        this.isScopeActive = true;
+        this.notifyExecutionStackChange();
+    }
+
+    /**
+     * Exit this scope - clears all execution variables and marks inactive.
+     */
+    exitScope(): void {
+        this.executionVariables.clear();
+        this.isScopeActive = false;
+        this.notifyExecutionStackChange();
+    }
+
+    /**
+     * Clear all execution variables in this scope (and optionally nested scopes).
+     * Called when execution stops or resets.
+     */
+    clearExecutionStack(): void {
+        this.executionVariables.clear();
+        this.isScopeActive = false;
+        
+        // Clear nested executors too
+        for (const widget of this.widgetMap.values()) {
+            for (const nestedExecutor of widget.getNestedExecutors()) {
+                nestedExecutor.clearExecutionStack();
+            }
+        }
+        
+        this.notifyExecutionStackChange();
+    }
+
+    /**
+     * Get the current scope as an ExecutionScope object.
+     */
+    private getCurrentScope(): ExecutionScope {
+        return {
+            scopeId: this.scopeId,
+            scopeName: this.scopeName,
+            variables: Array.from(this.executionVariables.values()),
+            isActive: this.isScopeActive
+        };
+    }
+
+    /**
+     * Collect the full execution stack snapshot from root to this executor.
+     * Only includes active scopes with variables or that are currently active.
+     */
+    getExecutionStackSnapshot(): ExecutionStackSnapshot {
+        const stack: ExecutionStackSnapshot = [];
+        
+        // Start from root and build down to current scope
+        this.collectStackFromRoot(stack);
+        
+        return stack;
+    }
+
+    private collectStackFromRoot(stack: ExecutionStackSnapshot): void {
+        // First, collect parent's stack
+        if (this.parentExecutor) {
+            this.parentExecutor.collectStackFromRoot(stack);
+        }
+        
+        // Add current scope if it's active or has variables
+        const currentScope = this.getCurrentScope();
+        if (currentScope.isActive || currentScope.variables.length > 0) {
+            stack.push(currentScope);
+        }
+        
+        // Collect from nested executors that are active
+        for (const widget of this.widgetMap.values()) {
+            for (const nestedExecutor of widget.getNestedExecutors()) {
+                if (nestedExecutor.isScopeActive) {
+                    nestedExecutor.collectNestedScopes(stack);
+                }
+            }
+        }
+    }
+
+    private collectNestedScopes(stack: ExecutionStackSnapshot): void {
+        const currentScope = this.getCurrentScope();
+        if (currentScope.isActive || currentScope.variables.length > 0) {
+            stack.push(currentScope);
+        }
+        
+        // Continue collecting from nested active scopes
+        for (const widget of this.widgetMap.values()) {
+            for (const nestedExecutor of widget.getNestedExecutors()) {
+                if (nestedExecutor.isScopeActive) {
+                    nestedExecutor.collectNestedScopes(stack);
+                }
+            }
+        }
     }
 
     getContainerId(): string {
@@ -202,11 +349,19 @@ export class Executor {
         return this.widgets.flatMap((w) => w.renderCode());
     }
 
-    execute() {
-        console.log(this.widgets);
-
-        for (const widget of this.widgets) {
-            widget.execute();
+    /**
+     * Execute all widgets in this executor.
+     * Yields step points from each widget's execute() method.
+     * Uses yield* to delegate to child widgets, keeping the generator chain intact.
+     */
+    async *execute(): ExecutionGenerator {
+        this.enterScope();
+        try {
+            for (const widget of this.widgets) {
+                yield* widget.execute();
+            }
+        } finally {
+            this.exitScope();
         }
     }
 }

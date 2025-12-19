@@ -4,12 +4,14 @@ interface DragContextValue {
   activeOverId: string | null;
   overPosition: string | null;
   isToolboxDrag: boolean;
+  isEditingLocked: boolean;
 }
 
 const DragContext = createContext<DragContextValue>({
   activeOverId: null,
   overPosition: null,
   isToolboxDrag: false,
+  isEditingLocked: false,
 });
 
 export const useDragContext = () => useContext(DragContext);

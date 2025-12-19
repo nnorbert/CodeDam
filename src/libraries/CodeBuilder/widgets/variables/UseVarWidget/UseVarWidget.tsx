@@ -2,6 +2,7 @@ import { configModal } from "../../../../../components/ConfigModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
+import type { ExecutionGenerator } from "../../../ExecutionTypes";
 import type { IGenericWidget } from "../../../interfaces/IGenericWidget";
 import UseVarComponent from "./component";
 import type { IVariable } from "../../../interfaces/IVariable";
@@ -58,7 +59,11 @@ export class UseVarWidget extends GenericWidgetBase {
         );
     }
 
-    execute(): unknown {
+    async *execute(): ExecutionGenerator {
+        // Expression widgets don't yield steps - they're evaluated synchronously
+    }
+
+    evaluate(): unknown {
         return this.valueProvider?.getValue();
     }
 

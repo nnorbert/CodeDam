@@ -2,6 +2,7 @@ import { configModal } from "../../../../../components/ConfigModal";
 import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
+import type { ExecutionGenerator } from "../../../ExecutionTypes";
 import UsePrimitiveValueComponent from "./component";
 import {
     UsePrimitiveValueConfigForm,
@@ -64,7 +65,11 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
         return <span style={{ color: "#569CD6", fontStyle: "normal" }}>unknown</span>;
     }
 
-    execute(): string | number | boolean | null | undefined {
+    async *execute(): ExecutionGenerator {
+        // Expression widgets don't yield steps - they're evaluated synchronously
+    }
+
+    evaluate(): string | number | boolean | null | undefined {
         return this.value;
     }
 

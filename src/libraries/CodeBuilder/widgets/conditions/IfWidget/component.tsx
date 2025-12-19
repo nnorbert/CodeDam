@@ -55,6 +55,7 @@ const IfComponent = ({ widget }: { widget: IfWidget }) => {
                     key={w.id}
                     id={w.id}
                     executor={widget.bodyExecutor}
+                    inExecution={w.inExecution}
                   >
                     {w.render()}
                   </SortableItem>
