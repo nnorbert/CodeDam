@@ -3,14 +3,14 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
-import CreaveVarComponent from "./component";
-import { CreateVarConfigForm, createValidator } from "./CreateVarConfigForm";
+import { CreateConstConfigForm, createValidator } from "./CreateConstConfigForm";
 import type { IVariable } from "../../../interfaces/IVariable";
+import CreaveConstComponent from "./component";
 
-export class CreateVarWidget extends GenericWidgetBase implements IVariable {
+export class CreateConstWidget extends GenericWidgetBase implements IVariable {
 
     public static getType(): string {
-        return "createVar";
+        return "createConst";
     }
 
     public static getCategory(): WidgetCategoryType {
@@ -18,7 +18,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div>Create Constant</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -34,7 +34,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
         valueSlot: null
     };
 
-    public isConstant: boolean = false;
+    public isConstant: boolean = true;
     public inExecution: boolean = false;
 
     constructor(executor: Executor) {
@@ -49,13 +49,12 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
         return this.value;
     }
 
-    setValue(value: unknown): void {
-        this.value = value;
-        this.executor.setExecutionVariable(this.name, value);
+    setValue(_value: unknown): void {
+        throw new Error("Cannot set value of a constant");
     }
 
     render(): React.ReactNode {
-        return <CreaveVarComponent widget={this}></CreaveVarComponent>;
+        return <CreaveConstComponent widget={this}></CreaveConstComponent>;
     }
 
     renderCode(): React.ReactNode {
@@ -65,7 +64,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
 
         return (
             <div style={highlightStyle}>
-                <span style={{ color: "#569CD6", fontStyle: "normal" }}>let</span>
+                <span style={{ color: "#569CD6", fontStyle: "normal" }}>const</span>
                 <span style={{ color: "#D4D4D4" }}> </span>
                 <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
@@ -91,10 +90,10 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
         const existingNames = this.executor.getVariableNames(this.id);
 
         const result = await configModal.open({
-            title: "Configure Variable",
+            title: "Configure Constant",
             initialValues: { name: this.name },
             validate: createValidator(existingNames),
-            renderContent: (props) => <CreateVarConfigForm {...props} />,
+            renderContent: (props) => <CreateConstConfigForm {...props} />,
         });
 
         if (result) {

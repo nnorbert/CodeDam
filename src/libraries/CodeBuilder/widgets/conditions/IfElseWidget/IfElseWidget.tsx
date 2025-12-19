@@ -2,12 +2,12 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
-import IfComponent from "./component";
+import IfElseComponent from "./component";
 
-export class IfWidget extends GenericWidgetBase {
+export class IfElseWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "if";
+        return "if-else";
     }
 
     public static getCategory(): WidgetCategoryType {
@@ -15,7 +15,7 @@ export class IfWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>If Condition</div>;
+        return <div>If-Else Condition</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -31,14 +31,22 @@ export class IfWidget extends GenericWidgetBase {
     /** Internal executor for managing the "then" branch widgets */
     public thenExecutor: Executor;
 
+    /** Internal executor for managing the "else" branch widgets */
+    public elseExecutor: Executor;
+
     public inExecution: boolean = false;
 
     constructor(executor: Executor) {
         super(executor);
-        // Create internal executor with canvas ID based on widget ID
+        // Create internal executors with canvas ID based on widget ID
         // Pass parent executor so nested widgets can access parent's variable stack
-        this.thenExecutor = new Executor(`canvas-${this.id}`, executor, "If Block");
+        this.thenExecutor = new Executor(`canvas-${this.id}-then`, executor, "If Block");
         this.thenExecutor.setOnChange(() => {
+            this.getExecutor().notifyChange();
+        });
+
+        this.elseExecutor = new Executor(`canvas-${this.id}-else`, executor, "Else Block");
+        this.elseExecutor.setOnChange(() => {
             this.getExecutor().notifyChange();
         });
     }
@@ -48,12 +56,17 @@ export class IfWidget extends GenericWidgetBase {
         return this.thenExecutor.getContainerId();
     }
 
+    /** Returns the canvas ID for the "else" body droppable area */
+    getElseCanvasId(): string {
+        return this.elseExecutor.getContainerId();
+    }
+
     getNestedExecutors(): Executor[] {
-        return [this.thenExecutor];
+        return [this.thenExecutor, this.elseExecutor];
     }
 
     render(): React.ReactNode {
-        return <IfComponent widget={this}></IfComponent>;
+        return <IfElseComponent widget={this}></IfElseComponent>;
     }
 
     renderCode(): React.ReactNode[] {
@@ -62,6 +75,7 @@ export class IfWidget extends GenericWidgetBase {
             : {};
 
         const thenWidgets = this.thenExecutor.getWidgets();
+        const elseWidgets = this.elseExecutor.getWidgets();
         const indentStyle = { paddingLeft: "2ch" };
 
         const lines: React.ReactNode[] = [];
@@ -92,7 +106,38 @@ export class IfWidget extends GenericWidgetBase {
             });
         } else {
             lines.push(
-                <div key={`${this.id}-empty`} style={{ ...indentStyle, color: "#6A9955", fontStyle: "italic" }}>
+                <div key={`${this.id}-then-empty`} style={{ ...indentStyle, color: "#6A9955", fontStyle: "italic" }}>
+                    {"// empty body"}
+                </div>
+            );
+        }
+
+        // } else {
+        lines.push(
+            <div key={`${this.id}-else`} style={highlightStyle}>
+                <span style={{ color: "#D4D4D4" }}>{"}"}</span>
+                <span style={{ color: "#C586C0", fontStyle: "normal" }}> else</span>
+                <span style={{ color: "#D4D4D4" }}> {"{"}</span>
+            </div>
+        );
+
+        // "Else" body widgets - each line indented
+        if (elseWidgets.length > 0) {
+            elseWidgets.forEach((widget) => {
+                const widgetCode = widget.renderCode();
+                // Handle both single nodes and arrays of nodes
+                const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
+                widgetLines.forEach((line, index) => {
+                    lines.push(
+                        <div key={`${widget.id}-else-${index}`} style={indentStyle}>
+                            {line}
+                        </div>
+                    );
+                });
+            });
+        } else {
+            lines.push(
+                <div key={`${this.id}-else-empty`} style={{ ...indentStyle, color: "#6A9955", fontStyle: "italic" }}>
                     {"// empty body"}
                 </div>
             );
@@ -114,9 +159,11 @@ export class IfWidget extends GenericWidgetBase {
         // Evaluate the condition from the slot
         const condition = this.slots.conditionSlot?.evaluate();
         
-        // If condition is truthy, execute the "then" branch
+        // If condition is truthy, execute the "then" branch, otherwise execute the "else" branch
         if (condition) {
             yield* this.thenExecutor.execute();
+        } else {
+            yield* this.elseExecutor.execute();
         }
     }
 
@@ -139,6 +186,10 @@ export class IfWidget extends GenericWidgetBase {
 
         this.thenExecutor.getWidgets().forEach((w) => {
             this.thenExecutor.deleteWidget(w.id, true);
+        });
+
+        this.elseExecutor.getWidgets().forEach((w) => {
+            this.elseExecutor.deleteWidget(w.id, true);
         });
     }
 }

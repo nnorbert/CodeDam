@@ -360,6 +360,7 @@ export class Executor {
             for (const widget of this.widgets) {
                 yield* widget.execute();
             }
+            yield { type: 'step', widget: this.widgets[this.widgets.length - 1] };
         } finally {
             this.exitScope();
         }

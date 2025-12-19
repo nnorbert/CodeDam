@@ -3,14 +3,15 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
-import CreaveVarComponent from "./component";
-import { CreateVarConfigForm, createValidator } from "./CreateVarConfigForm";
+import type { IGenericWidget } from "../../../interfaces/IGenericWidget";
 import type { IVariable } from "../../../interfaces/IVariable";
+import SetVarComponent from "./component";
+import { SetVarConfigForm, validateSetVarConfig, type SetVarConfig, type VariableOption } from "./SetVarConfigForm";
 
-export class CreateVarWidget extends GenericWidgetBase implements IVariable {
+export class SetVarWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "createVar";
+        return "setVar";
     }
 
     public static getCategory(): WidgetCategoryType {
@@ -18,56 +19,46 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div>Set Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {
         return WidgetRoles.STATEMENT;
     }
 
-    // ------------------------------
-
-    private name: string = "";
-    private value: unknown | null = null;
+    private targetVariable: (IGenericWidget & IVariable) | null = null;
 
     public slots: Record<string, GenericWidgetBase | null> = {
         valueSlot: null
     };
 
-    public isConstant: boolean = false;
     public inExecution: boolean = false;
 
     constructor(executor: Executor) {
         super(executor);
     }
 
-    getName(): string {
-        return this.name;
+    getReferencedVariableIds(): string[] {
+        return this.targetVariable ? [this.targetVariable.id] : [];
     }
 
-    getValue(): unknown | null {
-        return this.value;
-    }
-
-    setValue(value: unknown): void {
-        this.value = value;
-        this.executor.setExecutionVariable(this.name, value);
+    getTargetVariableName(): string | null {
+        return this.targetVariable?.getName() ?? null;
     }
 
     render(): React.ReactNode {
-        return <CreaveVarComponent widget={this}></CreaveVarComponent>;
+        return <SetVarComponent widget={this}></SetVarComponent>;
     }
 
     renderCode(): React.ReactNode {
+        // VS Code Dark+ theme colors by type
         const highlightStyle = this.inExecution
             ? { backgroundColor: "rgba(255, 200, 0, 0.15)", display: "block" }
             : { display: "block" };
 
         return (
             <div style={highlightStyle}>
-                <span style={{ color: "#569CD6", fontStyle: "normal" }}>let</span>
-                <span style={{ color: "#D4D4D4" }}> </span>
-                <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
+                <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.getTargetVariableName() || "not set"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
                 {this.slots.valueSlot?.renderCode() ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>undefined</span>}
                 <span style={{ color: "#D4D4D4" }}>;</span>
@@ -78,27 +69,41 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     async *execute(): ExecutionGenerator {
         yield { type: 'step', widget: this };
         // Evaluate the value from the slot
-        this.value = this.slots.valueSlot?.evaluate();
-        
+        const value = this.slots.valueSlot?.evaluate();
+
         // Update the execution stack with this variable's name and value
-        if (this.name) {
-            this.executor.setExecutionVariable(this.name, this.value);
+        if (this.targetVariable) {
+            this.targetVariable.setValue(value);
         }
     }
 
+    private getAvailableVariables(): VariableOption[] {
+        const variableStack = this.executor.getVariableStack();
+        return Object.entries(variableStack)
+            .filter(([_, variable]) => !variable.isConstant)
+            .map(([id, variable]) => ({
+                id,
+                name: variable.getName(),
+            }));
+    }
+
     async openConfig(): Promise<boolean> {
-        // Get existing variable names, excluding this widget's current name (for editing)
-        const existingNames = this.executor.getVariableNames(this.id);
+        const variables = this.getAvailableVariables();
 
         const result = await configModal.open({
-            title: "Configure Variable",
-            initialValues: { name: this.name },
-            validate: createValidator(existingNames),
-            renderContent: (props) => <CreateVarConfigForm {...props} />,
+            title: "Select Variable",
+            initialValues: {
+                selectedVariableId: this.targetVariable?.id ?? "",
+            } as SetVarConfig,
+            validate: validateSetVarConfig,
+            renderContent: (props) => (
+                <SetVarConfigForm {...props} variables={variables} />
+            ),
         });
 
         if (result) {
-            this.name = result.name.trim();
+            const variableStack = this.executor.getVariableStack();
+            this.targetVariable = variableStack[result.selectedVariableId] ?? null;
             return true;
         }
         return false;
@@ -106,9 +111,6 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
 
     async initWidget(): Promise<void> {
         await this.openConfig();
-
-        // Register itself as a variable
-        this.executor.registerVariable(this);
     }
 
     registerSlot(widget: GenericWidgetBase, slotId: string): void {
@@ -120,6 +122,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     cleanup(): void {
+        this.targetVariable = null;
         if (this.slots.valueSlot) {
             this.executor.deleteWidget(this.slots.valueSlot.id);
         }

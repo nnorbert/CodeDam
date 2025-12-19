@@ -28,14 +28,20 @@ import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseV
 import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
 import { UsePrimitiveValueWidget } from "../../libraries/CodeBuilder/widgets/variables/UsePrimitiveValueWidget/UsePrimitiveValueWidget";
 import { IfWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfWidget/IfWidget";
+import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfElseWidget/IfElseWidget";
+import { CreateConstWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateConstWidget/CreateConstWidget";
+import { SetVarWidget } from "../../libraries/CodeBuilder/widgets/variables/SetVarWidget/SetVarWidget";
 
 // ------------------ Playground ------------------
 export default function Playground() {
   const activeWidgets = [
     CreateVarWidget,
+    CreateConstWidget,
+    SetVarWidget,
     UsePrimitiveValueWidget,
     UseVarWidget,
-    IfWidget
+    IfWidget,
+    IfElseWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
   const executionControllerRef = useRef<ExecutionController>(null);

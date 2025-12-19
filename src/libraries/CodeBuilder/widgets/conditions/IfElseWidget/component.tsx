@@ -1,11 +1,12 @@
 import DroppableSlot from "../../../../../components/DroppableSlot/DroppableSlot";
 import { DroppableBody } from "../../../../../components/DroppableBody";
 import { WidgetRoles } from "../../../../../utils/constants";
-import type { IfWidget } from "./IfWidget";
+import type { IfElseWidget } from "./IfElseWidget";
 import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
 
-const IfComponent = ({ widget }: { widget: IfWidget }) => {
+const IfElseComponent = ({ widget }: { widget: IfElseWidget }) => {
   const thenWidgets = widget.thenExecutor.getWidgets();
+  const elseWidgets = widget.elseExecutor.getWidgets();
 
   const deleteHandler = () => {
     widget.getExecutor().deleteWidget(widget.id); 
@@ -47,9 +48,25 @@ const IfComponent = ({ widget }: { widget: IfWidget }) => {
           />
         </div>
         <div className="text-gray-600">{`}`}</div>
+
+        {/* Else keyword */}
+        <div className="flex items-center gap-1">
+          <span className="text-purple-600 font-semibold">else</span>
+        </div>
+
+        {/* "Else" Body: { content } - Droppable canvas for statement widgets */}
+        <div className="text-gray-600">{`{`}</div>
+        <div className="ml-4 min-h-16">
+          <DroppableBody
+            id={widget.getElseCanvasId()}
+            executor={widget.elseExecutor}
+            widgets={elseWidgets}
+          />
+        </div>
+        <div className="text-gray-600">{`}`}</div>
       </div>
     </WidgetWrapper>
   );
 };
 
-export default IfComponent;
+export default IfElseComponent;
