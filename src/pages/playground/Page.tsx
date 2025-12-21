@@ -31,6 +31,11 @@ import { IfWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfWidge
 import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfElseWidget/IfElseWidget";
 import { CreateConstWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateConstWidget/CreateConstWidget";
 import { SetVarWidget } from "../../libraries/CodeBuilder/widgets/variables/SetVarWidget/SetVarWidget";
+import { AdditionWidget } from "../../libraries/CodeBuilder/widgets/operations/AdditionWidget/AdditionWidget";
+import { SubtractionWidget } from "../../libraries/CodeBuilder/widgets/operations/SubtractionWidget/SubtractionWidget";
+import { MultiplicationWidget } from "../../libraries/CodeBuilder/widgets/operations/MultiplicationWidget/MultiplicationWidget";
+import { DivisionWidget } from "../../libraries/CodeBuilder/widgets/operations/DivisionWidget/DivisionWidget";
+import { ModuloWidget } from "../../libraries/CodeBuilder/widgets/operations/ModuloWidget/ModuloWidget";
 
 // ------------------ Playground ------------------
 export default function Playground() {
@@ -41,7 +46,12 @@ export default function Playground() {
     UsePrimitiveValueWidget,
     UseVarWidget,
     IfWidget,
-    IfElseWidget
+    IfElseWidget,
+    AdditionWidget,
+    SubtractionWidget,
+    MultiplicationWidget,
+    DivisionWidget,
+    ModuloWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
   const executionControllerRef = useRef<ExecutionController>(null);

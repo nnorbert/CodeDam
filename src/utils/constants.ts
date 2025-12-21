@@ -3,6 +3,7 @@ export const CANVAS_ID = "canvas";
 export const WidgetCategory = {
     VARIABLES: "variables",
     CONDITIONS: "conditions",
+    OPERATIONS: "operations",
 } as const;
 export type WidgetCategoryType = typeof WidgetCategory[keyof typeof WidgetCategory];
 
