@@ -44,23 +44,23 @@ const SortableItem = (props: Props) => {
 
     // Inner content style
     const contentStyle: React.CSSProperties = {
-        minHeight: "60px",
         width: "fit-content",
-        outline: isDragging ? "3px solid rgba(99,102,241,0.9)" : "none",
+        outline: isDragging ? "3px solid rgba(139,115,85,0.9)" : "none",
+        borderRadius: "8px",
     };
 
-    // Drag indicator shadow
+    // Drag indicator shadow (green for wood theme)
     const dragShadow = active?.data.current?.role === WidgetRoles.STATEMENT ? (
         activeRegion === "top"
-            ? "shadow-[0_-4px_6px_rgba(59,130,246,0.6)]"
+            ? "shadow-[0_-4px_8px_rgba(124,179,66,0.7)]"
             : activeRegion === "bottom"
-                ? "shadow-[0_4px_6px_rgba(59,130,246,0.6)]"
+                ? "shadow-[0_4px_8px_rgba(124,179,66,0.7)]"
                 : ""
     ) : "";
 
-    // Execution highlight shadow
+    // Execution highlight shadow (golden glow)
     const executionShadow = inExecution
-        ? "shadow-[0_0_0_3px_rgba(251,191,36,0.8),0_0_12px_rgba(251,191,36,0.6)]"
+        ? "shadow-[0_0_0_3px_rgba(251,191,36,0.9),0_0_16px_rgba(251,191,36,0.7)]"
         : "";
 
     // Combine shadows - execution shadow takes priority
@@ -72,11 +72,11 @@ const SortableItem = (props: Props) => {
             style={wrapperStyle}
             {...attributes}
             {...(isEditingLocked ? {} : listeners)}
-            className={isEditingLocked ? "cursor-default" : "cursor-move"}
+            className={isEditingLocked ? "cursor-default" : "cursor-grab active:cursor-grabbing"}
         >
             <div
                 style={contentStyle}
-                className={`p-3 bg-green-200 rounded shadow transition-all duration-200 box-border flex flex-col items-start justify-center ${shadow}`}
+                className={`transition-all duration-200 ${shadow}`}
             >
                 {children}
             </div>

@@ -2,6 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import type { GenericWidgetBase } from "../../libraries/CodeBuilder/baseClasses/GenericWidgetBase";
 import { useDragContext } from "../../contexts/DragContext";
+import { WidgetRoles } from "../../utils/constants";
 
 export type ToolboxItemData = typeof GenericWidgetBase;
 
@@ -13,6 +14,8 @@ type Props = {
 const ToolBoxItem = ({ widget, disabled }: Props) => {
   const { isEditingLocked } = useDragContext();
   const isDisabled = disabled || isEditingLocked;
+  const role = widget.getRole();
+  const isStatement = role === WidgetRoles.STATEMENT;
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
@@ -22,7 +25,7 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
         type: widget.getType(),
         isToolboxItem: true,
         className: widget,
-        role: widget.getRole(),
+        role: role,
       },
     });
 
@@ -31,13 +34,18 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
     opacity: disabled ? 1 : isDragging ? 0.5 : isEditingLocked ? 0.5 : 1,
   };
 
+  // Different styles for statement (plank) vs expression (slice)
+  const itemClasses = isStatement
+    ? "toolbox-item-statement w-[72px] h-16 flex items-center justify-center text-center text-xs font-semibold"
+    : "toolbox-item-expression w-16 h-16 flex items-center justify-center text-center text-xs font-semibold";
+
   return (
     <div
       ref={isDisabled ? undefined : setNodeRef}
       style={style}
       {...(!isDisabled ? attributes : {})}
       {...(!isDisabled ? listeners : {})}
-      className={`w-20 h-20 m-2 flex items-center justify-center text-center bg-yellow-200 rounded-lg shadow ${isEditingLocked ? 'cursor-not-allowed' : 'cursor-grab'}`}
+      className={`${itemClasses} ${isEditingLocked ? 'cursor-not-allowed opacity-60' : 'cursor-grab hover:scale-105 transition-transform'}`}
     >
       {widget.getToolboxItemElement()}
     </div>

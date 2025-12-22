@@ -9,7 +9,7 @@ const AdditionComponent = ({ widget }: { widget: AdditionWidget }) => {
     };
 
     return (
-        <WidgetWrapper onDelete={deleteHandler}>
+        <WidgetWrapper onDelete={deleteHandler} role={WidgetRoles.EXPRESSION}>
             <div className="font-mono text-sm flex items-center gap-1">
                 {!widget.slots.leftOperand && (
                     <DroppableSlot
@@ -23,12 +23,12 @@ const AdditionComponent = ({ widget }: { widget: AdditionWidget }) => {
                     </DroppableSlot>
                 )}
                 {widget.slots.leftOperand && (
-                    <div className="flex items-center justify-center pl-2 pr-2 rounded-md border border-gray-300">
+                    <div className="flex items-center">
                         {widget.slots.leftOperand.render()}
                     </div>
                 )}
 
-                <span className="text-blue-600 font-bold px-1">+</span>
+                <span className="text-amber-800 font-bold px-1">+</span>
 
                 {!widget.slots.rightOperand && (
                     <DroppableSlot
@@ -42,7 +42,7 @@ const AdditionComponent = ({ widget }: { widget: AdditionWidget }) => {
                     </DroppableSlot>
                 )}
                 {widget.slots.rightOperand && (
-                    <div className="flex items-center justify-center pl-2 pr-2 rounded-md border border-gray-300">
+                    <div className="flex items-center">
                         {widget.slots.rightOperand.render()}
                     </div>
                 )}

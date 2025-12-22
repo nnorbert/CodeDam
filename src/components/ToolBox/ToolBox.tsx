@@ -18,12 +18,15 @@ const ToolBox = ({ widgets }: { widgets: ToolboxItemData[] }) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="toolbox-workshop flex flex-col gap-1 p-2">
+      <div className="text-center font-bold text-sm py-1 text-amber-900">
+        🪵 Workshop
+      </div>
       {Object.entries(widgetsMap.current).map(([category, categoryWidgets]) => (
-        <Disclosure key={category}>
+        <Disclosure key={category} defaultOpen>
           {({ open }) => (
-            <div className="border rounded-lg overflow-hidden">
-              <DisclosureButton className="flex justify-between items-center w-full px-3 py-2 text-left font-semibold bg-yellow-100 hover:bg-yellow-200 capitalize">
+            <div className="rounded-lg overflow-hidden border-2 border-amber-700/30">
+              <DisclosureButton className="toolbox-category-header flex justify-between items-center w-full px-3 py-2 text-left font-semibold capitalize text-sm">
                 {category}
                 <ChevronUpIcon
                   className={`w-4 h-4 transition-transform duration-200 ${
@@ -32,7 +35,7 @@ const ToolBox = ({ widgets }: { widgets: ToolboxItemData[] }) => {
                 />
               </DisclosureButton>
 
-              <DisclosurePanel className="p-2 bg-yellow-50 grid grid-cols-2 gap-2">
+              <DisclosurePanel className="p-3 bg-amber-50/80 flex flex-wrap justify-center gap-3">
                 {categoryWidgets.map((w) => (
                   <ToolBoxItem key={`tool-${w.getType()}`} widget={w} />
                 ))}

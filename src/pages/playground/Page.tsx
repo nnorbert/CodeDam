@@ -233,14 +233,18 @@ export default function Playground() {
       collisionDetection={CustomCollisionDetector}
     >
       <DragProvider value={dragContextValue}>
-        <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
-          {/* Toolbox */}
-          <aside className="w-64 border-r bg-yellow-50 p-4 overflow-y-auto">
+        <div className="flex overflow-hidden bg-gradient-to-b from-sky-100 to-sky-200" style={{ height: "calc(100vh - var(--header-height))" }}>
+          {/* Toolbox - Workshop */}
+          <aside className="w-64 border-r-2 border-amber-600/30 bg-gradient-to-b from-amber-100 to-amber-50 p-3 overflow-y-auto shadow-lg">
             <ToolBox widgets={activeWidgets}></ToolBox>
           </aside>
 
-          {/* Canvas */}
+          {/* Canvas - The Dam Building Area */}
           <main className="flex-1 flex flex-col p-4 overflow-hidden">
+            <div className="text-center mb-2">
+              <h2 className="text-amber-800 font-bold text-lg">🦫 Build Your Dam</h2>
+              <p className="text-amber-600/70 text-xs">Drag planks from the workshop to build your program!</p>
+            </div>
             {/* The droppable area now expands to fill available height */}
             <div className="flex-1 min-h-0">
               <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
@@ -249,9 +253,11 @@ export default function Playground() {
                   strategy={verticalListSortingStrategy}
                 >
                   {mainExecutorRef.current.getWidgets().length === 0 ? (
-                    <div className="text-gray-400">Drag a widget here</div>
+                    <div className="text-amber-600/60 text-sm italic py-8 text-center">
+                      🪵 Drop planks here to build your dam!
+                    </div>
                   ) : (
-                    <div className="flex flex-col overflow-y-auto max-h-full p-1">
+                    <div className="flex flex-col overflow-y-auto max-h-full p-1 gap-2">
                       {mainExecutorRef.current.getWidgets().map((w) => (
                         <SortableItem
                           key={w.id}
@@ -270,7 +276,7 @@ export default function Playground() {
           </main>
 
           {/* Variable Stack, Code Preview & Control Panel */}
-          <aside className="w-1/3 border-l bg-gray-50 flex flex-col">
+          <aside className="w-1/3 border-l-2 border-amber-600/30 bg-gradient-to-b from-amber-50 to-white flex flex-col shadow-lg">
             {/* Variable Stack & Code Preview - each takes 50% of available space */}
             <div className="flex-1 min-h-0 flex flex-col">
               {/* Variable Stack - 50% */}

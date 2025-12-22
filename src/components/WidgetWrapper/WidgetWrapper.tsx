@@ -3,14 +3,17 @@ import { EllipsisVerticalIcon, Cog6ToothIcon, TrashIcon } from "@heroicons/react
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { confirmationModal } from "../ConfirmationModal";
 import { useDragContext } from "../../contexts/DragContext";
+import { WidgetRoles, type WidgetRoleType } from "../../utils/constants";
 
 type Props = PropsWithChildren<{
     onDelete: () => void;
     onSettings?: () => void;
+    role?: WidgetRoleType;
 }>;
 
-const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
+const WidgetWrapper = ({ children, onDelete, onSettings, role = WidgetRoles.STATEMENT }: Props) => {
     const { isEditingLocked } = useDragContext();
+    const isStatement = role === WidgetRoles.STATEMENT;
 
     const handleDelete = async () => {
         if (isEditingLocked) return;
@@ -36,13 +39,23 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
         e.stopPropagation();
     };
 
+    // Wrapper classes based on role
+    const wrapperClasses = isStatement 
+        ? "wood-plank" 
+        : "wood-slice";
+
+    // Menu button styling - needs contrast against wood background
+    const menuButtonClasses = isStatement
+        ? "text-amber-100 hover:text-white hover:bg-amber-900/30 transition-colors cursor-pointer p-1 rounded"
+        : "text-amber-800 hover:text-amber-950 hover:bg-amber-900/20 transition-colors cursor-pointer p-1 rounded";
+
     return (
-        <div className="flex flex-row items-center gap-1">
-            <div className="flex-1">{children}</div>
+        <div className={`${wrapperClasses} flex flex-row items-start gap-1`}>
+            <div className="flex-1 font-semibold self-center">{children}</div>
             {!isEditingLocked && (
-                <Menu as="div" className="relative self-start">
+                <Menu as="div" className="relative self-start mt-1">
                     <MenuButton
-                        className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer pt-4 pb-4"
+                        className={menuButtonClasses}
                         onPointerDown={stopDrag}
                         onMouseDown={stopDrag}
                         onClick={(e) => e.stopPropagation()}
@@ -51,7 +64,7 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                     </MenuButton>
                     <MenuItems
                         anchor="bottom end"
-                        className="absolute right-0 mt-1 w-32 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none z-50"
+                        className="absolute right-0 mt-1 w-32 origin-top-right rounded-md bg-amber-50 shadow-lg ring-1 ring-amber-900/10 focus:outline-none z-50 border border-amber-200"
                         onPointerDown={stopDrag}
                         onMouseDown={stopDrag}
                     >
@@ -65,9 +78,9 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                                     e.stopPropagation();
                                     handleSettings();
                                 }}
-                                className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"
+                                className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-amber-900 data-[focus]:bg-amber-100 cursor-pointer"
                             >
-                                <Cog6ToothIcon className="w-4 h-4 text-gray-400 group-data-[focus]:text-gray-600" />
+                                <Cog6ToothIcon className="w-4 h-4 text-amber-700 group-data-[focus]:text-amber-800" />
                                 Settings
                             </button>
                         </MenuItem>
@@ -81,9 +94,9 @@ const WidgetWrapper = ({ children, onDelete, onSettings }: Props) => {
                                     e.stopPropagation();
                                     handleDelete();
                                 }}
-                                className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 data-[focus]:bg-red-50 data-[focus]:text-red-600 cursor-pointer"
+                                className="group flex w-full items-center gap-2 px-3 py-2 text-sm text-amber-900 data-[focus]:bg-red-50 data-[focus]:text-red-600 cursor-pointer"
                             >
-                                <TrashIcon className="w-4 h-4 text-gray-400 group-data-[focus]:text-red-500" />
+                                <TrashIcon className="w-4 h-4 text-amber-700 group-data-[focus]:text-red-500" />
                                 Delete
                             </button>
                         </MenuItem>

@@ -37,16 +37,19 @@ const ControlPanel = ({ executionState, onPlay, onPause, onStop, onStep }: Props
         )}
       </button>
 
-      {/* Step Button - only visible when paused */}
-      {isPaused && (
-        <button
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 text-white transition-colors shadow-md hover:shadow-lg cursor-pointer"
-          onClick={onStep}
-          title="Step"
-        >
-          <ForwardIcon className="w-6 h-6" />
-        </button>
-      )}
+      {/* Step Button - always visible, enabled only when paused */}
+      <button
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors shadow-md ${
+          isPaused
+            ? "bg-amber-500 hover:bg-amber-600 text-white hover:shadow-lg cursor-pointer"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+        }`}
+        onClick={onStep}
+        disabled={!isPaused}
+        title="Step"
+      >
+        <ForwardIcon className="w-6 h-6" />
+      </button>
 
       {/* Stop Button - slightly smaller */}
       <button

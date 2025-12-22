@@ -15,7 +15,7 @@ const DroppableBody = ({
   id,
   executor,
   widgets,
-  emptyMessage = "Drop widget here",
+  emptyMessage = "🪵 Drop planks here to build your dam!",
 }: Props) => {
   return (
     <DroppableCanvas id={id} executor={executor}>
@@ -24,7 +24,7 @@ const DroppableBody = ({
         strategy={verticalListSortingStrategy}
       >
         {widgets.length === 0 ? (
-          <div className="text-gray-400 text-sm">{emptyMessage}</div>
+          <div className="text-amber-600/60 text-sm italic py-4 text-center">{emptyMessage}</div>
         ) : (
           widgets.map((w) => (
             <SortableItem

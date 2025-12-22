@@ -29,16 +29,17 @@ const DroppableCanvas = (props: Props) => {
   return (
     <div
       ref={setNodeRef}
-      className={["border p-4 rounded flex flex-col",
-        canAccept ? "border-blue-400" : "border-gray-300",
-        isOver && canAccept ? "bg-blue-50" : "bg-white"
+      className={[
+        "canvas-water border-2 p-4 rounded-lg flex flex-col transition-all duration-200",
+        canAccept ? "border-green-400 shadow-lg shadow-green-200/50" : "border-amber-300/50",
+        isOver && canAccept ? "bg-green-50/50" : ""
       ].join(" ")}
       style={{
         height: "100%",
         overflow: "hidden",
       }}
     >
-      <div className="flex-1 overflow-y-auto flex flex-col pr-2 pl-2">
+      <div className="flex-1 overflow-y-auto flex flex-col pr-2 pl-2 gap-2">
         {children}
       </div>
     </div>

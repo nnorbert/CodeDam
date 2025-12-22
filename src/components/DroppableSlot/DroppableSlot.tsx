@@ -31,15 +31,18 @@ const DroppableSlot = (props: Props) => {
     const activeRole = active?.data?.current?.role;
     const canAccept = !isEditingLocked && props.accepts.includes(activeRole);
 
+    // Build class names for the slot (circular wood slice hole)
+    const slotClasses = [
+        "slot-empty",
+        "h-8 min-w-24 px-3 flex items-center justify-center text-xs font-medium text-amber-700/70",
+        "transition-all duration-200",
+        isEditingLocked && "opacity-60",
+        canAccept && "can-accept",
+        isOver && canAccept && "is-over",
+    ].filter(Boolean).join(" ");
+
     return (
-        <div
-            ref={setNodeRef}
-            className={[
-                "h-10 w-32 rounded border-2 border-dashed flex items-center justify-center text-xs",
-                isEditingLocked ? "border-gray-200 opacity-60" : canAccept ? "border-blue-400" : "border-gray-300",
-                isOver && canAccept ? "bg-blue-100" : "bg-white",
-            ].join(" ")}
-        >
+        <div ref={setNodeRef} className={slotClasses}>
             {props.children}
         </div>
     );

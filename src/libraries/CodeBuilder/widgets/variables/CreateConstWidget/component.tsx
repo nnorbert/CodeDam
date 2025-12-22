@@ -32,9 +32,10 @@ const CreaveConstComponent = ({ widget }: { widget: CreateConstWidget }) => {
 
   return (
     <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
-      <div className="flex items-center gap-1 font-medium">
-        <span className="text-indigo-600">const {widget.getName() || "unnamed"}</span>
-        <span className="text-gray-500">=</span>
+      <div className="flex items-center gap-2 font-medium">
+        <span className="text-blue-800 font-bold">const</span>
+        <span className="text-amber-900">{widget.getName() || "unnamed"}</span>
+        <span className="text-amber-700">=</span>
         {!widget.slots.valueSlot && (
           <DroppableSlot
             id={`${widget.id}-valueSlot`}
@@ -47,7 +48,7 @@ const CreaveConstComponent = ({ widget }: { widget: CreateConstWidget }) => {
           </DroppableSlot>
         )}
         {widget.slots.valueSlot && (
-          <div className="flex items-center justify-center pl-2 pr-2 rounded-md border border-gray-300">
+          <div className="flex items-center">
             {widget.slots.valueSlot.render()}
           </div>
         )}

@@ -1,4 +1,5 @@
 import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
+import { WidgetRoles } from "../../../../../utils/constants";
 import type { UsePrimitiveValueWidget } from "./UsePrimitiveValueWidget";
 
 // Format value for display
@@ -24,7 +25,7 @@ const UsePrimitiveValueComponent = ({ widget, value }: { widget: UsePrimitiveVal
   };
 
   return (
-    <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
+    <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
       <div className="flex items-center justify-center font-mono text-sm">
         {formatValue(value)}
       </div>

@@ -1,4 +1,5 @@
 import { WidgetWrapper } from "../../../../../components/WidgetWrapper";
+import { WidgetRoles } from "../../../../../utils/constants";
 import { UseVarWidget } from "./UseVarWidget";
 
 const UseVarComponent = ({ widget }: { widget: UseVarWidget }) => {
@@ -17,9 +18,9 @@ const UseVarComponent = ({ widget }: { widget: UseVarWidget }) => {
   const variableName = widget.getVariableName();
 
   return (
-    <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
+    <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
       <div className="font-mono text-sm">
-        {variableName || <span className="text-gray-400 italic">no variable</span>}
+        {variableName || <span className="text-amber-600/60 italic">no variable</span>}
       </div>
     </WidgetWrapper>
   );
