@@ -39,7 +39,7 @@ const DroppableCanvas = (props: Props) => {
         overflow: "hidden",
       }}
     >
-      <div className="flex-1 overflow-y-auto flex flex-col pr-2 pl-2 gap-2">
+      <div className="flex-1 overflow-y-auto flex flex-col pr-2 pl-2">
         {children}
       </div>
     </div>

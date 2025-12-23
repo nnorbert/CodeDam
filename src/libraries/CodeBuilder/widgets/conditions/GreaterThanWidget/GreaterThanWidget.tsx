@@ -2,20 +2,20 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
-import MultiplicationComponent from "./component";
+import GreaterThanComponent from "./component";
 
-export class MultiplicationWidget extends GenericWidgetBase {
+export class GreaterThanWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "multiplication";
+        return "greaterThan";
     }
 
     public static getCategory(): WidgetCategoryType {
-        return WidgetCategory.OPERATIONS;
+        return WidgetCategory.COMPARISONS;
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Multiplication (×)</div>;
+        return <div>Greater Than (&gt;)</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -36,7 +36,7 @@ export class MultiplicationWidget extends GenericWidgetBase {
     }
 
     render(): React.ReactNode {
-        return <MultiplicationComponent widget={this} />;
+        return <GreaterThanComponent widget={this} />;
     }
 
     renderCode(): React.ReactNode {
@@ -48,7 +48,7 @@ export class MultiplicationWidget extends GenericWidgetBase {
             <span style={highlightStyle}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.leftOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* left */</span>}
-                <span style={{ color: "#D4D4D4" }}> * </span>
+                <span style={{ color: "#D4D4D4" }}> &gt; </span>
                 {this.slots.rightOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* right */</span>}
                 <span style={{ color: "#D4D4D4" }}>)</span>
             </span>
@@ -59,14 +59,14 @@ export class MultiplicationWidget extends GenericWidgetBase {
         // Expression widgets don't yield steps - they're evaluated synchronously
     }
 
-    async evaluate(): Promise<number> {
+    async evaluate(): Promise<boolean> {
         const left = await this.slots.leftOperand?.evaluate();
         const right = await this.slots.rightOperand?.evaluate();
         
         const leftNum = typeof left === "number" ? left : Number(left) || 0;
         const rightNum = typeof right === "number" ? right : Number(right) || 0;
         
-        return leftNum * rightNum;
+        return leftNum > rightNum;
     }
 
     async initWidget(): Promise<void> {

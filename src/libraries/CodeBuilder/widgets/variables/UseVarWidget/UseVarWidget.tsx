@@ -63,7 +63,7 @@ export class UseVarWidget extends GenericWidgetBase {
         // Expression widgets don't yield steps - they're evaluated synchronously
     }
 
-    evaluate(): unknown {
+    async evaluate(): Promise<unknown> {
         return this.valueProvider?.getValue();
     }
 

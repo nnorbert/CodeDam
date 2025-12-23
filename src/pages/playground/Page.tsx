@@ -18,6 +18,7 @@ import SortableItem from "../../components/SortableItem/SortableItem";
 import ToolBox from "../../components/ToolBox/ToolBox";
 import ToolBoxItem, { type ToolboxItemData } from "../../components/ToolBoxItem/ToolBoxItem";
 import { UserInputModal } from "../../components/UserInputModal";
+import { UserOutputModal } from "../../components/UserOutputModal";
 import { DragProvider } from "../../contexts/DragContext";
 import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollisionDetector";
 import { Executor } from "../../libraries/CodeBuilder/Executor";
@@ -27,8 +28,8 @@ import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/C
 import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseVarWidget/UseVarWidget";
 import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
 import { UsePrimitiveValueWidget } from "../../libraries/CodeBuilder/widgets/variables/UsePrimitiveValueWidget/UsePrimitiveValueWidget";
-import { IfWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfWidget/IfWidget";
-import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/conditions/IfElseWidget/IfElseWidget";
+import { IfWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfWidget/IfWidget";
+import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfElseWidget/IfElseWidget";
 import { CreateConstWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateConstWidget/CreateConstWidget";
 import { SetVarWidget } from "../../libraries/CodeBuilder/widgets/variables/SetVarWidget/SetVarWidget";
 import { AdditionWidget } from "../../libraries/CodeBuilder/widgets/operations/AdditionWidget/AdditionWidget";
@@ -36,6 +37,17 @@ import { SubtractionWidget } from "../../libraries/CodeBuilder/widgets/operation
 import { MultiplicationWidget } from "../../libraries/CodeBuilder/widgets/operations/MultiplicationWidget/MultiplicationWidget";
 import { DivisionWidget } from "../../libraries/CodeBuilder/widgets/operations/DivisionWidget/DivisionWidget";
 import { ModuloWidget } from "../../libraries/CodeBuilder/widgets/operations/ModuloWidget/ModuloWidget";
+import { NegationWidget } from "../../libraries/CodeBuilder/widgets/conditions/NegationWidget/NegationWidget";
+import { GreaterThanWidget } from "../../libraries/CodeBuilder/widgets/conditions/GreaterThanWidget/GreaterThanWidget";
+import { GreaterOrEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/GreaterOrEqualWidget/GreaterOrEqualWidget";
+import { LessThanWidget } from "../../libraries/CodeBuilder/widgets/conditions/LessThanWidget/LessThanWidget";
+import { LessOrEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/LessOrEqualWidget/LessOrEqualWidget";
+import { EqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/EqualWidget/EqualWidget";
+import { StrictEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/StrictEqualWidget/StrictEqualWidget";
+import { AndWidget } from "../../libraries/CodeBuilder/widgets/conditions/AndWidget/AndWidget";
+import { OrWidget } from "../../libraries/CodeBuilder/widgets/conditions/OrWidget/OrWidget";
+import { UserInputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserInputWidget/UserInputWidget";
+import { UserOutputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserOutputWidget/UserOutputWidget";
 
 // ------------------ Playground ------------------
 export default function Playground() {
@@ -51,7 +63,18 @@ export default function Playground() {
     SubtractionWidget,
     MultiplicationWidget,
     DivisionWidget,
-    ModuloWidget
+    ModuloWidget,
+    NegationWidget,
+    GreaterThanWidget,
+    GreaterOrEqualWidget,
+    LessThanWidget,
+    LessOrEqualWidget,
+    EqualWidget,
+    StrictEqualWidget,
+    AndWidget,
+    OrWidget,
+    UserInputWidget,
+    UserOutputWidget
   ];
   const mainExecutorRef = useRef<Executor>(null);
   const executionControllerRef = useRef<ExecutionController>(null);
@@ -257,7 +280,7 @@ export default function Playground() {
                       🪵 Drop planks here to build your dam!
                     </div>
                   ) : (
-                    <div className="flex flex-col overflow-y-auto max-h-full p-1 gap-2">
+                    <div className="flex flex-col overflow-y-auto max-h-full p-1">
                       {mainExecutorRef.current.getWidgets().map((w) => (
                         <SortableItem
                           key={w.id}
@@ -305,8 +328,9 @@ export default function Playground() {
           {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
         </DragOverlay>
 
-        {/* Global modal for user input requests */}
+        {/* Global modals for user interaction */}
         <UserInputModal />
+        <UserOutputModal />
       </DragProvider>
     </DndContext>
   );

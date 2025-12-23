@@ -19,8 +19,9 @@ export interface IGenericWidget {
      * Evaluate the widget and return its computed value.
      * Used by expression widgets (e.g., UseVarWidget, UsePrimitiveValueWidget).
      * Statement widgets can return undefined.
+     * Async to support widgets that need user interaction (e.g., UserInputWidget).
      */
-    evaluate(): unknown;
+    evaluate(): Promise<unknown>;
     initWidget(): Promise<void>;
     registerSlot(widget: IGenericWidget, slotId: string): void;
     unregisterSlot(slotId: string): void;

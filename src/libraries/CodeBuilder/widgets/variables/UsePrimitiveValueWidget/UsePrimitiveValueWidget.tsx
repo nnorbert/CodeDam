@@ -69,7 +69,7 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
         // Expression widgets don't yield steps - they're evaluated synchronously
     }
 
-    evaluate(): string | number | boolean | null | undefined {
+    async evaluate(): Promise<string | number | boolean | null | undefined> {
         return this.value;
     }
 

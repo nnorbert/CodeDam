@@ -2,10 +2,21 @@ export const CANVAS_ID = "canvas";
 
 export const WidgetCategory = {
     VARIABLES: "variables",
-    CONDITIONS: "conditions",
+    DECISIONS: "decisions",
+    COMPARISONS: "comparisons",
     OPERATIONS: "operations",
+    INTERACTIONS: "interactions",
 } as const;
 export type WidgetCategoryType = typeof WidgetCategory[keyof typeof WidgetCategory];
+
+/** Defines the display order of widget categories in the toolbox */
+export const WidgetCategoryOrder: WidgetCategoryType[] = [
+    WidgetCategory.VARIABLES,
+    WidgetCategory.OPERATIONS,
+    WidgetCategory.COMPARISONS,
+    WidgetCategory.DECISIONS,
+    WidgetCategory.INTERACTIONS,
+];
 
 export const WidgetRoles = {
     STATEMENT: "statement",

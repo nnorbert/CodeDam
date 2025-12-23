@@ -14,7 +14,9 @@ export class ExecutionController {
     private executor: Executor | null = null;
     private isWaitingForAsync = false;
     private state: ExecutionState = 'idle';
-    private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
+    private autoPlayTimeout: ReturnType<typeof setTimeout> | null = null;
+    private isAutoPlaying = false;
+    private autoPlayIntervalMs = 1000;
     private currentWidget: IGenericWidget | null = null;
 
     // Callbacks for UI updates
@@ -150,24 +152,48 @@ export class ExecutionController {
 
     /**
      * Start auto-play mode - executes one step per interval
+     * Uses setTimeout to ensure proper delay between steps, even with async widgets
      */
     play(intervalMs: number = 1000): void {
         if (this.state === 'idle') {
             return; // Need to call start() first
         }
 
-        if (this.autoPlayInterval) {
+        if (this.isAutoPlaying) {
             return; // Already playing
         }
 
+        this.autoPlayIntervalMs = intervalMs;
+        this.isAutoPlaying = true;
         this.setState('running');
         
-        this.autoPlayInterval = setInterval(async () => {
+        this.scheduleNextStep();
+    }
+
+    /**
+     * Schedule the next step execution after the configured delay
+     */
+    private scheduleNextStep(): void {
+        // Don't schedule if not auto-playing or not in running state
+        if (!this.isAutoPlaying || this.state !== 'running') {
+            return;
+        }
+
+        this.autoPlayTimeout = setTimeout(async () => {
+            // Check again after timeout in case state changed
+            if (!this.isAutoPlaying || this.state !== 'running') {
+                return;
+            }
+
             const result = await this.step();
+            
             if (result.done) {
                 this.stopAutoPlay();
+            } else {
+                // Schedule next step only after current step completes
+                this.scheduleNextStep();
             }
-        }, intervalMs);
+        }, this.autoPlayIntervalMs);
     }
 
     /**
@@ -217,9 +243,10 @@ export class ExecutionController {
     }
 
     private stopAutoPlay(): void {
-        if (this.autoPlayInterval) {
-            clearInterval(this.autoPlayInterval);
-            this.autoPlayInterval = null;
+        this.isAutoPlaying = false;
+        if (this.autoPlayTimeout) {
+            clearTimeout(this.autoPlayTimeout);
+            this.autoPlayTimeout = null;
         }
     }
 }

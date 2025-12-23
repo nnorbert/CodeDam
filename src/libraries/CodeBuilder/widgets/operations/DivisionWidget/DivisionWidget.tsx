@@ -59,9 +59,9 @@ export class DivisionWidget extends GenericWidgetBase {
         // Expression widgets don't yield steps - they're evaluated synchronously
     }
 
-    evaluate(): number {
-        const left = this.slots.leftOperand?.evaluate();
-        const right = this.slots.rightOperand?.evaluate();
+    async evaluate(): Promise<number> {
+        const left = await this.slots.leftOperand?.evaluate();
+        const right = await this.slots.rightOperand?.evaluate();
         
         const leftNum = typeof left === "number" ? left : Number(left) || 0;
         const rightNum = typeof right === "number" ? right : Number(right) || 0;

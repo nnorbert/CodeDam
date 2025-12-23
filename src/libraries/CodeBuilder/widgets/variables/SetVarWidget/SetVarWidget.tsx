@@ -68,8 +68,9 @@ export class SetVarWidget extends GenericWidgetBase {
 
     async *execute(): ExecutionGenerator {
         yield { type: 'step', widget: this };
-        // Evaluate the value from the slot
-        const value = this.slots.valueSlot?.evaluate();
+        
+        // Evaluate the value from the slot (async to support user input)
+        const value = await this.slots.valueSlot?.evaluate();
 
         // Update the execution stack with this variable's name and value
         if (this.targetVariable) {

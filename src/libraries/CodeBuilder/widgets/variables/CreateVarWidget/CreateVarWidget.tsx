@@ -77,8 +77,9 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
 
     async *execute(): ExecutionGenerator {
         yield { type: 'step', widget: this };
-        // Evaluate the value from the slot
-        this.value = this.slots.valueSlot?.evaluate();
+        
+        // Evaluate the value from the slot (async to support user input)
+        this.value = await this.slots.valueSlot?.evaluate();
         
         // Update the execution stack with this variable's name and value
         if (this.name) {

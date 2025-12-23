@@ -2,20 +2,20 @@ import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleTy
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
-import MultiplicationComponent from "./component";
+import NegationComponent from "./component";
 
-export class MultiplicationWidget extends GenericWidgetBase {
+export class NegationWidget extends GenericWidgetBase {
 
     public static getType(): string {
-        return "multiplication";
+        return "negation";
     }
 
     public static getCategory(): WidgetCategoryType {
-        return WidgetCategory.OPERATIONS;
+        return WidgetCategory.COMPARISONS;
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Multiplication (×)</div>;
+        return <div>Not (!)</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -25,8 +25,7 @@ export class MultiplicationWidget extends GenericWidgetBase {
     // ------------------------------
 
     public slots: Record<string, GenericWidgetBase | null> = {
-        leftOperand: null,
-        rightOperand: null
+        value: null
     };
 
     public inExecution: boolean = false;
@@ -36,7 +35,7 @@ export class MultiplicationWidget extends GenericWidgetBase {
     }
 
     render(): React.ReactNode {
-        return <MultiplicationComponent widget={this} />;
+        return <NegationComponent widget={this} />;
     }
 
     renderCode(): React.ReactNode {
@@ -46,10 +45,9 @@ export class MultiplicationWidget extends GenericWidgetBase {
 
         return (
             <span style={highlightStyle}>
+                <span style={{ color: "#C586C0" }}>!</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
-                {this.slots.leftOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* left */</span>}
-                <span style={{ color: "#D4D4D4" }}> * </span>
-                {this.slots.rightOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* right */</span>}
+                {this.slots.value?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* value */</span>}
                 <span style={{ color: "#D4D4D4" }}>)</span>
             </span>
         );
@@ -59,14 +57,9 @@ export class MultiplicationWidget extends GenericWidgetBase {
         // Expression widgets don't yield steps - they're evaluated synchronously
     }
 
-    async evaluate(): Promise<number> {
-        const left = await this.slots.leftOperand?.evaluate();
-        const right = await this.slots.rightOperand?.evaluate();
-        
-        const leftNum = typeof left === "number" ? left : Number(left) || 0;
-        const rightNum = typeof right === "number" ? right : Number(right) || 0;
-        
-        return leftNum * rightNum;
+    async evaluate(): Promise<boolean> {
+        const value = await this.slots.value?.evaluate();
+        return !value;
     }
 
     async initWidget(): Promise<void> {
@@ -82,11 +75,8 @@ export class MultiplicationWidget extends GenericWidgetBase {
     }
 
     cleanup(): void {
-        if (this.slots.leftOperand) {
-            this.executor.deleteWidget(this.slots.leftOperand.id, true);
-        }
-        if (this.slots.rightOperand) {
-            this.executor.deleteWidget(this.slots.rightOperand.id, true);
+        if (this.slots.value) {
+            this.executor.deleteWidget(this.slots.value.id, true);
         }
     }
 }

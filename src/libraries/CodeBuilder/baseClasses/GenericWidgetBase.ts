@@ -67,8 +67,9 @@ export abstract class GenericWidgetBase implements IGenericWidget {
      * Evaluate the widget and return its computed value.
      * Override in expression widgets that provide values.
      * Statement widgets can leave the default implementation.
+     * Async to support widgets that need user interaction.
      */
-    evaluate(): unknown {
+    async evaluate(): Promise<unknown> {
         return undefined;
     }
 
