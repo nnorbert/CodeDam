@@ -1,5 +1,6 @@
 import type { Executor } from "../Executor";
 import type { ExecutionGenerator } from "../ExecutionTypes";
+import type { CodeLanguageType } from "../../../utils/constants";
 
 export interface IGenericWidget {
     readonly id: string;
@@ -8,7 +9,14 @@ export interface IGenericWidget {
     inExecution: boolean;
     getExecutor(): Executor;
     render(): React.ReactNode;
-    renderCode(): React.ReactNode | React.ReactNode[];
+    /**
+     * Render the code representation of this widget.
+     * @param language - The target language (JavaScript/Python)
+     * @param indent - Base indentation string from parent (e.g., "    " for 4 spaces)
+     * @returns React node(s) representing the code. Statement widgets should return
+     *          span-based content; the caller handles line wrapping.
+     */
+    renderCode(language: CodeLanguageType, indent?: string): React.ReactNode | React.ReactNode[];
     /** 
      * Execute the widget. Returns an async generator that yields step points.
      * Each 'step' yield pauses execution until the next step event.

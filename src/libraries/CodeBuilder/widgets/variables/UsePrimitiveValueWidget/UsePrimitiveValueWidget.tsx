@@ -1,5 +1,5 @@
 import { configModal } from "../../../../../components/ConfigModal";
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -45,8 +45,13 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
         return <UsePrimitiveValueComponent widget={this} value={this.value}></UsePrimitiveValueComponent>;
     }
 
-    renderCode(): React.ReactNode {
-        // VS Code Dark+ theme colors by type
+    renderCode(language: CodeLanguageType, _indent: string = ""): React.ReactNode {
+        return language === CodeLanguages.PYTHON 
+            ? this.renderPythonCode() 
+            : this.renderJavaScriptCode();
+    }
+
+    private renderJavaScriptCode(): React.ReactNode {
         if (this.value === null) {
             return <span style={{ color: "#569CD6", fontStyle: "normal" }}>null</span>;
         }
@@ -63,6 +68,22 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
             return <span style={{ color: "#569CD6", fontStyle: "normal" }}>{this.value ? "true" : "false"}</span>;
         }
         return <span style={{ color: "#569CD6", fontStyle: "normal" }}>unknown</span>;
+    }
+
+    private renderPythonCode(): React.ReactNode {
+        if (this.value === null || this.value === undefined) {
+            return <span style={{ color: "#569CD6", fontStyle: "normal" }}>None</span>;
+        }
+        if (typeof this.value === "string") {
+            return <span style={{ color: "#CE9178", fontStyle: "normal" }}>"{this.value}"</span>;
+        }
+        if (typeof this.value === "number") {
+            return <span style={{ color: "#B5CEA8", fontStyle: "normal" }}>{this.value}</span>;
+        }
+        if (typeof this.value === "boolean") {
+            return <span style={{ color: "#569CD6", fontStyle: "normal" }}>{this.value ? "True" : "False"}</span>;
+        }
+        return <span style={{ color: "#569CD6", fontStyle: "normal" }}>None</span>;
     }
 
     async *execute(): ExecutionGenerator {

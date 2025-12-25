@@ -48,6 +48,7 @@ import { AndWidget } from "../../libraries/CodeBuilder/widgets/conditions/AndWid
 import { OrWidget } from "../../libraries/CodeBuilder/widgets/conditions/OrWidget/OrWidget";
 import { UserInputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserInputWidget/UserInputWidget";
 import { UserOutputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserOutputWidget/UserOutputWidget";
+import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
 
 // ------------------ Playground ------------------
 export default function Playground() {
@@ -90,6 +91,7 @@ export default function Playground() {
   const [, forceUpdate] = useState(0);
   const [executionState, setExecutionState] = useState<ExecutionState>('idle');
   const [executionStack, setExecutionStack] = useState<ExecutionStackSnapshot>([]);
+  const [codeLanguage, setCodeLanguage] = useState<CodeLanguageType>(CodeLanguages.JAVASCRIPT);
 
   // Subscribe to executor changes for re-rendering
   useEffect(() => {
@@ -309,7 +311,11 @@ export default function Playground() {
               
               {/* Code Preview - 50% */}
               <div className="flex-1 min-h-0 p-4 pt-0 overflow-hidden">
-                <CodePreview code={mainExecutorRef.current.getCodePreview()} />
+                <CodePreview 
+                  code={mainExecutorRef.current.getCodePreview(codeLanguage)} 
+                  language={codeLanguage}
+                  onLanguageChange={setCodeLanguage}
+                />
               </div>
             </div>
             

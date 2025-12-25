@@ -1,5 +1,5 @@
 import { configModal } from "../../../../../components/ConfigModal";
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -57,20 +57,42 @@ export class CreateConstWidget extends GenericWidgetBase implements IVariable {
         return <CreaveConstComponent widget={this}></CreaveConstComponent>;
     }
 
-    renderCode(): React.ReactNode {
+    renderCode(language: CodeLanguageType, indent: string = ""): React.ReactNode {
+        return language === CodeLanguages.PYTHON 
+            ? this.renderPythonCode(indent) 
+            : this.renderJavaScriptCode(indent);
+    }
+
+    private renderJavaScriptCode(indent: string): React.ReactNode {
         const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)", display: "block" }
-            : { display: "block" };
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
 
         return (
-            <div style={highlightStyle}>
-                <span style={{ color: "#569CD6", fontStyle: "normal" }}>const</span>
+            <span style={highlightStyle}>
+                {indent}<span style={{ color: "#569CD6", fontStyle: "normal" }}>const</span>
                 <span style={{ color: "#D4D4D4" }}> </span>
                 <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
-                {this.slots.valueSlot?.renderCode() ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>undefined</span>}
+                {this.slots.valueSlot?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>undefined</span>}
                 <span style={{ color: "#D4D4D4" }}>;</span>
-            </div>
+            </span>
+        );
+    }
+
+    private renderPythonCode(indent: string): React.ReactNode {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
+
+        // Python convention: constants are uppercase
+        const pythonName = (this.name || "UNNAMED").toUpperCase();
+        return (
+            <span style={highlightStyle}>
+                {indent}<span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{pythonName}</span>
+                <span style={{ color: "#D4D4D4" }}> = </span>
+                {this.slots.valueSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>None</span>}
+            </span>
         );
     }
 

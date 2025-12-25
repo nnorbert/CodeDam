@@ -1,4 +1,4 @@
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -39,7 +39,14 @@ export class GreaterOrEqualWidget extends GenericWidgetBase {
         return <GreaterOrEqualComponent widget={this} />;
     }
 
-    renderCode(): React.ReactNode {
+    renderCode(language: CodeLanguageType, _indent: string = ""): React.ReactNode {
+        if (language === CodeLanguages.PYTHON) {
+            return this.renderPythonCode();
+        }
+        return this.renderJavaScriptCode();
+    }
+
+    private renderJavaScriptCode(): React.ReactNode {
         const highlightStyle = this.inExecution
             ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
             : {};
@@ -47,9 +54,25 @@ export class GreaterOrEqualWidget extends GenericWidgetBase {
         return (
             <span style={highlightStyle}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
-                {this.slots.leftOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* left */</span>}
+                {this.slots.leftOperand?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* left */</span>}
                 <span style={{ color: "#D4D4D4" }}> &gt;= </span>
-                {this.slots.rightOperand?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* right */</span>}
+                {this.slots.rightOperand?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* right */</span>}
+                <span style={{ color: "#D4D4D4" }}>)</span>
+            </span>
+        );
+    }
+
+    private renderPythonCode(): React.ReactNode {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
+
+        return (
+            <span style={highlightStyle}>
+                <span style={{ color: "#D4D4D4" }}>(</span>
+                {this.slots.leftOperand?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># left</span>}
+                <span style={{ color: "#D4D4D4" }}> &gt;= </span>
+                {this.slots.rightOperand?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># right</span>}
                 <span style={{ color: "#D4D4D4" }}>)</span>
             </span>
         );

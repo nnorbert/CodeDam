@@ -1,4 +1,4 @@
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -38,7 +38,13 @@ export class NegationWidget extends GenericWidgetBase {
         return <NegationComponent widget={this} />;
     }
 
-    renderCode(): React.ReactNode {
+    renderCode(language: CodeLanguageType, _indent: string = ""): React.ReactNode {
+        return language === CodeLanguages.PYTHON 
+            ? this.renderPythonCode() 
+            : this.renderJavaScriptCode();
+    }
+
+    private renderJavaScriptCode(): React.ReactNode {
         const highlightStyle = this.inExecution
             ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
             : {};
@@ -47,7 +53,22 @@ export class NegationWidget extends GenericWidgetBase {
             <span style={highlightStyle}>
                 <span style={{ color: "#C586C0" }}>!</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
-                {this.slots.value?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* value */</span>}
+                {this.slots.value?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* value */</span>}
+                <span style={{ color: "#D4D4D4" }}>)</span>
+            </span>
+        );
+    }
+
+    private renderPythonCode(): React.ReactNode {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
+
+        return (
+            <span style={highlightStyle}>
+                <span style={{ color: "#569CD6" }}>not </span>
+                <span style={{ color: "#D4D4D4" }}>(</span>
+                {this.slots.value?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># value</span>}
                 <span style={{ color: "#D4D4D4" }}>)</span>
             </span>
         );

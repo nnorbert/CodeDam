@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import type { IGenericWidget } from "../interfaces/IGenericWidget";
 import type { Executor } from "../Executor";
-import type { WidgetRoleType } from "../../../utils/constants";
+import type { WidgetRoleType, CodeLanguageType } from "../../../utils/constants";
 import type { ExecutionGenerator } from "../ExecutionTypes";
 
 export abstract class GenericWidgetBase implements IGenericWidget {
@@ -74,7 +74,7 @@ export abstract class GenericWidgetBase implements IGenericWidget {
     }
 
     abstract render(): React.ReactNode;
-    abstract renderCode(): React.ReactNode | React.ReactNode[];
+    abstract renderCode(language: CodeLanguageType, indent?: string): React.ReactNode | React.ReactNode[];
     /** 
      * Execute the widget. Returns an async generator that yields step points.
      * Subclasses should implement their execution logic here.

@@ -1,9 +1,8 @@
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useEffect, useState, useCallback } from "react";
 
 // Types for the modal request
 interface OutputRequest {
-  title: string;
   value: unknown;
   resolve: () => void;
 }
@@ -27,10 +26,10 @@ class OutputModalManager {
     };
   }
 
-  open(title: string, value: unknown): Promise<void> {
+  open(value: unknown): Promise<void> {
     return new Promise((resolve) => {
       if (this.listener) {
-        this.listener({ title, value, resolve });
+        this.listener({ value, resolve });
       } else {
         // No listener registered, resolve immediately
         resolve();
@@ -52,7 +51,7 @@ export const userOutputModal = OutputModalManager.getInstance();
 function formatValue(value: unknown): string {
   if (value === null) return "null";
   if (value === undefined) return "undefined";
-  if (typeof value === "string") return `"${value}"`;
+  if (typeof value === "string") return value;
   if (typeof value === "object") return JSON.stringify(value, null, 2);
   return String(value);
 }
@@ -96,10 +95,6 @@ export default function UserOutputModal() {
           transition
           className="w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition-all duration-200 data-[closed]:scale-95 data-[closed]:opacity-0"
         >
-          <DialogTitle className="text-lg font-semibold text-gray-900 mb-4">
-            {request?.title}
-          </DialogTitle>
-
           <div className="bg-gray-100 rounded-lg p-4 font-mono text-sm overflow-auto max-h-64">
             <pre className="whitespace-pre-wrap break-words text-gray-800">
               {request ? formatValue(request.value) : ""}

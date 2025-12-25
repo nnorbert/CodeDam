@@ -14,6 +14,9 @@ const UserInputComponent = ({ widget }: { widget: UserInputWidget }) => {
         }
     };
 
+    const valueType = widget.getValueType();
+    const typeIcon = valueType === "number" ? "🔢" : "📝";
+
     return (
         <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
             <div className="font-mono text-sm flex items-center gap-1">
@@ -21,6 +24,9 @@ const UserInputComponent = ({ widget }: { widget: UserInputWidget }) => {
                 <span className="text-amber-800 font-semibold">input</span>
                 <span className="text-gray-500 text-xs truncate max-w-24" title={widget.getTitle()}>
                     "{widget.getTitle()}"
+                </span>
+                <span className="text-xs ml-1" title={`Returns ${valueType}`}>
+                    {typeIcon}
                 </span>
             </div>
         </WidgetWrapper>

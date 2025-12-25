@@ -29,3 +29,9 @@ export const DroppableTypes = {
     SLOT: "slot",
 } as const;
 export type DroppableType = typeof DroppableTypes[keyof typeof DroppableTypes];
+
+export const CodeLanguages = {
+    JAVASCRIPT: "javascript",
+    PYTHON: "python",
+} as const;
+export type CodeLanguageType = typeof CodeLanguages[keyof typeof CodeLanguages];

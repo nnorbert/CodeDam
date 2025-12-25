@@ -1,5 +1,5 @@
 import { configModal } from "../../../../../components/ConfigModal";
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -50,11 +50,18 @@ export class UseVarWidget extends GenericWidgetBase {
         return <UseVarComponent widget={this}></UseVarComponent>;
     }
 
-    renderCode(): React.ReactNode {
+    renderCode(language: CodeLanguageType, _indent: string = ""): React.ReactNode {
         // VS Code Dark+ theme colors by type
+        let name = this.valueProvider?.getName() ?? "undefined";
+
+        // Python convention: constants are uppercase
+        if (language === CodeLanguages.PYTHON && this.valueProvider?.isConstant) {
+            name = name.toUpperCase();
+        }
+
         return (
             <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>
-                {this.valueProvider?.getName() ?? "undefined"}
+                {name}
             </span>
         );
     }

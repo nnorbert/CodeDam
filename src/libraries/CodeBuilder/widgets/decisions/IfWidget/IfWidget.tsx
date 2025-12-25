@@ -1,4 +1,4 @@
-import { WidgetCategory, WidgetRoles, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
+import { CodeLanguages, WidgetCategory, WidgetRoles, type CodeLanguageType, type WidgetCategoryType, type WidgetRoleType } from "../../../../../utils/constants";
 import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
@@ -56,54 +56,98 @@ export class IfWidget extends GenericWidgetBase {
         return <IfComponent widget={this}></IfComponent>;
     }
 
-    renderCode(): React.ReactNode[] {
+    renderCode(language: CodeLanguageType, indent: string = ""): React.ReactNode[] {
+        if (language === CodeLanguages.PYTHON) {
+            return this.renderPythonCode(indent);
+        }
+        return this.renderJavaScriptCode(indent);
+    }
+
+    private renderJavaScriptCode(indent: string): React.ReactNode[] {
         const highlightStyle = this.inExecution
             ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
             : {};
 
         const thenWidgets = this.thenExecutor.getWidgets();
-        const indentStyle = { paddingLeft: "2ch" };
-
+        const childIndent = indent + "    "; // Add 4 spaces for nested content
         const lines: React.ReactNode[] = [];
 
-        // if (condition) {
+        // JavaScript: if (condition) {
         lines.push(
-            <div key={`${this.id}-if`} style={highlightStyle}>
-                <span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
+            <span key={`${this.id}-if`} style={highlightStyle}>
+                {indent}<span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
                 <span style={{ color: "#D4D4D4" }}> (</span>
-                {this.slots.conditionSlot?.renderCode() ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* condition */</span>}
+                {this.slots.conditionSlot?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* condition */</span>}
                 <span style={{ color: "#D4D4D4" }}>) {"{"}</span>
-            </div>
+            </span>
         );
 
         // "Then" body widgets - each line indented
         if (thenWidgets.length > 0) {
             thenWidgets.forEach((widget) => {
-                const widgetCode = widget.renderCode();
-                // Handle both single nodes and arrays of nodes
+                const widgetCode = widget.renderCode(CodeLanguages.JAVASCRIPT, childIndent);
                 const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
                 widgetLines.forEach((line, index) => {
                     lines.push(
-                        <div key={`${widget.id}-${index}`} style={indentStyle}>
-                            {line}
-                        </div>
+                        <span key={`${widget.id}-${index}`}>{line}</span>
                     );
                 });
             });
         } else {
             lines.push(
-                <div key={`${this.id}-empty`} style={{ ...indentStyle, color: "#6A9955", fontStyle: "italic" }}>
-                    {"// empty body"}
-                </div>
+                <span key={`${this.id}-empty`} style={{ color: "#6A9955", fontStyle: "italic" }}>
+                    {childIndent}{"// empty body"}
+                </span>
             );
         }
 
         // Closing brace
         lines.push(
-            <div key={`${this.id}-close`}>
-                <span style={{ color: "#D4D4D4" }}>{"}"}</span>
-            </div>
+            <span key={`${this.id}-close`}>
+                {indent}<span style={{ color: "#D4D4D4" }}>{"}"}</span>
+            </span>
         );
+
+        return lines;
+    }
+
+    private renderPythonCode(indent: string): React.ReactNode[] {
+        const highlightStyle = this.inExecution
+            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
+            : {};
+
+        const thenWidgets = this.thenExecutor.getWidgets();
+        const childIndent = indent + "    "; // Add 4 spaces for nested content
+        const lines: React.ReactNode[] = [];
+
+        // Python: if condition:
+        lines.push(
+            <span key={`${this.id}-if`} style={highlightStyle}>
+                {indent}<span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
+                <span style={{ color: "#D4D4D4" }}> </span>
+                {this.slots.conditionSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># condition</span>}
+                <span style={{ color: "#D4D4D4" }}>:</span>
+            </span>
+        );
+
+        // "Then" body widgets - each line indented
+        if (thenWidgets.length > 0) {
+            thenWidgets.forEach((widget) => {
+                const widgetCode = widget.renderCode(CodeLanguages.PYTHON, childIndent);
+                const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
+                widgetLines.forEach((line, index) => {
+                    lines.push(
+                        <span key={`${widget.id}-${index}`}>{line}</span>
+                    );
+                });
+            });
+        } else {
+            lines.push(
+                <span key={`${this.id}-empty`}>
+                    {childIndent}<span style={{ color: "#569CD6", fontStyle: "normal" }}>pass</span>
+                </span>
+            );
+        }
 
         return lines;
     }

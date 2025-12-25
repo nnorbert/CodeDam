@@ -2,6 +2,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import type { IGenericWidget } from "./interfaces/IGenericWidget";
 import type { IVariable } from "./interfaces/IVariable";
 import type { ExecutionGenerator, ExecutionVariable, ExecutionScope, ExecutionStackSnapshot } from "./ExecutionTypes";
+import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
 
 export class Executor {
 
@@ -345,8 +346,8 @@ export class Executor {
         };
     }
 
-    getCodePreview(): React.ReactNode[] {
-        return this.widgets.flatMap((w) => w.renderCode());
+    getCodePreview(language: CodeLanguageType = CodeLanguages.JAVASCRIPT): React.ReactNode[] {
+        return this.widgets.flatMap((w) => w.renderCode(language, ""));
     }
 
     /**
