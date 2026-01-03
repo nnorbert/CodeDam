@@ -27,7 +27,7 @@ const ToolBox = ({ widgets }: { widgets: ToolboxItemData[] }) => {
         🪵 Workshop
       </div>
       {orderedCategories.map((category: WidgetCategoryType) => (
-        <Disclosure key={category} defaultOpen>
+        <Disclosure key={category}>
           {({ open }) => (
             <div className="rounded-lg overflow-hidden border-2 border-amber-700/30">
               <DisclosureButton className="toolbox-category-header flex justify-between items-center w-full px-3 py-2 text-left font-semibold capitalize text-sm">

@@ -1,3 +1,4 @@
+import "./Page.css";
 import {
   DndContext,
   DragOverlay,
@@ -258,7 +259,7 @@ export default function Playground() {
       collisionDetection={CustomCollisionDetector}
     >
       <DragProvider value={dragContextValue}>
-        <div className="flex overflow-hidden bg-gradient-to-b from-sky-100 to-sky-200" style={{ height: "calc(100vh - var(--header-height))" }}>
+        <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
           {/* Toolbox - Workshop */}
           <aside className="w-64 border-r-2 border-amber-600/30 bg-gradient-to-b from-amber-100 to-amber-50 p-3 overflow-y-auto shadow-lg">
             <ToolBox widgets={activeWidgets}></ToolBox>

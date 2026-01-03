@@ -1,4 +1,37 @@
+@import "https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap";
+@import "https://fonts.googleapis.com/css2?family=Chewy&display=swap";
 @import "tailwindcss";
+
+/** Main Theme */
+body {
+  font-family: "Patrick Hand", cursive;
+  color: #753723;
+}
+
+#header-container a {
+  color: #753723;
+  font-family: "Chewy", cursive;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  text-shadow: 2px 2px 0 rgba(252, 243, 158, 1);
+  transition: color 0.3s ease;
+  text-align: center;
+  display: inline-block;
+  padding: 2px 20px;
+}
+#header-container a:hover {
+  color: #753723;
+  text-decoration: underline;
+}
+#header-container a:active {
+  color: #753723;
+}
+#header-container a:visited {
+  color: #753723;
+}
+
+/** ------------------------------------------------------------ */
 
 :root {
   font-family: 'Nunito', 'Comic Neue', system-ui, sans-serif;

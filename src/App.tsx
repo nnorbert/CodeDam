@@ -16,10 +16,14 @@ function HomePage() {
 function App() {
   return (
     <Router>
-      <nav className="bg-gray-800 p-4 text-white flex gap-4">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/playground" className="hover:underline">Start building</Link>
-      </nav>
+      <div id="header-container" className="flex">
+        <div className="header-part1"></div>
+        <div className="header-part2">
+          <Link to="/" className="hover:underline">Home</Link>
+          <Link to="/playground" className="hover:underline">Start building</Link>
+        </div>
+        <div className="header-part3"></div>
+      </div>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
