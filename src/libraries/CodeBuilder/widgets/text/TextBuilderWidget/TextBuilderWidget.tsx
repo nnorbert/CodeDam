@@ -4,7 +4,7 @@ import { GenericWidgetBase } from "../../../baseClasses/GenericWidgetBase";
 import type { Executor } from "../../../Executor";
 import type { ExecutionGenerator } from "../../../ExecutionTypes";
 import TextBuilderComponent from "./component";
-import { TextBuilderConfigForm, createValidator, MAX_TEXT_COMPONENTS } from "./TextBuilderConfigForm";
+import { TextBuilderConfigForm, createValidator } from "./TextBuilderConfigForm";
 
 export interface TextBuilderConfig extends Record<string, unknown> {
     componentCount: number;
