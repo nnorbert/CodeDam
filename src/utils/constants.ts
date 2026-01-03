@@ -5,6 +5,7 @@ export const WidgetCategory = {
     DECISIONS: "decisions",
     COMPARISONS: "comparisons",
     OPERATIONS: "operations",
+    TEXT_OPERATIONS: "text operations",
     INTERACTIONS: "interactions",
 } as const;
 export type WidgetCategoryType = typeof WidgetCategory[keyof typeof WidgetCategory];
@@ -13,6 +14,7 @@ export type WidgetCategoryType = typeof WidgetCategory[keyof typeof WidgetCatego
 export const WidgetCategoryOrder: WidgetCategoryType[] = [
     WidgetCategory.VARIABLES,
     WidgetCategory.OPERATIONS,
+    WidgetCategory.TEXT_OPERATIONS,
     WidgetCategory.COMPARISONS,
     WidgetCategory.DECISIONS,
     WidgetCategory.INTERACTIONS,

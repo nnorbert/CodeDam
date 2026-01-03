@@ -49,6 +49,8 @@ import { AndWidget } from "../../libraries/CodeBuilder/widgets/conditions/AndWid
 import { OrWidget } from "../../libraries/CodeBuilder/widgets/conditions/OrWidget/OrWidget";
 import { UserInputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserInputWidget/UserInputWidget";
 import { UserOutputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserOutputWidget/UserOutputWidget";
+import { TextBuilderWidget } from "../../libraries/CodeBuilder/widgets/text/TextBuilderWidget/TextBuilderWidget";
+import { TextLengthWidget } from "../../libraries/CodeBuilder/widgets/text/TextLengthWidget/TextLengthWidget";
 import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
 
 // ------------------ Playground ------------------
@@ -66,6 +68,8 @@ export default function Playground() {
     MultiplicationWidget,
     DivisionWidget,
     ModuloWidget,
+    TextBuilderWidget,
+    TextLengthWidget,
     NegationWidget,
     GreaterThanWidget,
     GreaterOrEqualWidget,
