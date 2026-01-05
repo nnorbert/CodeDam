@@ -3,6 +3,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors
 } from "@dnd-kit/core";
@@ -161,7 +162,15 @@ export default function Playground() {
     await executionControllerRef.current?.step();
   }, []);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    })
+  );
 
   function handleDragStart(event: any) {
     setActiveOverId(event.active.id);
