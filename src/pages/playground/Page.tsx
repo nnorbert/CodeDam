@@ -2,7 +2,7 @@ import "./Page.css";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors
@@ -163,11 +163,17 @@ export default function Playground() {
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor, {
+      // Require mouse to move 5px before activating drag
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
     useSensor(TouchSensor, {
+      // Require 150ms press before activating (helps distinguish from scroll)
       activationConstraint: {
         delay: 150,
-        tolerance: 5,
+        tolerance: 8,
       },
     })
   );

@@ -139,6 +139,12 @@ body {
 }
 
 /* ====== Toolbox Item Styles ====== */
+/* Prevent browser handling touch gestures on draggable items */
+.toolbox-item-statement,
+.toolbox-item-expression {
+  touch-action: none;
+}
+
 .toolbox-item-statement {
   background: 
     repeating-linear-gradient(

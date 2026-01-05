@@ -40,6 +40,8 @@ const SortableItem = (props: Props) => {
         // Padding creates visual gap but remains part of this element's hit area
         paddingTop: "4px",
         paddingBottom: "4px",
+        // Prevent browser handling touch gestures on sortable items
+        touchAction: isEditingLocked ? "auto" : "none",
     };
 
     // Inner content style
