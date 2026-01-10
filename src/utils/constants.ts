@@ -4,6 +4,7 @@ export const WidgetCategory = {
     VARIABLES: "variables",
     DECISIONS: "decisions",
     COMPARISONS: "comparisons",
+    LOGIC: "logic",
     OPERATIONS: "operations",
     TEXT_OPERATIONS: "text operations",
     INTERACTIONS: "interactions",
@@ -16,6 +17,7 @@ export const WidgetCategoryOrder: WidgetCategoryType[] = [
     WidgetCategory.OPERATIONS,
     WidgetCategory.TEXT_OPERATIONS,
     WidgetCategory.COMPARISONS,
+    WidgetCategory.LOGIC,
     WidgetCategory.DECISIONS,
     WidgetCategory.INTERACTIONS,
 ];

@@ -11,7 +11,7 @@ export class OrWidget extends GenericWidgetBase {
     }
 
     public static getCategory(): WidgetCategoryType {
-        return WidgetCategory.COMPARISONS;
+        return WidgetCategory.LOGIC;
     }
 
     public static getToolboxItemElement(): React.ReactNode {
