@@ -11,21 +11,12 @@ let isGAInitialized = false;
 
 export function loadGA() {
     // Skip if no measurement ID configured
-    if (!GA_ID) {
-        console.warn("[Analytics] VITE_GA_MEASUREMENT_ID not configured");
-        return;
-    }
+    if (!GA_ID) return;
     
     // Prevent duplicate initialization
-    if (isGAInitialized || document.getElementById("ga-gtag")) {
-        console.debug("[Analytics] Already initialized, skipping");
-        return;
-    }
+    if (isGAInitialized || document.getElementById("ga-gtag")) return;
     
     isGAInitialized = true;
-    
-    const debugMode = import.meta.env.DEV || import.meta.env.VITE_GA_DEBUG === "true";
-    console.debug("[Analytics] Initializing GA with ID:", GA_ID, "debug_mode:", debugMode);
 
     // Load gtag.js script
     const script = document.createElement("script");
@@ -49,9 +40,9 @@ export function loadGA() {
     // Configure Google Analytics
     window.gtag("js", new Date());
     window.gtag("config", GA_ID, {
-        anonymize_ip: true,      // Privacy: anonymize IP addresses
-        send_page_view: false,   // SPA: we send page views manually via gaPageView()
-        debug_mode: debugMode,
+        anonymize_ip: true,
+        send_page_view: false, // SPA: we track page views manually
+        debug_mode: import.meta.env.DEV || import.meta.env.VITE_GA_DEBUG === "true",
     });
 }
 
@@ -60,18 +51,8 @@ export function loadGA() {
  * @param path - The path to track (e.g., "/playground")
  */
 export function gaPageView(path: string) {
-    if (!GA_ID) {
-        console.debug("[Analytics] gaPageView skipped: no GA_ID");
-        return;
-    }
-    
-    if (!window.gtag) {
-        console.debug("[Analytics] gaPageView skipped: gtag not loaded");
-        return;
-    }
+    if (!GA_ID || !window.gtag) return;
 
-    console.debug("[Analytics] Sending page_view:", path);
-    
     window.gtag("event", "page_view", {
         page_path: path,
         page_location: window.location.origin + path,
