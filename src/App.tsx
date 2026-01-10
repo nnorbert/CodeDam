@@ -1,8 +1,17 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Playground from './pages/playground/Page';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { ConfigModal } from './components/ConfigModal';
+import { pageview } from './analytics';
+import { useEffect } from 'react';
 
+function PageViewTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    pageview(location.pathname + location.search);
+  }, [location]);
+  return null;
+}
 
 function HomePage() {
   return (
@@ -16,6 +25,7 @@ function HomePage() {
 function App() {
   return (
     <Router>
+      <PageViewTracker />
       <div id="header-container" className="flex">
         <div className="header-part1"></div>
         <div className="header-part2">
