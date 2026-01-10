@@ -2,16 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Playground from './pages/playground/Page';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { ConfigModal } from './components/ConfigModal';
-import { pageview } from './analytics';
-import { useEffect } from 'react';
+import { PageViewTracker } from './analytics/PageViewTracker';
+import { AnalyticsConsentBanner } from './components/AnalyticsConsentBanner';
 
-function PageViewTracker() {
-  const location = useLocation();
-  useEffect(() => {
-    pageview(location.pathname + location.search);
-  }, [location]);
-  return null;
-}
 
 function HomePage() {
   return (
@@ -42,6 +35,7 @@ function App() {
 
       <ConfirmationModal />
       <ConfigModal />
+      <AnalyticsConsentBanner />
     </Router>
   );
 }
