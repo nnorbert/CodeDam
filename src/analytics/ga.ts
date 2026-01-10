@@ -45,7 +45,7 @@ export function loadGA() {
     window.gtag("config", GA_ID, {
         anonymize_ip: true,      // Privacy: anonymize IP addresses
         send_page_view: false,   // SPA: we send page views manually via gaPageView()
-        debug_mode: import.meta.env.DEV, // Enable debug mode in development
+        debug_mode: import.meta.env.DEV || import.meta.env.VITE_GA_DEBUG === "true",
     });
 }
 
