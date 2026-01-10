@@ -37,10 +37,12 @@ export function loadGA() {
     // Initialize dataLayer if not present
     window.dataLayer = window.dataLayer || [];
     
-    // Define gtag function if not already defined
+    // Define gtag function exactly as Google specifies
+    // Must use 'arguments' object, not spread syntax, for gtag.js compatibility
     if (!window.gtag) {
-        window.gtag = function gtag(...args: unknown[]) {
-            window.dataLayer!.push(args);
+        window.gtag = function () {
+            // eslint-disable-next-line prefer-rest-params
+            window.dataLayer!.push(arguments);
         };
     }
 
