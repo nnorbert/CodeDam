@@ -332,12 +332,12 @@ export default function Playground() {
                 {/* Variable Stack & Code Preview - each takes 50% of available space */}
                 <div className="flex-1 min-h-0 flex flex-col">
                   {/* Variable Stack - 50% */}
-                  <div className="flex-1 min-h-0 p-4 pt-0 overflow-hidden">
+                  <div className="flex-1 min-h-0 pb-4 overflow-hidden">
                     <VariableStack executionStack={executionStack} />
                   </div>
 
                   {/* Code Preview - 50% */}
-                  <div className="flex-1 min-h-0 p-4 pt-0 overflow-hidden">
+                  <div className="flex-1 min-h-0 pb-4 overflow-hidden">
                     <CodePreview
                       code={mainExecutorRef.current.getCodePreview(codeLanguage)}
                       language={codeLanguage}
