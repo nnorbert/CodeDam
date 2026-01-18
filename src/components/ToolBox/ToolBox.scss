@@ -1,0 +1,67 @@
+#toolbox-container {
+    background-image: url('../../assets/theme/CodeDam/images/wood_bck.png');
+    background-repeat: repeat;
+    width: 256px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+
+    border-radius: 10px;
+
+    .toolbox-header {
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--white-color);
+        padding: 8px 16px;
+        background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+        box-shadow: var(--box-shadow);
+        position: relative;
+        border-radius: 10px 10px 0 0;
+        z-index: 1;
+        flex-shrink: 0;
+    }
+
+    .toolbox-content {
+        border-radius: 0 0 10px 10px;
+        position: relative;
+        z-index: 0;
+        padding: 16px 14px;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-mask-image: linear-gradient(to bottom,
+                black 95%,
+                transparent 100%);
+        mask-image: linear-gradient(to bottom,
+                black 95%,
+                transparent 100%);
+
+        .toolbox-category {
+            margin-bottom: 8px;
+
+            .toolbox-category-header {
+                font-size: 18px;
+                font-weight: 900;
+                color: var(--main-color);
+                background-color: var(--white-color);
+                padding: 8px 16px;
+                border-radius: 22px;
+                cursor: pointer;
+                position: relative;
+                z-index: 1;
+                box-shadow: var(--box-shadow);
+            }
+
+            .toolbox-category-content {
+                margin-top: -18px;
+                padding: 32px 16px 16px 16px;
+                border-radius: 0 0 10px 10px;
+                position: relative;
+                z-index: 0;
+                box-shadow: var(--box-shadow);
+            }
+        }
+    }
+}

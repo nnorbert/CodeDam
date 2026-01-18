@@ -1,0 +1,51 @@
+.playground-container {
+  background-image: url('../../assets/theme/CodeDam/images/playground_bck.png');
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.main-canvas-wrapepr {
+  padding: 0 0 16px 0;
+
+  .main-canvas-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-image: url('../../assets/theme/CodeDam/images/wood_bck.png');
+    background-repeat: repeat;
+    border-radius: 10px;
+    overflow: hidden;
+
+    .main-canvas-header {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--white-color);
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+      box-shadow: var(--box-shadow);
+      position: relative;
+      border-radius: 10px 10px 0 0;
+      z-index: 1;
+      flex-shrink: 0;
+
+      p {
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+
+    .main-canvas-content {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+
+      .empty-message {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--main-color);
+        padding-top: 64px;
+      }
+    }
+  }
+}

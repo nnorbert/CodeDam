@@ -15,7 +15,7 @@ const DroppableBody = ({
   id,
   executor,
   widgets,
-  emptyMessage = "🪵 Drop planks here to build your dam!",
+  emptyMessage = "Drop planks here to build your dam!",
 }: Props) => {
   return (
     <DroppableCanvas id={id} executor={executor}>
