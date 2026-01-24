@@ -4,9 +4,11 @@ type Props = {
   code: React.ReactNode[];
   language: CodeLanguageType;
   onLanguageChange: (language: CodeLanguageType) => void;
+  /** Set of line keys that should be highlighted (from widget activeLineKeys) */
+  highlightedLineKeys?: Set<string>;
 };
 
-const CodePreview = ({ code, language, onLanguageChange }: Props) => {
+const CodePreview = ({ code, language, onLanguageChange, highlightedLineKeys = new Set() }: Props) => {
   return (
     <div className="flex flex-col h-full">
       {/* Title bar */}
@@ -35,30 +37,39 @@ const CodePreview = ({ code, language, onLanguageChange }: Props) => {
         className="flex-1 overflow-auto font-mono text-sm"
         style={{ backgroundColor: "#1E1E1E" }}
       >
-        {code.map((codeLine, index) => (
-          <div
-            key={index}
-            className="flex hover:bg-white/5 transition-colors"
-            style={{ minHeight: "1.5rem" }}
-          >
-            {/* Line number gutter */}
+        {code.map((codeLine, index) => {
+          // Check if this line should be highlighted based on the React element's key
+          const lineKey = (codeLine as React.ReactElement)?.key?.toString() || '';
+          const isHighlighted = highlightedLineKeys.has(lineKey);
+          
+          return (
             <div
-              className="select-none text-right pr-4 pl-2"
-              style={{
-                color: "#858585",
-                minWidth: "3rem",
-                backgroundColor: "#1E1E1E",
+              key={index}
+              className="flex hover:bg-white/5 transition-colors"
+              style={{ 
+                minHeight: "1.5rem",
+                backgroundColor: isHighlighted ? "rgba(251, 191, 36, 0.15)" : undefined,
               }}
             >
-              {index + 1}
-            </div>
+              {/* Line number gutter */}
+              <div
+                className="select-none text-right pr-4 pl-2"
+                style={{
+                  color: isHighlighted ? "#FBB936" : "#858585",
+                  minWidth: "3rem",
+                  backgroundColor: "#1E1E1E",
+                }}
+              >
+                {index + 1}
+              </div>
 
-            {/* Code content */}
-            <div className="flex-1 pr-4" style={{ color: "#D4D4D4", whiteSpace: "pre" }}>
-              {codeLine}
+              {/* Code content */}
+              <div className="flex-1 pr-4" style={{ color: "#D4D4D4", whiteSpace: "pre" }}>
+                {codeLine}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

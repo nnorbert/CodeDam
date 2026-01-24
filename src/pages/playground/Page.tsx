@@ -99,6 +99,7 @@ export default function Playground() {
   const [executionState, setExecutionState] = useState<ExecutionState>('idle');
   const [executionStack, setExecutionStack] = useState<ExecutionStackSnapshot>([]);
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguageType>(CodeLanguages.JAVASCRIPT);
+  const [activeLineKeys, setActiveLineKeys] = useState<Set<string>>(new Set());
 
   // Subscribe to executor changes for re-rendering
   useEffect(() => {
@@ -117,6 +118,9 @@ export default function Playground() {
   // Subscribe to widget changes to trigger re-render for highlighting
   useEffect(() => {
     executionControllerRef.current?.setOnWidgetChange(() => {
+      // Update active line keys when widget changes
+      const keys = executionControllerRef.current?.getActiveLineKeys() ?? [];
+      setActiveLineKeys(new Set(keys));
       forceUpdate(n => n + 1);
     });
     return () => executionControllerRef.current?.setOnWidgetChange(null);
@@ -342,6 +346,7 @@ export default function Playground() {
                       code={mainExecutorRef.current.getCodePreview(codeLanguage)}
                       language={codeLanguage}
                       onLanguageChange={setCodeLanguage}
+                      highlightedLineKeys={activeLineKeys}
                     />
                   </div>
                 </div>

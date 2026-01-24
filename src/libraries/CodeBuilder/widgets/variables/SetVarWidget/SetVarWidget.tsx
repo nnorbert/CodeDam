@@ -57,12 +57,8 @@ export class SetVarWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         return (
-            <span style={highlightStyle}>
+            <span key={`${this.id}-line`}>
                 {indent}<span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.getTargetVariableName() || "not set"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
                 {this.slots.valueSlot?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>undefined</span>}
@@ -72,12 +68,8 @@ export class SetVarWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         return (
-            <span style={highlightStyle}>
+            <span key={`${this.id}-line`}>
                 {indent}<span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.getTargetVariableName() || "not_set"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
                 {this.slots.valueSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>None</span>}
@@ -86,6 +78,7 @@ export class SetVarWidget extends GenericWidgetBase {
     }
 
     async *execute(): ExecutionGenerator {
+        this.activeLineKeys = [`${this.id}-line`];
         yield { type: 'step', widget: this };
         
         // Evaluate the value from the slot (async to support user input)
@@ -95,6 +88,8 @@ export class SetVarWidget extends GenericWidgetBase {
         if (this.targetVariable) {
             this.targetVariable.setValue(value);
         }
+        
+        this.activeLineKeys = [];
     }
 
     private getAvailableVariables(): VariableOption[] {

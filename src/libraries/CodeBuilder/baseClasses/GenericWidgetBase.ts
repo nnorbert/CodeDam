@@ -15,6 +15,12 @@ export abstract class GenericWidgetBase implements IGenericWidget {
         throw new Error("getCategory() must be implemented by subclass");
     }
 
+    /** 
+     * Array of line keys that should be highlighted during execution.
+     * Empty array means no specific lines highlighted (all lines or none).
+     */
+    public activeLineKeys: string[] = [];
+
     // Static method - called on the class itself, not instances
     static getToolboxItemElement(): React.ReactNode {
         throw new Error("getToolboxItemElement() must be implemented by subclass");

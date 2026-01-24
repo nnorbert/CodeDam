@@ -7,6 +7,12 @@ export interface IGenericWidget {
     readonly executor: Executor;
     /** Whether this widget is currently being executed */
     inExecution: boolean;
+    /** 
+     * Array of line keys that should be highlighted during execution.
+     * Keys correspond to the keys used in renderCode().
+     * Empty array means no specific lines highlighted (backward compatible).
+     */
+    activeLineKeys: string[];
     getExecutor(): Executor;
     render(): React.ReactNode;
     /**

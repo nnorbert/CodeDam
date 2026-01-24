@@ -56,10 +56,7 @@ export class UserInputWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         const inputCall = (
             <>
                 <span style={{ color: "#DCDCAA" }}>prompt</span>
@@ -71,7 +68,7 @@ export class UserInputWidget extends GenericWidgetBase {
 
         if (this.valueType === "number") {
             return (
-                <span style={highlightStyle}>
+                <span key={lineKey}>
                     <span style={{ color: "#DCDCAA" }}>Number</span>
                     <span style={{ color: "#D4D4D4" }}>(</span>
                     {inputCall}
@@ -81,17 +78,14 @@ export class UserInputWidget extends GenericWidgetBase {
         }
 
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 {inputCall}
             </span>
         );
     }
 
     private renderPythonCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         const inputCall = (
             <>
                 <span style={{ color: "#DCDCAA" }}>input</span>
@@ -103,7 +97,7 @@ export class UserInputWidget extends GenericWidgetBase {
 
         if (this.valueType === "number") {
             return (
-                <span style={highlightStyle}>
+                <span key={lineKey}>
                     <span style={{ color: "#DCDCAA" }}>int</span>
                     <span style={{ color: "#D4D4D4" }}>(</span>
                     {inputCall}
@@ -113,7 +107,7 @@ export class UserInputWidget extends GenericWidgetBase {
         }
 
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 {inputCall}
             </span>
         );

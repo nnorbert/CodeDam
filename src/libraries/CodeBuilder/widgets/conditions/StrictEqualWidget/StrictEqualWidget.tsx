@@ -46,12 +46,9 @@ export class StrictEqualWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.leftOperand?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* left */</span>}
                 <span style={{ color: "#D4D4D4" }}> === </span>
@@ -62,13 +59,10 @@ export class StrictEqualWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         // Python doesn't have ===, use == instead
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.leftOperand?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># left</span>}
                 <span style={{ color: "#D4D4D4" }}> == </span>

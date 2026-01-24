@@ -45,12 +45,9 @@ export class TextLengthWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#569CD6" }}>String</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.textInput?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#CE9178" }}>""</span>}
@@ -61,12 +58,9 @@ export class TextLengthWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#DCDCAA" }}>len</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 <span style={{ color: "#569CD6" }}>str</span>

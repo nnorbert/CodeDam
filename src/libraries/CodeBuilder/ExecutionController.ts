@@ -67,6 +67,41 @@ export class ExecutionController {
     }
 
     /**
+     * Get all active line keys from the currently executing widget and its nested executors.
+     * This collects line keys from widgets that have inExecution = true.
+     */
+    getActiveLineKeys(): string[] {
+        if (!this.executor) {
+            return [];
+        }
+        return this.collectActiveLineKeys(this.executor);
+    }
+
+    /**
+     * Recursively collect active line keys from all widgets in execution.
+     */
+    private collectActiveLineKeys(executor: Executor): string[] {
+        const keys: string[] = [];
+        
+        const widgets = executor.getWidgets();
+        for (const widget of widgets) {
+            // Add this widget's active line keys if it's executing
+            if (widget.inExecution) {
+                keys.push(...widget.activeLineKeys);
+            }
+            
+            // Always check nested executors (regardless of parent's inExecution state)
+            // because nested widgets might be executing even when parent widget is not
+            const nestedExecutors = widget.getNestedExecutors();
+            for (const nestedExecutor of nestedExecutors) {
+                keys.push(...this.collectActiveLineKeys(nestedExecutor));
+            }
+        }
+        
+        return keys;
+    }
+
+    /**
      * Check if execution is waiting for an async operation
      */
     isWaiting(): boolean {
