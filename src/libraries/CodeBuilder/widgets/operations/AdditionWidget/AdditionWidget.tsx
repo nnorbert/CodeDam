@@ -15,7 +15,7 @@ export class AdditionWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Addition (+)</div>;
+        return <div title="Addition" className="big-font">+</div>;
     }
 
     public static getRole(): WidgetRoleType {

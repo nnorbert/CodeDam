@@ -22,7 +22,7 @@ export class UsePrimitiveValueWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Use Value</div>;
+        return <div title="Use Value">Use Value</div>;
     }
 
     public static getRole(): WidgetRoleType {

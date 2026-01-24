@@ -3,6 +3,7 @@ import { useDroppable } from "@dnd-kit/core";
 import type { PropsWithChildren } from "react";
 import type { Executor } from "../../libraries/CodeBuilder/Executor";
 import { useDragContext } from "../../contexts/DragContext";
+import "./DroppableSlot.scss";
 
 type Props = PropsWithChildren<{
     id: string;
@@ -33,7 +34,7 @@ const DroppableSlot = (props: Props) => {
 
     // Build class names for the slot (circular wood slice hole)
     const slotClasses = [
-        "slot-empty",
+        "droppable-slot",
         "h-8 min-w-24 px-3 flex items-center justify-center text-xs font-medium text-amber-700/70",
         "transition-all duration-200",
         isEditingLocked && "opacity-60",

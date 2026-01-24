@@ -15,7 +15,7 @@ export class TextLengthWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Text Length</div>;
+        return <div title="Text Length">Text Length</div>;
     }
 
     public static getRole(): WidgetRoleType {

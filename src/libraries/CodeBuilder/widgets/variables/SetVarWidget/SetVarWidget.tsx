@@ -19,7 +19,7 @@ export class SetVarWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Set Variable</div>;
+        return <div title="Set Variable">Set Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {

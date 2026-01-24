@@ -15,7 +15,7 @@ export class EqualWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Equal (==)</div>;
+        return <div title="Equal" className="big-font">==</div>;
     }
 
     public static getRole(): WidgetRoleType {

@@ -15,7 +15,7 @@ export class OrWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Or (||)</div>;
+        return <div title="Or" className="big-font">||</div>;
     }
 
     public static getRole(): WidgetRoleType {

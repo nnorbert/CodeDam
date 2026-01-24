@@ -1,0 +1,33 @@
+.toolbox-item {
+    font-family: 'Mulish';
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.5;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 8px;
+    width: 90px;
+    height: 70px;
+
+    &.toolbox-item-statement {
+        background-image: url('../../assets/theme/CodeDam/images/toolbox_item_statement.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: var(--white-color);
+    }
+    &.toolbox-item-expression {
+        background-image: url('../../assets/theme/CodeDam/images/toolbox_item_expression.png');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: var(--main-color);
+    }
+
+    .big-font {
+        font-size: 20px;
+    }
+}

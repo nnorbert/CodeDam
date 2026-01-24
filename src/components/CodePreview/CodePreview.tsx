@@ -10,7 +10,7 @@ type Props = {
 
 const CodePreview = ({ code, language, onLanguageChange, highlightedLineKeys = new Set() }: Props) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full rounded-lg overflow-hidden">
       {/* Title bar */}
       <div
         className="flex items-center justify-between px-4 py-2 text-sm font-medium"

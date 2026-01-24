@@ -18,7 +18,7 @@ export class CreateConstWidget extends GenericWidgetBase implements IVariable {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Constant</div>;
+        return <div title="Create Constant">Create Constant</div>;
     }
 
     public static getRole(): WidgetRoleType {

@@ -15,7 +15,7 @@ export class SubtractionWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Subtraction (−)</div>;
+        return <div title="Subtraction" className="big-font">−</div>;
     }
 
     public static getRole(): WidgetRoleType {

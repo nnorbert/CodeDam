@@ -15,7 +15,7 @@ export class NegationWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Not (!)</div>;
+        return <div title="Not" className="big-font">!</div>;
     }
 
     public static getRole(): WidgetRoleType {

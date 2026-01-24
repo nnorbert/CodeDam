@@ -22,7 +22,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Text Builder</div>;
+        return <div title="Text Builder">Text Builder</div>;
     }
 
     public static getRole(): WidgetRoleType {

@@ -16,7 +16,7 @@ export class UserOutputWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>User Output</div>;
+        return <div title="User Output">User Output</div>;
     }
 
     public static getRole(): WidgetRoleType {

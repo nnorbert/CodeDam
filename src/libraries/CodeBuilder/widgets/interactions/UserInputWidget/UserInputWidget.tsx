@@ -18,7 +18,7 @@ export class UserInputWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>User Input</div>;
+        return <div title="User Input">User Input</div>;
     }
 
     public static getRole(): WidgetRoleType {

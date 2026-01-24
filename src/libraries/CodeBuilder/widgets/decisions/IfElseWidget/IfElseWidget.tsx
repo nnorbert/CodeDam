@@ -15,7 +15,7 @@ export class IfElseWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>If-Else Decision</div>;
+        return <div title="If-Else Decision">If-Else Decision</div>;
     }
 
     public static getRole(): WidgetRoleType {

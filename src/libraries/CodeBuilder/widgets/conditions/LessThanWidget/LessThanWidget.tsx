@@ -15,7 +15,7 @@ export class LessThanWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Less Than (&lt;)</div>;
+        return <div title="Less Than" className="big-font">&lt;</div>;
     }
 
     public static getRole(): WidgetRoleType {

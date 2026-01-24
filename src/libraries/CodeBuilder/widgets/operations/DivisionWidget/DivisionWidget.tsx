@@ -15,7 +15,7 @@ export class DivisionWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Division (÷)</div>;
+        return <div title="Division" className="big-font">÷</div>;
     }
 
     public static getRole(): WidgetRoleType {

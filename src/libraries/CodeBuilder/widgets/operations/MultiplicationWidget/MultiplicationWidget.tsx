@@ -15,7 +15,7 @@ export class MultiplicationWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Multiplication (×)</div>;
+        return <div title="Multiplication" className="big-font">×</div>;
     }
 
     public static getRole(): WidgetRoleType {

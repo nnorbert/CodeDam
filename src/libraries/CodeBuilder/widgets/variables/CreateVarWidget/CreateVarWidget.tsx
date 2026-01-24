@@ -18,7 +18,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div title="Create Variable">Create Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {

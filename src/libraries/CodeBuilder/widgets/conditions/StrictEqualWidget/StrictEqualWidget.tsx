@@ -15,7 +15,7 @@ export class StrictEqualWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Strict Equal (===)</div>;
+        return <div title="Strict Equal" className="big-font">===</div>;
     }
 
     public static getRole(): WidgetRoleType {

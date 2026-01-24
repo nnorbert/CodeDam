@@ -15,7 +15,7 @@ export class GreaterOrEqualWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Greater or Equal (≥)</div>;
+        return <div title="Greater or Equal" className="big-font">≥</div>;
     }
 
     public static getRole(): WidgetRoleType {

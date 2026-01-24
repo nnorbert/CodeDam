@@ -15,7 +15,7 @@ export class ModuloWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Modulo (%)</div>;
+        return <div title="Modulo" className="big-font">%</div>;
     }
 
     public static getRole(): WidgetRoleType {

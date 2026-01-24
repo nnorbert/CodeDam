@@ -15,7 +15,7 @@ export class AndWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>And (&&)</div>;
+        return <div title="And" className="big-font">&&</div>;
     }
 
     public static getRole(): WidgetRoleType {

@@ -42,7 +42,7 @@ const ToolBox = ({ widgets }: { widgets: ToolboxItemData[] }) => {
 
                 <DisclosurePanel
                   transition
-                  className="toolbox-category-content bg-amber-50/80 flex flex-wrap justify-center gap-3 origin-top transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0">
+                  className="toolbox-category-content bg-amber-50/80 flex flex-wrap gap-3 origin-top transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0">
                   {widgetsMap[category].map((w) => (
                     <ToolBoxItem key={`tool-${w.getType()}`} widget={w} />
                   ))}
