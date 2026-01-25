@@ -132,15 +132,18 @@
 :root {
   /* Variables */
   --main-color: #684f37;
+  --brown-color: #967259;
+  --brown-light: #f7ddcb;
   --secondary-color: #edac47;
-
   --green-light: #80d689;
   --green-dark: #37ab80;
-
   --white-color: #ffffff;
   --link-blue-bcg: #539ed1;
-
+  --red-color: #c43028;
   --menu-color: #eabea0;
+  --text-green-light: #c8e5a3;
+  --text-yellow-light: #f2d394;
+  --highlight-color: #f3e746;
 
   --header-height: 96px;
 
@@ -155,6 +158,40 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.text-white-color {
+  color: var(--white-color);
+}
+.text-main-color {
+  color: var(--main-color);
+}
+.text-brown-color {
+  color: var(--brown-color);
+}
+.text-brown-light {
+  color: var(--brown-light);
+}
+.text-red-color {
+  color: var(--red-color);
+}
+.text-menu-color {
+  color: var(--menu-color);
+}
+.text-green-light {
+  color: var(--green-light);
+}
+.text-green-dark {
+  color: var(--green-dark);
+}
+.text-link-blue-bcg {
+  color: var(--link-blue-bcg);
+}
+.text-green-light {
+  color: var(--text-green-light);
+}
+.text-yellow-light {
+  color: var(--text-yellow-light);
 }
 
 body {

@@ -59,7 +59,7 @@ const WidgetWrapper = ({ children, onDelete, onSettings, role = WidgetRoles.STAT
                 'flex flex-row items-start gap-1'
             ].join(" ")
         }>
-            <div className="flex-1 font-semibold self-center">{children}</div>
+            <div className="flex-1 self-center">{children}</div>
             {!isEditingLocked && (
                 <Menu as="div" className="widget-menu-wrapper relative self-start mt-1">
                     <MenuButton

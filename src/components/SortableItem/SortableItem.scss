@@ -1,0 +1,19 @@
+.sortable-item {
+    .active-region-top {
+        box-shadow: 0 -4px 8px 2px var(--green-light);
+        border-top: 2px solid var(--green-light);
+    }
+    .active-region-bottom {
+        box-shadow: 0 4px 8px 2px var(--green-light);
+        border-bottom: 2px solid var(--green-light);
+    }
+
+    .in-execution {
+        box-shadow: 0 0 6px 2px var(--highlight-color);
+        border: 2px solid var(--highlight-color);
+
+        .widget-wrapper {
+            box-shadow: none !important;
+        }
+    }
+}
