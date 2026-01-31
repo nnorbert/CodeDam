@@ -6,6 +6,7 @@ interface ModalRequest {
   title: string;
   placeholder?: string;
   defaultValue?: string;
+  valueType?: "text" | "number";
   resolve: (value: string | null) => void;
 }
 
@@ -28,10 +29,19 @@ class ModalManager {
     };
   }
 
-  open(title: string, options?: { placeholder?: string; defaultValue?: string }): Promise<string | null> {
+  open(
+    title: string,
+    options?: { placeholder?: string; defaultValue?: string; valueType?: "text" | "number" }
+  ): Promise<string | null> {
     return new Promise((resolve) => {
       if (this.listener) {
-        this.listener({ title, placeholder: options?.placeholder, defaultValue: options?.defaultValue, resolve });
+        this.listener({
+          title,
+          placeholder: options?.placeholder,
+          defaultValue: options?.defaultValue,
+          valueType: options?.valueType ?? "text",
+          resolve,
+        });
       } else {
         // No listener registered, resolve with null
         resolve(null);
@@ -53,6 +63,7 @@ export const userInputModal = ModalManager.getInstance();
 export default function UserInputModal() {
   const [request, setRequest] = useState<ModalRequest | null>(null);
   const [inputValue, setInputValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   // Callback ref that focuses the input when it's mounted
   const inputRefCallback = useCallback((node: HTMLInputElement | null) => {
@@ -62,29 +73,51 @@ export default function UserInputModal() {
     }
   }, []);
 
+  const validate = useCallback(
+    (raw: string): string | null => {
+      const trimmed = raw.trim();
+      if (!request) return null;
+      if (!trimmed) return "Value is required";
+      if (request.valueType === "number") {
+        const n = Number(trimmed);
+        if (!Number.isFinite(n)) return "Please enter a valid number";
+      }
+      return null;
+    },
+    [request]
+  );
+
   useEffect(() => {
     const unsubscribe = userInputModal.subscribe((req) => {
       setRequest(req);
       if (req) {
         setInputValue(req.defaultValue ?? "");
+        setError(null);
       }
     });
     return unsubscribe;
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (request && inputValue.trim()) {
-      request.resolve(inputValue.trim());
-      setRequest(null);
-      setInputValue("");
+    if (!request) return;
+    const validationError = validate(inputValue);
+    if (validationError) {
+      setError(validationError);
+      return;
     }
-  }, [request, inputValue]);
+
+    request.resolve(inputValue.trim());
+    setRequest(null);
+    setInputValue("");
+    setError(null);
+  }, [request, inputValue, validate]);
 
   const handleCancel = useCallback(() => {
     if (request) {
       request.resolve(null);
       setRequest(null);
       setInputValue("");
+      setError(null);
     }
   }, [request]);
 
@@ -118,12 +151,28 @@ export default function UserInputModal() {
           <input
             ref={inputRefCallback}
             type="text"
+            inputMode={request?.valueType === "number" ? "decimal" : undefined}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              setInputValue(next);
+              if (request?.valueType === "number") {
+                const nextError = validate(next);
+                // Don't show "required" while typing; only show numeric format errors
+                setError(nextError === "Value is required" ? null : nextError);
+              } else if (error) {
+                setError(null);
+              }
+            }}
             onKeyDown={handleKeyDown}
             placeholder={request?.placeholder ?? "Enter value..."}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+            className={`w-full rounded-lg border px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+              error
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20"
+            }`}
           />
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
           <div className="mt-6 flex justify-end gap-3">
             <button
@@ -136,7 +185,7 @@ export default function UserInputModal() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!inputValue.trim()}
+              disabled={!inputValue.trim() || !!error}
               className="rounded-lg bttn-gradiant px-4 py-2 text-sm font-medium text-white disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               Submit

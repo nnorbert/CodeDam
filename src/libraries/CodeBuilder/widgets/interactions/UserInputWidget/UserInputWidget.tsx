@@ -121,6 +121,7 @@ export class UserInputWidget extends GenericWidgetBase {
         // Capture user input when evaluated
         const rawValue = await userInputModal.open(this.title, {
             placeholder: "Enter value...",
+            valueType: this.valueType,
         });
 
         if (rawValue === null) {
