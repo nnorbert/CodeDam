@@ -19,7 +19,7 @@ export class UseVarWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Use Variable</div>;
+        return <div title="Use Variable">Use Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {

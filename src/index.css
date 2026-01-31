@@ -1,310 +1,249 @@
-@import "https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap";
-@import "https://fonts.googleapis.com/css2?family=Chewy&display=swap";
 @import "tailwindcss";
 
-/** Main Theme */
-body {
-  font-family: "Patrick Hand", cursive;
-  color: #753723;
+/* Fonts - Mulish */
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Extra_Light_2807.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
 }
 
-#header-container a {
-  color: #753723;
-  font-family: "Chewy", cursive;
-  font-size: 24px;
-  font-weight: bold;
-  text-decoration: none;
-  text-shadow: 2px 2px 0 rgba(252, 243, 158, 1);
-  transition: color 0.3s ease;
-  text-align: center;
-  display: inline-block;
-  padding: 2px 20px;
-}
-#header-container a:hover {
-  color: #753723;
-  text-decoration: underline;
-}
-#header-container a:active {
-  color: #753723;
-}
-#header-container a:visited {
-  color: #753723;
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Light_2808.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
-/** ------------------------------------------------------------ */
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Regular_2809.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Medium_2810.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Semi_Bold_2811.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Bold_2812.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Extra_Bold_2813.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Black_2814.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Extra_Light_Italic_2815.ttf") format("truetype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Light_Italic_2816.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Italic_2817.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Medium_Italic_2818.ttf") format("truetype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Semi_Bold_Italic_2819.ttf") format("truetype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Bold_Italic_2820.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Extra_Bold_Italic_2821.ttf") format("truetype");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mulish";
+  src: url("./assets/fonts/mulish/Mulish_Black_Italic_2822.ttf") format("truetype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root {
-  font-family: 'Nunito', 'Comic Neue', system-ui, sans-serif;
+  /* Variables */
+  --main-color: #684f37;
+  --brown-color: #967259;
+  --brown-light: #f7ddcb;
+  --secondary-color: #edac47;
+  --green-light: #80d689;
+  --green-dark: #37ab80;
+  --white-color: #ffffff;
+  --link-blue-bcg: #539ed1;
+  --red-color: #c43028;
+  --menu-color: #eabea0;
+  --text-green-light: #c8e5a3;
+  --text-yellow-light: #f2d394;
+  --text-blue-light: #a3c8e5;
+  --text-blue-dark: #539ed1;
+  --text-red-light: #e5a3a3;
+  --highlight-color: #f3e746;
+
+  --header-height: 96px;
+
+  --box-shadow: 0px 5px 5px -1px rgba(0, 0, 0, 0.5);
+
+  font-family: "Mulish";
+  color: var(--main-color);
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light;
-  color: #3D2817;
-  background-color: #E8F4F8;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /** Custom variables */
-  --header-height: 64px;
-
-  /* ====== CodeDam Wood Theme ====== */
-  
-  /* Statement (Plank) Colors - Weathered/Dark Wood */
-  --wood-plank-main: #8B7355;
-  --wood-plank-light: #A68B5B;
-  --wood-plank-dark: #5D4E37;
-  --wood-plank-grain: #9C8B75;
-  --wood-plank-shadow: #3D2817;
-  
-  /* Expression (Slice) Colors - Fresh Cut/Honey Wood */
-  --wood-slice-main: #DEB887;
-  --wood-slice-light: #F5DEB3;
-  --wood-slice-dark: #D2A679;
-  --wood-slice-ring: #C4A574;
-  --wood-slice-border: #B8860B;
-  
-  /* Accent Colors */
-  --water-light: #87CEEB;
-  --water-dark: #4A90A4;
-  --leaf-green: #7CB342;
-  --beaver-brown: #8B4513;
-  
-  /* UI Colors */
-  --canvas-bg: #E3F2FD;
-  --toolbox-bg: #FAEBD7;
-  --slot-empty: #FFF8DC;
-  --slot-hover: #FFE4B5;
 }
 
-/* ====== Wood Plank (Statement) Styles ====== */
-.wood-plank {
-  position: relative;
-  background: 
-    /* Wood grain pattern */
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(93, 78, 55, 0.1) 2px,
-      rgba(93, 78, 55, 0.1) 4px
-    ),
-    /* Main wood gradient */
-    linear-gradient(
-      180deg,
-      var(--wood-plank-light) 0%,
-      var(--wood-plank-main) 20%,
-      var(--wood-plank-main) 80%,
-      var(--wood-plank-dark) 100%
-    );
-  border: 3px solid var(--wood-plank-dark);
-  border-radius: 8px;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.2),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
-    2px 3px 6px rgba(61, 40, 23, 0.3);
-  padding: 8px 12px;
-  color: #2D1B0E;
+.text-white-color {
+  color: var(--white-color);
+}
+.text-main-color {
+  color: var(--main-color);
+}
+.text-secondary-color {
+  color: var(--secondary-color);
+}
+.text-brown-color {
+  color: var(--brown-color);
+}
+.text-brown-light {
+  color: var(--brown-light);
+}
+.text-red-color {
+  color: var(--red-color);
+}
+.text-menu-color {
+  color: var(--menu-color);
+}
+.text-green-light {
+  color: var(--green-light);
+}
+.text-green-dark {
+  color: var(--green-dark);
+}
+.text-link-blue-bcg {
+  color: var(--link-blue-bcg);
+}
+.text-green-light {
+  color: var(--text-green-light);
+}
+.text-yellow-light {
+  color: var(--text-yellow-light);
+}
+.text-blue-light {
+  color: var(--text-blue-light);
+}
+.text-blue-dark {
+  color: var(--text-blue-dark);
+}
+.text-red-light {
+  color: var(--text-red-light);
 }
 
-/* ====== Wood Slice (Expression) Styles ====== */
-.wood-slice {
-  position: relative;
-  background: 
-    /* Subtle horizontal wood grain that works at any width */
-    linear-gradient(
-      180deg,
-      var(--wood-slice-light) 0%,
-      var(--wood-slice-main) 15%,
-      var(--wood-slice-light) 30%,
-      var(--wood-slice-main) 50%,
-      var(--wood-slice-light) 70%,
-      var(--wood-slice-main) 85%,
-      var(--wood-slice-dark) 100%
-    );
-  border: 2px solid var(--wood-slice-border);
-  border-radius: 999px;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.15),
-    1px 2px 4px rgba(61, 40, 23, 0.25);
-  padding: 4px 12px;
-  color: #2D1B0E;
-  min-height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.font-size-24 {
+  font-size: 26px;
 }
 
-/* ====== Toolbox Item Styles ====== */
-/* Prevent browser handling touch gestures on draggable items */
-.toolbox-item-statement,
-.toolbox-item-expression {
-  touch-action: none;
+.bttn-gradiant {
+  background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+}
+.bttn-gradiant:disabled {
+  background: linear-gradient(135deg, #b1b1b1, #6c6c6c);
+  cursor: not-allowed;
+  /* outline: none  !important; */
 }
 
-.toolbox-item-statement {
-  background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 2px,
-      rgba(93, 78, 55, 0.08) 2px,
-      rgba(93, 78, 55, 0.08) 4px
-    ),
-    linear-gradient(
-      180deg,
-      var(--wood-plank-light) 0%,
-      var(--wood-plank-main) 50%,
-      var(--wood-plank-dark) 100%
-    );
-  border: 2px solid var(--wood-plank-dark);
-  border-radius: 6px;
-  box-shadow: 
-    inset 0 1px 2px rgba(255, 255, 255, 0.2),
-    1px 2px 4px rgba(61, 40, 23, 0.3);
-}
-
-.toolbox-item-expression {
-  background: 
-    linear-gradient(
-      180deg,
-      var(--wood-slice-light) 0%,
-      var(--wood-slice-main) 50%,
-      var(--wood-slice-dark) 100%
-    );
-  border: 2px solid var(--wood-slice-border);
-  border-radius: 50%;
-  box-shadow: 
-    inset 0 2px 4px rgba(255, 255, 255, 0.4),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
-    1px 2px 4px rgba(61, 40, 23, 0.25);
-}
-
-/* ====== Droppable Slot Styles ====== */
-.slot-empty {
-  background: linear-gradient(180deg, #FFF8DC 0%, #EED9B6 100%);
-  border: 2px dashed var(--wood-slice-border);
-  border-radius: 999px;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.slot-empty.can-accept {
-  border-color: var(--leaf-green);
-  background: linear-gradient(180deg, #F0FFF0 0%, #C8E6C9 100%);
-  animation: pulse-slot 1.5s ease-in-out infinite;
-}
-
-.slot-empty.is-over {
-  background: linear-gradient(180deg, #E8F5E9 0%, #A5D6A7 100%);
-  transform: scale(1.05);
-}
-
-@keyframes pulse-slot {
-  0%, 100% { box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(124, 179, 66, 0.4); }
-  50% { box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(124, 179, 66, 0); }
-}
-
-/* ====== Toolbox Container (Workshop) ====== */
-.toolbox-workshop {
-  background: 
-    linear-gradient(
-      180deg,
-      #D2B48C 0%,
-      #C4A574 100%
-    );
-  border: 3px solid #8B7355;
-  border-radius: 12px;
-  box-shadow: 
-    inset 0 2px 8px rgba(255, 255, 255, 0.2),
-    3px 4px 8px rgba(61, 40, 23, 0.3);
-}
-
-.toolbox-category-header {
-  background: 
-    linear-gradient(
-      90deg,
-      var(--wood-plank-dark) 0%,
-      var(--wood-plank-main) 50%,
-      var(--wood-plank-dark) 100%
-    );
-  color: #FFF8DC;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  border-bottom: 2px solid var(--wood-plank-shadow);
-}
-
-/* ====== Canvas (Water/Dam) Styles ====== */
-.canvas-water {
-  background: 
-    linear-gradient(
-      180deg,
-      #E3F2FD 0%,
-      #BBDEFB 50%,
-      #90CAF9 100%
-    );
-  position: relative;
-}
-
-.canvas-water::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: 
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px,
-      transparent 20px,
-      rgba(255, 255, 255, 0.1) 20px,
-      rgba(255, 255, 255, 0.1) 21px
-    );
-  pointer-events: none;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+.bttn-gradiant:hover {
+  /* outline: 2px solid var(--green-dark); */
+  background: linear-gradient(135deg, var(--green-dark), var(--green-dark));
 }
 
 body {
-  min-width: 320px;
-  min-height: 100vh;
+  background-color: #6bbbff;
+  font-family: "Mulish";
+  font-weight: 400;
+  color: var(--main-color);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+aside {
+  padding: 0 24px 16px 24px;
 }
 
-button.btn {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button.btn:hover {
-  border-color: #646cff;
-}
-button.btn:focus,
-button.btn:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
+.page-content {
+  flex: 1;
 }

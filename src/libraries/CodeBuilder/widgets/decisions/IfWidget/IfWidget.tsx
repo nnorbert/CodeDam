@@ -15,7 +15,7 @@ export class IfWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>If Decision</div>;
+        return <div title="If Decision">If Decision</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -64,17 +64,14 @@ export class IfWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(indent: string): React.ReactNode[] {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         const thenWidgets = this.thenExecutor.getWidgets();
         const childIndent = indent + "    "; // Add 4 spaces for nested content
         const lines: React.ReactNode[] = [];
 
         // JavaScript: if (condition) {
+        const ifLineKey = `${this.id}-if`;
         lines.push(
-            <span key={`${this.id}-if`} style={highlightStyle}>
+            <span key={ifLineKey}>
                 {indent}<span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
                 <span style={{ color: "#D4D4D4" }}> (</span>
                 {this.slots.conditionSlot?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* condition */</span>}
@@ -87,10 +84,9 @@ export class IfWidget extends GenericWidgetBase {
             thenWidgets.forEach((widget) => {
                 const widgetCode = widget.renderCode(CodeLanguages.JAVASCRIPT, childIndent);
                 const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
-                widgetLines.forEach((line, index) => {
-                    lines.push(
-                        <span key={`${widget.id}-${index}`}>{line}</span>
-                    );
+                // Push lines directly without wrapping to preserve their keys
+                widgetLines.forEach((line) => {
+                    lines.push(line);
                 });
             });
         } else {
@@ -102,8 +98,9 @@ export class IfWidget extends GenericWidgetBase {
         }
 
         // Closing brace
+        const closeLineKey = `${this.id}-close`;
         lines.push(
-            <span key={`${this.id}-close`}>
+            <span key={closeLineKey}>
                 {indent}<span style={{ color: "#D4D4D4" }}>{"}"}</span>
             </span>
         );
@@ -112,17 +109,14 @@ export class IfWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(indent: string): React.ReactNode[] {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         const thenWidgets = this.thenExecutor.getWidgets();
         const childIndent = indent + "    "; // Add 4 spaces for nested content
         const lines: React.ReactNode[] = [];
 
         // Python: if condition:
+        const ifLineKey = `${this.id}-if`;
         lines.push(
-            <span key={`${this.id}-if`} style={highlightStyle}>
+            <span key={ifLineKey}>
                 {indent}<span style={{ color: "#C586C0", fontStyle: "normal" }}>if</span>
                 <span style={{ color: "#D4D4D4" }}> </span>
                 {this.slots.conditionSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># condition</span>}
@@ -135,10 +129,9 @@ export class IfWidget extends GenericWidgetBase {
             thenWidgets.forEach((widget) => {
                 const widgetCode = widget.renderCode(CodeLanguages.PYTHON, childIndent);
                 const widgetLines = Array.isArray(widgetCode) ? widgetCode : [widgetCode];
-                widgetLines.forEach((line, index) => {
-                    lines.push(
-                        <span key={`${widget.id}-${index}`}>{line}</span>
-                    );
+                // Push lines directly without wrapping to preserve their keys
+                widgetLines.forEach((line) => {
+                    lines.push(line);
                 });
             });
         } else {
@@ -153,6 +146,8 @@ export class IfWidget extends GenericWidgetBase {
     }
 
     async *execute(): ExecutionGenerator {
+        // Highlight the opening if line
+        this.activeLineKeys = [`${this.id}-if`];
         yield { type: 'step', widget: this };
         
         // Evaluate the condition from the slot (async to support user input)
@@ -160,8 +155,17 @@ export class IfWidget extends GenericWidgetBase {
         
         // If condition is truthy, execute the "then" branch
         if (condition) {
+            // Clear highlighting while executing the then block
+            this.activeLineKeys = [];
             yield* this.thenExecutor.execute();
+            
+            // Highlight the closing brace after then block completes (only for JS)
+            this.activeLineKeys = [`${this.id}-close`];
+            yield { type: 'step', widget: this };
         }
+        
+        // Clear active lines when done
+        this.activeLineKeys = [];
     }
 
     async initWidget(): Promise<void> {

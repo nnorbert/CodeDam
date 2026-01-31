@@ -10,8 +10,8 @@ const NegationComponent = ({ widget }: { widget: NegationWidget }) => {
 
     return (
         <WidgetWrapper onDelete={deleteHandler} role={WidgetRoles.EXPRESSION}>
-            <div className="font-mono text-sm flex items-center gap-1">
-                <span className="text-amber-800 font-bold">!</span>
+            <div className="flex items-center gap-1">
+                <span className="text-red-color font-size-24 ml-2 mr-2">!</span>
 
                 {!widget.slots.value && (
                     <DroppableSlot

@@ -32,10 +32,10 @@ const CreaveVarComponent = ({ widget }: { widget: CreateVarWidget }) => {
 
   return (
     <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
-      <div className="flex items-center gap-2 font-medium">
-        <span className="text-emerald-800 font-bold">create</span>
-        <span className="text-amber-900">{widget.getName() || "unnamed"}</span>
-        <span className="text-amber-700">=</span>
+      <div className="flex items-center gap-2">
+        <span>Create</span>
+        <span className="text-green-light">{widget.getName() || "unnamed"}</span>
+        <span>=</span>
         {!widget.slots.valueSlot && (
           <DroppableSlot
             id={`${widget.id}-valueSlot`}

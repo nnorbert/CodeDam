@@ -32,10 +32,10 @@ const CreaveConstComponent = ({ widget }: { widget: CreateConstWidget }) => {
 
   return (
     <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler}>
-      <div className="flex items-center gap-2 font-medium">
-        <span className="text-blue-800 font-bold">const</span>
-        <span className="text-amber-900">{widget.getName() || "unnamed"}</span>
-        <span className="text-amber-700">=</span>
+      <div className="flex items-center gap-2">
+        <span>Const</span>
+        <span className="text-blue-light">{widget.getName() || "unnamed"}</span>
+        <span>=</span>
         {!widget.slots.valueSlot && (
           <DroppableSlot
             id={`${widget.id}-valueSlot`}

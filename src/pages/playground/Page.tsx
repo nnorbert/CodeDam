@@ -1,4 +1,4 @@
-import "./Page.css";
+import "./Page.scss";
 import {
   DndContext,
   DragOverlay,
@@ -53,6 +53,7 @@ import { UserOutputWidget } from "../../libraries/CodeBuilder/widgets/interactio
 import { TextBuilderWidget } from "../../libraries/CodeBuilder/widgets/text/TextBuilderWidget/TextBuilderWidget";
 import { TextLengthWidget } from "../../libraries/CodeBuilder/widgets/text/TextLengthWidget/TextLengthWidget";
 import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
+import { Header } from "../../components/Header";
 
 // ------------------ Playground ------------------
 export default function Playground() {
@@ -98,6 +99,7 @@ export default function Playground() {
   const [executionState, setExecutionState] = useState<ExecutionState>('idle');
   const [executionStack, setExecutionStack] = useState<ExecutionStackSnapshot>([]);
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguageType>(CodeLanguages.JAVASCRIPT);
+  const [activeLineKeys, setActiveLineKeys] = useState<Set<string>>(new Set());
 
   // Subscribe to executor changes for re-rendering
   useEffect(() => {
@@ -116,6 +118,9 @@ export default function Playground() {
   // Subscribe to widget changes to trigger re-render for highlighting
   useEffect(() => {
     executionControllerRef.current?.setOnWidgetChange(() => {
+      // Update active line keys when widget changes
+      const keys = executionControllerRef.current?.getActiveLineKeys() ?? [];
+      setActiveLineKeys(new Set(keys));
       forceUpdate(n => n + 1);
     });
     return () => executionControllerRef.current?.setOnWidgetChange(null);
@@ -138,14 +143,14 @@ export default function Playground() {
   // Execution control handlers
   const handlePlay = useCallback(() => {
     if (!mainExecutorRef.current || !executionControllerRef.current) return;
-    
+
     const controller = executionControllerRef.current;
-    
+
     if (controller.getState() === 'idle' || controller.getState() === 'finished') {
       // Start fresh execution
       controller.start(mainExecutorRef.current);
     }
-    
+
     // Start auto-play mode
     controller.play(1000);
   }, []);
@@ -269,95 +274,104 @@ export default function Playground() {
   }), [activeOverId, overPosition, isToolboxDrag, isEditingLocked]);
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragMove={handleDragMove}
-      onDragCancel={handleDragCancel}
-      collisionDetection={CustomCollisionDetector}
-    >
-      <DragProvider value={dragContextValue}>
-        <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
-          {/* Toolbox - Workshop */}
-          <aside className="w-64 border-r-2 border-amber-600/30 bg-gradient-to-b from-amber-100 to-amber-50 p-3 overflow-y-auto shadow-lg">
-            <ToolBox widgets={activeWidgets}></ToolBox>
-          </aside>
+    <div className="page-wrapper playground-container">
+      <Header activeMenuItem="playground" showBeavy={true} />
 
-          {/* Canvas - The Dam Building Area */}
-          <main className="flex-1 flex flex-col p-4 overflow-hidden">
-            <div className="text-center mb-2">
-              <h2 className="text-amber-800 font-bold text-lg">🦫 Build Your Dam</h2>
-              <p className="text-amber-600/70 text-xs">Drag planks from the workshop to build your program!</p>
-            </div>
-            {/* The droppable area now expands to fill available height */}
-            <div className="flex-1 min-h-0">
-              <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
-                <SortableContext
-                  items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {mainExecutorRef.current.getWidgets().length === 0 ? (
-                    <div className="text-amber-600/60 text-sm italic py-8 text-center">
-                      🪵 Drop planks here to build your dam!
-                    </div>
-                  ) : (
-                    <div className="flex flex-col overflow-y-auto max-h-full p-1">
-                      {mainExecutorRef.current.getWidgets().map((w) => (
-                        <SortableItem
-                          key={w.id}
-                          id={w.id}
-                          executor={w.getExecutor()}
-                          inExecution={w.inExecution}
-                        >
-                          {w.render()}
-                        </SortableItem>
-                      ))}
-                    </div>
-                  )}
-                </SortableContext>
-              </DroppableCanvas>
-            </div>
-          </main>
+      <div className="page-content">
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragMove={handleDragMove}
+          onDragCancel={handleDragCancel}
+          collisionDetection={CustomCollisionDetector}
+        >
+          <DragProvider value={dragContextValue}>
+            <div className="flex overflow-hidden" style={{ height: "calc(100vh - var(--header-height))" }}>
+              {/* Toolbox - Workshop */}
+              <aside className="h-full">
+                <ToolBox widgets={activeWidgets}></ToolBox>
+              </aside>
 
-          {/* Variable Stack, Code Preview & Control Panel */}
-          <aside className="w-1/3 border-l-2 border-amber-600/30 bg-gradient-to-b from-amber-50 to-white flex flex-col shadow-lg">
-            {/* Variable Stack & Code Preview - each takes 50% of available space */}
-            <div className="flex-1 min-h-0 flex flex-col">
-              {/* Variable Stack - 50% */}
-              <div className="flex-1 min-h-0 p-4 overflow-hidden">
-                <VariableStack executionStack={executionStack} />
-              </div>
-              
-              {/* Code Preview - 50% */}
-              <div className="flex-1 min-h-0 p-4 pt-0 overflow-hidden">
-                <CodePreview 
-                  code={mainExecutorRef.current.getCodePreview(codeLanguage)} 
-                  language={codeLanguage}
-                  onLanguageChange={setCodeLanguage}
+              {/* Canvas - The Dam Building Area */}
+              <main className="main-canvas-wrapepr flex-1 overflow-hidden">
+                <div className="main-canvas-container">
+                  <div className="main-canvas-header flex items-center justify-between">
+                    <h2>Build Your Dam</h2>
+                    <p>Drag planks from the workshop to build your program!</p>
+                  </div>
+                  {/* The droppable area now expands to fill available height */}
+                  <div className="main-canvas-content p-4 pt-0">
+                    <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
+                      <SortableContext
+                        items={mainExecutorRef.current.getWidgets().map((w) => w.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {mainExecutorRef.current.getWidgets().length === 0 ? (
+                          <div className="empty-message text-center">
+                            Drop planks here to build your dam!
+                          </div>
+                        ) : (
+                          <div className="flex flex-col overflow-y-auto max-h-full p-1">
+                            {mainExecutorRef.current.getWidgets().map((w) => (
+                              <SortableItem
+                                key={w.id}
+                                id={w.id}
+                                executor={w.getExecutor()}
+                                inExecution={w.inExecution}
+                              >
+                                {w.render()}
+                              </SortableItem>
+                            ))}
+                          </div>
+                        )}
+                      </SortableContext>
+                    </DroppableCanvas>
+                  </div>
+                </div>
+              </main>
+
+              {/* Variable Stack, Code Preview & Control Panel */}
+              <aside className="w-1/3 flex flex-col shadow-lg">
+                {/* Variable Stack & Code Preview - each takes 50% of available space */}
+                <div className="flex-1 min-h-0 flex flex-col">
+                  {/* Variable Stack - 50% */}
+                  <div className="flex-1 min-h-0 pb-4 overflow-hidden">
+                    <VariableStack executionStack={executionStack} />
+                  </div>
+
+                  {/* Code Preview - 50% */}
+                  <div className="flex-1 min-h-0 pb-4 overflow-hidden">
+                    <CodePreview
+                      code={mainExecutorRef.current.getCodePreview(codeLanguage)}
+                      language={codeLanguage}
+                      onLanguageChange={setCodeLanguage}
+                      highlightedLineKeys={activeLineKeys}
+                    />
+                  </div>
+                </div>
+
+                {/* Control Panel - fixed height */}
+                <ControlPanel
+                  executionState={executionState}
+                  onPlay={handlePlay}
+                  onPause={handlePause}
+                  onStop={handleStop}
+                  onStep={handleStep}
                 />
-              </div>
+              </aside>
             </div>
-            
-            {/* Control Panel - fixed height */}
-            <ControlPanel
-              executionState={executionState}
-              onPlay={handlePlay}
-              onPause={handlePause}
-              onStop={handleStop}
-              onStep={handleStep}
-            />
-          </aside>
-        </div>
 
-        <DragOverlay>
-          {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
-        </DragOverlay>
+            <DragOverlay>
+              {activeWidget ? <ToolBoxItem widget={activeWidget.widget} disabled /> : null}
+            </DragOverlay>
 
-        {/* Global modals for user interaction */}
-        <UserInputModal />
-        <UserOutputModal />
-      </DragProvider>
-    </DndContext>
+            {/* Global modals for user interaction */}
+            <UserInputModal />
+            <UserOutputModal />
+          </DragProvider>
+        </DndContext>
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,28 @@
+.widget-wrapper {
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--white-color);
+
+    &.statement-wrapper {
+        background-image: url('../../assets/theme/CodeDam/images/widget_bck.webp');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    &.expression-wrapper {
+        background-color: var(--white-color);
+    }
+
+    .widget-menu-wrapper {
+        margin-left: 8px;
+        .widget-menu-button {
+            background-color: var(--menu-color);
+            opacity: 0.7;
+            padding: 6px 2px 6px 2px;
+            font-weight: 900;
+        }
+    }
+}

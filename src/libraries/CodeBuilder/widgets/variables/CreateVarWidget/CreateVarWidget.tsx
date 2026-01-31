@@ -18,7 +18,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Create Variable</div>;
+        return <div title="Create Variable">Create Variable</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -65,12 +65,8 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     private renderJavaScriptCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         return (
-            <span style={highlightStyle}>
+            <span key={`${this.id}-line`}>
                 {indent}<span style={{ color: "#569CD6", fontStyle: "normal" }}>let</span>
                 <span style={{ color: "#D4D4D4" }}> </span>
                 <span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
@@ -82,12 +78,8 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     private renderPythonCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
         return (
-            <span style={highlightStyle}>
+            <span key={`${this.id}-line`}>
                 {indent}<span style={{ color: "#9CDCFE", fontStyle: "normal" }}>{this.name || "unnamed"}</span>
                 <span style={{ color: "#D4D4D4" }}> = </span>
                 {this.slots.valueSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#569CD6", fontStyle: "normal" }}>None</span>}
@@ -96,6 +88,7 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
     }
 
     async *execute(): ExecutionGenerator {
+        this.activeLineKeys = [`${this.id}-line`];
         yield { type: 'step', widget: this };
         
         // Evaluate the value from the slot (async to support user input)
@@ -105,6 +98,8 @@ export class CreateVarWidget extends GenericWidgetBase implements IVariable {
         if (this.name) {
             this.executor.setExecutionVariable(this.name, this.value);
         }
+        
+        this.activeLineKeys = [];
     }
 
     async openConfig(): Promise<boolean> {

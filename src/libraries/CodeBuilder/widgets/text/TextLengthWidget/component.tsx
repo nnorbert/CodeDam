@@ -10,8 +10,8 @@ const TextLengthComponent = ({ widget }: { widget: TextLengthWidget }) => {
 
     return (
         <WidgetWrapper onDelete={deleteHandler} role={WidgetRoles.EXPRESSION}>
-            <div className="font-mono text-sm flex items-center gap-1">
-                <span className="text-teal-800 font-bold">len(</span>
+            <div className="flex items-center gap-1">
+                <span className="text-green-dark">Len(</span>
                 {!widget.slots.textInput && (
                     <DroppableSlot
                         id={`${widget.id}-textInput`}
@@ -28,7 +28,7 @@ const TextLengthComponent = ({ widget }: { widget: TextLengthWidget }) => {
                         {widget.slots.textInput.render()}
                     </div>
                 )}
-                <span className="text-teal-800 font-bold">)</span>
+                <span className="text-green-dark">)</span>
             </div>
         </WidgetWrapper>
     );

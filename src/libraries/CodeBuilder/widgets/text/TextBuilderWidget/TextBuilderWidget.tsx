@@ -22,7 +22,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Text Builder</div>;
+        return <div title="Text Builder">Text Builder</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -84,10 +84,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         const separator = this.addSpaces ? " + ' ' + " : " + ";
         const components: React.ReactNode[] = [];
 
@@ -113,7 +110,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
         }
 
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {components}
                 <span style={{ color: "#D4D4D4" }}>)</span>
@@ -122,10 +119,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         const separator = this.addSpaces ? " + ' ' + " : " + ";
         const components: React.ReactNode[] = [];
 
@@ -151,7 +145,7 @@ export class TextBuilderWidget extends GenericWidgetBase {
         }
 
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {components}
                 <span style={{ color: "#D4D4D4" }}>)</span>

@@ -16,7 +16,7 @@ export class UserOutputWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>User Output</div>;
+        return <div title="User Output">User Output</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -47,12 +47,9 @@ export class UserOutputWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 {indent}<span style={{ color: "#DCDCAA" }}>alert</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.valueSlot?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* value */</span>}
@@ -62,12 +59,9 @@ export class UserOutputWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(indent: string): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 {indent}<span style={{ color: "#DCDCAA" }}>print</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.valueSlot?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># value</span>}
@@ -77,6 +71,7 @@ export class UserOutputWidget extends GenericWidgetBase {
     }
 
     async *execute(): ExecutionGenerator {
+        this.activeLineKeys = [`${this.id}-line`];
         yield { type: 'step', widget: this };
         
         // Evaluate the value from the slot (async to support user input)
@@ -84,6 +79,8 @@ export class UserOutputWidget extends GenericWidgetBase {
         
         // Show the output modal and wait for user to acknowledge
         await userOutputModal.open(value);
+        
+        this.activeLineKeys = [];
     }
 
     async initWidget(): Promise<void> {

@@ -1,5 +1,6 @@
 import { ForwardIcon, PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import type { ExecutionState } from "../../libraries/CodeBuilder/ExecutionController";
+import "./ControlPanel.scss";
 
 type Props = {
   executionState: ExecutionState;
@@ -23,7 +24,7 @@ const ControlPanel = ({ executionState, onPlay, onPause, onStop, onStep }: Props
   };
 
   return (
-    <div className="h-16 border-t border-gray-200 bg-gray-100 flex items-center justify-center gap-4">
+    <div className="control-panel h-16 border-t border-gray-200 bg-gray-100 flex items-center justify-center gap-4">
       {/* Play/Pause Button - slightly bigger */}
       <button
         className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-md hover:shadow-lg cursor-pointer"

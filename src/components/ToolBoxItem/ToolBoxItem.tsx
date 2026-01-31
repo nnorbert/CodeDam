@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import type { GenericWidgetBase } from "../../libraries/CodeBuilder/baseClasses/GenericWidgetBase";
 import { useDragContext } from "../../contexts/DragContext";
 import { WidgetRoles } from "../../utils/constants";
+import "./ToolBoxItem.scss";
 
 export type ToolboxItemData = typeof GenericWidgetBase;
 
@@ -45,7 +46,11 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
       style={style}
       {...(!isDisabled ? attributes : {})}
       {...(!isDisabled ? listeners : {})}
-      className={`${itemClasses} ${isEditingLocked ? 'cursor-not-allowed opacity-60' : 'cursor-grab hover:scale-105 transition-transform'}`}
+      className={[
+        'toolbox-item',
+        isStatement ? "toolbox-item-statement" : "toolbox-item-expression",
+        `${itemClasses} ${isEditingLocked ? 'cursor-not-allowed opacity-60' : 'cursor-grab hover:scale-105 transition-transform'}`
+      ].join(" ")}
     >
       {widget.getToolboxItemElement()}
     </div>

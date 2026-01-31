@@ -15,7 +15,7 @@ export class NegationWidget extends GenericWidgetBase {
     }
 
     public static getToolboxItemElement(): React.ReactNode {
-        return <div>Not (!)</div>;
+        return <div title="Not" className="big-font">!</div>;
     }
 
     public static getRole(): WidgetRoleType {
@@ -45,12 +45,9 @@ export class NegationWidget extends GenericWidgetBase {
     }
 
     private renderJavaScriptCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#C586C0" }}>!</span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.value?.renderCode(CodeLanguages.JAVASCRIPT, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}>/* value */</span>}
@@ -60,12 +57,9 @@ export class NegationWidget extends GenericWidgetBase {
     }
 
     private renderPythonCode(): React.ReactNode {
-        const highlightStyle = this.inExecution
-            ? { backgroundColor: "rgba(255, 200, 0, 0.15)" }
-            : {};
-
+        const lineKey = `${this.id}-line`;
         return (
-            <span style={highlightStyle}>
+            <span key={lineKey}>
                 <span style={{ color: "#569CD6" }}>not </span>
                 <span style={{ color: "#D4D4D4" }}>(</span>
                 {this.slots.value?.renderCode(CodeLanguages.PYTHON, "") ?? <span style={{ color: "#6A9955", fontStyle: "italic" }}># value</span>}

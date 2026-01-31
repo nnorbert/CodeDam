@@ -3,10 +3,12 @@ import type { PropsWithChildren } from "react";
 import { DroppableTypes, WidgetRoles } from "../../utils/constants";
 import type { Executor } from "../../libraries/CodeBuilder/Executor";
 import { useDragContext } from "../../contexts/DragContext";
+import "./DroppableCanvas.scss";
 
 type Props = PropsWithChildren<{
   id: string;
   executor: Executor;
+  isNested?: boolean;
 }>;
 
 const DroppableCanvas = (props: Props) => {
@@ -30,9 +32,11 @@ const DroppableCanvas = (props: Props) => {
     <div
       ref={setNodeRef}
       className={[
-        "canvas-water border-2 p-4 rounded-lg flex flex-col transition-all duration-200",
-        canAccept ? "border-green-400 shadow-lg shadow-green-200/50" : "border-amber-300/50",
-        isOver && canAccept ? "bg-green-50/50" : ""
+        "droppable-canvas-area",
+        props.isNested ? "nested" : "",
+        "flex flex-col transition-all duration-200",
+        canAccept ? "can-accept" : "",
+        isOver && canAccept ? "is-over" : ""
       ].join(" ")}
       style={{
         height: "100%",

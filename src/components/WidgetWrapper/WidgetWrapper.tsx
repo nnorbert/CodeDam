@@ -4,6 +4,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { confirmationModal } from "../ConfirmationModal";
 import { useDragContext } from "../../contexts/DragContext";
 import { WidgetRoles, type WidgetRoleType } from "../../utils/constants";
+import "./WidgetWrapper.scss";
 
 type Props = PropsWithChildren<{
     onDelete: () => void;
@@ -46,14 +47,21 @@ const WidgetWrapper = ({ children, onDelete, onSettings, role = WidgetRoles.STAT
 
     // Menu button styling - needs contrast against wood background
     const menuButtonClasses = isStatement
-        ? "text-amber-100 hover:text-white hover:bg-amber-900/30 transition-colors cursor-pointer p-1 rounded"
-        : "text-amber-800 hover:text-amber-950 hover:bg-amber-900/20 transition-colors cursor-pointer p-1 rounded";
+        ? "widget-menu-button text-amber-100 hover:text-white hover:bg-amber-900/30 transition-colors cursor-pointer p-1 rounded"
+        : "widget-menu-button text-amber-800 hover:text-amber-950 hover:bg-amber-900/20 transition-colors cursor-pointer p-1 rounded";
 
     return (
-        <div className={`${wrapperClasses} flex flex-row items-start gap-1`}>
-            <div className="flex-1 font-semibold self-center">{children}</div>
+        <div className={
+            [
+                'widget-wrapper',
+                isStatement ? "statement-wrapper" : "expression-wrapper",
+                wrapperClasses,
+                'flex flex-row items-start gap-1'
+            ].join(" ")
+        }>
+            <div className="flex-1 self-center">{children}</div>
             {!isEditingLocked && (
-                <Menu as="div" className="relative self-start mt-1">
+                <Menu as="div" className="widget-menu-wrapper relative self-start mt-1">
                     <MenuButton
                         className={menuButtonClasses}
                         onPointerDown={stopDrag}

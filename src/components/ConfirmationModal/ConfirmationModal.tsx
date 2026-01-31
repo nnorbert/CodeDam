@@ -148,14 +148,14 @@ export default function ConfirmationModal() {
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
             >
               {request?.cancelLabel ?? "Cancel"}
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${styles.button}`}
+              className={`rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${styles.button} cursor-pointer`}
             >
               {request?.confirmLabel ?? "Confirm"}
             </button>

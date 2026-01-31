@@ -1,0 +1,60 @@
+.header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+
+  #logo {
+    width: 240px;
+  }
+
+  .main-menu {
+    margin-left: 80px;
+
+    ul {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+      margin: 0;
+      padding: 0;
+
+      li.main-menu-item {
+        a {
+          color: var(--white-color);
+          text-decoration: none;
+          font-size: 24px;
+          font-weight: 600;
+          padding: 8px 24px;
+        }
+
+        &.active {
+          a {
+            background-color: var(--link-blue-bcg);
+            border-radius: 24px;
+            font-weight: 900;
+            box-shadow: 0px 5px 8px 0 rgba(0, 0, 0, 0.4);
+          }
+        }
+      }
+    }
+  }
+}
+
+.beavy-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-left: auto;
+  
+  #beavy-logo {
+    width: 169px;
+    margin-right: 40px;
+  }
+
+  #beavy {
+    width: 185px;
+    margin-right: 120px;
+  }
+}
+
