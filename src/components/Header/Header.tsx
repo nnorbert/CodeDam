@@ -1,7 +1,7 @@
 import "./Header.scss";
-import codedamLogo from "../../assets/theme/CodeDam/images/codedam.png";
-import beavyLogo from "../../assets/theme/CodeDam/images/Beavy_logo.png";
-import Beavy from "../../assets/theme/CodeDam/images/Beavy.png";
+import codedamLogo from "../../assets/theme/CodeDam/images/codedam.webp";
+import beavyLogo from "../../assets/theme/CodeDam/images/Beavy_logo.webp";
+import Beavy from "../../assets/theme/CodeDam/images/Beavy.webp";
 
 export type MenuItemId = "home" | "playground";
 
