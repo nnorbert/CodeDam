@@ -154,14 +154,14 @@ export default function ConfigModal() {
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSubmit}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+              className="rounded-lg bttn-gradiant px-4 py-2 text-sm font-medium text-white transition-colors cursor-pointer"
             >
               Save
             </button>

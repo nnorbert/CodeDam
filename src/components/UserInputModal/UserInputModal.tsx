@@ -129,7 +129,7 @@ export default function UserInputModal() {
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -137,7 +137,7 @@ export default function UserInputModal() {
               type="button"
               onClick={handleSubmit}
               disabled={!inputValue.trim()}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg bttn-gradiant px-4 py-2 text-sm font-medium text-white disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               Submit
             </button>

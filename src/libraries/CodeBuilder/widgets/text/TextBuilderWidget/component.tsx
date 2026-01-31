@@ -25,7 +25,7 @@ const TextBuilderComponent = ({ widget }: { widget: TextBuilderWidget }) => {
             // Add separator (+ or space indicator) between slots
             if (i > 0) {
                 elements.push(
-                    <span key={`sep-${i}`} className="text-teal-700 font-bold px-1">
+                    <span key={`sep-${i}`} className="text-green-dark">
                         {widget.addSpaces ? "⌴" : "+"}
                     </span>
                 );
@@ -58,8 +58,7 @@ const TextBuilderComponent = ({ widget }: { widget: TextBuilderWidget }) => {
 
     return (
         <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
-            <div className="font-mono text-sm flex items-center gap-1 flex-wrap">
-                <span className="text-teal-800 font-bold mr-1">📝</span>
+            <div className="flex items-center gap-1 flex-wrap">
                 {renderSlots()}
             </div>
         </WidgetWrapper>

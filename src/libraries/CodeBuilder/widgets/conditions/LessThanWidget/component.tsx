@@ -10,7 +10,7 @@ const LessThanComponent = ({ widget }: { widget: LessThanWidget }) => {
 
     return (
         <WidgetWrapper onDelete={deleteHandler} role={WidgetRoles.EXPRESSION}>
-            <div className="font-mono text-sm flex items-center gap-1">
+            <div className="flex items-center gap-1">
                 {!widget.slots.leftOperand && (
                     <DroppableSlot
                         id={`${widget.id}-leftOperand`}
@@ -28,7 +28,7 @@ const LessThanComponent = ({ widget }: { widget: LessThanWidget }) => {
                     </div>
                 )}
 
-                <span className="text-amber-800 font-bold px-1">&lt;</span>
+                <span className="text-red-color font-size-24 ml-2 mr-2">&lt;</span>
 
                 {!widget.slots.rightOperand && (
                     <DroppableSlot

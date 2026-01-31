@@ -19,8 +19,8 @@ const UseVarComponent = ({ widget }: { widget: UseVarWidget }) => {
 
   return (
     <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
-      <div className="font-mono text-sm">
-        {variableName || <span className="text-amber-600/60 italic">no variable</span>}
+      <div className="text-main-color">
+        {variableName || <span className="italic text-red-color">no variable</span>}
       </div>
     </WidgetWrapper>
   );

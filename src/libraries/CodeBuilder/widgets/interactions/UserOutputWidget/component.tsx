@@ -12,8 +12,7 @@ const UserOutputComponent = ({ widget }: { widget: UserOutputWidget }) => {
         <WidgetWrapper onDelete={deleteHandler}>
             <div>
                 <div className="flex items-center gap-1">
-                    <span>alert</span>
-                    <span>(</span>
+                    <span className="text-brown-light">Output (</span>
                     {!widget.slots.valueSlot && (
                         <DroppableSlot
                             id={`${widget.id}-valueSlot`}
@@ -30,7 +29,7 @@ const UserOutputComponent = ({ widget }: { widget: UserOutputWidget }) => {
                             {widget.slots.valueSlot.render()}
                         </div>
                     )}
-                    <span>)</span>
+                    <span className="text-brown-light">)</span>
                 </div>
             </div>
         </WidgetWrapper>

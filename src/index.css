@@ -143,6 +143,9 @@
   --menu-color: #eabea0;
   --text-green-light: #c8e5a3;
   --text-yellow-light: #f2d394;
+  --text-blue-light: #a3c8e5;
+  --text-blue-dark: #539ed1;
+  --text-red-light: #e5a3a3;
   --highlight-color: #f3e746;
 
   --header-height: 96px;
@@ -165,6 +168,9 @@
 }
 .text-main-color {
   color: var(--main-color);
+}
+.text-secondary-color {
+  color: var(--secondary-color);
 }
 .text-brown-color {
   color: var(--brown-color);
@@ -192,6 +198,33 @@
 }
 .text-yellow-light {
   color: var(--text-yellow-light);
+}
+.text-blue-light {
+  color: var(--text-blue-light);
+}
+.text-blue-dark {
+  color: var(--text-blue-dark);
+}
+.text-red-light {
+  color: var(--text-red-light);
+}
+
+.font-size-24 {
+  font-size: 26px;
+}
+
+.bttn-gradiant {
+  background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+}
+.bttn-gradiant:disabled {
+  background: linear-gradient(135deg, #b1b1b1, #6c6c6c);
+  cursor: not-allowed;
+  /* outline: none  !important; */
+}
+
+.bttn-gradiant:hover {
+  /* outline: 2px solid var(--green-dark); */
+  background: linear-gradient(135deg, var(--green-dark), var(--green-dark));
 }
 
 body {

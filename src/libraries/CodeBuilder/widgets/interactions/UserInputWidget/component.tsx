@@ -17,7 +17,7 @@ const UserInputComponent = ({ widget }: { widget: UserInputWidget }) => {
     return (
         <WidgetWrapper onDelete={deleteHandler} onSettings={settingsHandler} role={WidgetRoles.EXPRESSION}>
             <div className="flex items-center gap-1">
-                <span className="text-red-color">input</span>
+                <span className="text-green-dark">Input</span>
                 <span title={widget.getTitle()}>
                     <span className="text-main-color">"{widget.getTitle()}"</span>
                 </span>                

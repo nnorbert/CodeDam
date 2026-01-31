@@ -8,6 +8,7 @@ import "./DroppableCanvas.scss";
 type Props = PropsWithChildren<{
   id: string;
   executor: Executor;
+  isNested?: boolean;
 }>;
 
 const DroppableCanvas = (props: Props) => {
@@ -32,6 +33,7 @@ const DroppableCanvas = (props: Props) => {
       ref={setNodeRef}
       className={[
         "droppable-canvas-area",
+        props.isNested ? "nested" : "",
         "flex flex-col transition-all duration-200",
         canAccept ? "can-accept" : "",
         isOver && canAccept ? "is-over" : ""

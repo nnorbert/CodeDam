@@ -4,6 +4,10 @@
   box-shadow: var(--box-shadow);
   border-radius: 0 0 10px 10px;
 
+  &.nested {
+    border-radius: 10px;
+  }
+
   &.can-accept {
     border: 2px solid var(--green-light);
     box-shadow: 0px 0px 6px 3px var(--green-light);
