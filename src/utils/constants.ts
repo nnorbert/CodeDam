@@ -3,6 +3,7 @@ export const CANVAS_ID = "canvas";
 export const WidgetCategory = {
     VARIABLES: "variables",
     DECISIONS: "decisions",
+    LOOPS: "loops",
     COMPARISONS: "comparisons",
     LOGIC: "logic",
     OPERATIONS: "operations",
@@ -19,6 +20,7 @@ export const WidgetCategoryOrder: WidgetCategoryType[] = [
     WidgetCategory.COMPARISONS,
     WidgetCategory.LOGIC,
     WidgetCategory.DECISIONS,
+    WidgetCategory.LOOPS,
     WidgetCategory.INTERACTIONS,
 ];
 

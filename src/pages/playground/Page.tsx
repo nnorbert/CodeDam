@@ -32,6 +32,8 @@ import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
 import { UsePrimitiveValueWidget } from "../../libraries/CodeBuilder/widgets/variables/UsePrimitiveValueWidget/UsePrimitiveValueWidget";
 import { IfWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfWidget/IfWidget";
 import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfElseWidget/IfElseWidget";
+import { WhileLoopWidget } from "../../libraries/CodeBuilder/widgets/loops/WhileLoop/WhileLoop";
+import { RepeatNWidget } from "../../libraries/CodeBuilder/widgets/loops/RepeatN/RepeatN";
 import { CreateConstWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateConstWidget/CreateConstWidget";
 import { SetVarWidget } from "../../libraries/CodeBuilder/widgets/variables/SetVarWidget/SetVarWidget";
 import { AdditionWidget } from "../../libraries/CodeBuilder/widgets/operations/AdditionWidget/AdditionWidget";
@@ -65,6 +67,8 @@ export default function Playground() {
     UseVarWidget,
     IfWidget,
     IfElseWidget,
+    WhileLoopWidget,
+    RepeatNWidget,
     AdditionWidget,
     SubtractionWidget,
     MultiplicationWidget,

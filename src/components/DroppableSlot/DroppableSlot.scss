@@ -5,6 +5,7 @@
     font-size: 16px;
     font-weight: 800;
     color: var(--main-color);
+    min-height: 50px;
 
     &.can-accept {
         border: 2px solid var(--green-light);

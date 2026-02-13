@@ -276,6 +276,10 @@ export class Executor {
         this.variableStack[variable.id] = variable;
     }
 
+    unregisterVariable(widgetId: string): void {
+        delete this.variableStack[widgetId];
+    }
+
     getVariableNames(excludeWidgetId?: string): string[] {
         const names: string[] = [];
         for (const [widgetId, variable] of Object.entries(this.variableStack)) {
@@ -361,7 +365,10 @@ export class Executor {
             for (const widget of this.widgets) {
                 yield* widget.execute();
             }
-            yield { type: 'step', widget: this.widgets[this.widgets.length - 1] };
+
+            if (!this.parentExecutor) {
+                yield { type: 'step', widget: this.widgets[this.widgets.length - 1] };
+            }
         } finally {
             this.exitScope();
         }
