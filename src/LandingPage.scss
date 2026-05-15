@@ -1,0 +1,194 @@
+/* One-page shell: below min viewport width the page keeps min width and scrolls horizontally. */
+
+@mixin landing-band-split {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-block: 28px;
+
+  .landing-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .landing-section__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .landing-split {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// Green band — same stops everywhere; $angle: 0 for sections, 90 for .donate-link.
+@mixin landing-theme-green-band($angle: 0deg) {
+  background: linear-gradient(
+    $angle,
+    rgba(70, 175, 126, 1) 0%,
+    rgba(87, 199, 133, 1) 50%,
+    rgba(161, 232, 167, 1) 100%
+  );
+  color: var(--white-color);
+}
+
+.landing-page {
+  --landing-content-max: 1366px;
+  --landing-content-min: 800px;
+
+  min-width: var(--landing-content-min);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--white-color);
+}
+
+.landing-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-container {
+  width: 100%;
+  max-width: var(--landing-content-max);
+  min-width: var(--landing-content-min);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 3vw, 40px);
+  box-sizing: border-box;
+
+  &--flush-y {
+    padding-block: 0;
+  }
+}
+
+/* Two-column band: text + image. DOM is always text column then media column; grid areas swap for --media-left. */
+.landing-split {
+  display: grid;
+  gap: clamp(16px, 3vw, 32px);
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "text media";
+
+  &--media-left {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "media text";
+  }
+
+  &__text {
+    grid-area: text;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-width: 0;
+  }
+
+  /* Keeps <br /> / block flow sane vs flex on __text. */
+  &__text-inner {
+    max-width: 100%;
+  }
+
+  &__title {
+    display: block;
+    margin: 0 0 16px;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  &__copy {
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  &__media {
+    grid-area: media;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &--media-left &__media {
+    justify-content: flex-start;
+  }
+
+  &__img {
+    display: block;
+    width: 650px;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+.landing-section {
+  width: 100%;
+  box-sizing: border-box;
+
+  &__content {
+    min-height: 120px;
+  }
+
+  &--header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: url('./assets/theme/CodeDam/images/landing_page/bck2.png') center / cover no-repeat;
+    height: 800px;
+  }
+
+  &--devices {
+    @include landing-band-split;
+    @include landing-theme-green-band;
+  }
+
+  &--partners {
+    @include landing-band-split;
+
+    background-color: var(--white-color);
+    color: var(--main-color);
+
+    .landing-split__copy {
+      color: var(--brown-color);
+    }
+  }
+
+  &--donations {
+    @include landing-band-split;
+    background-color: #FFC341;
+    color: var(--main-color);
+
+    img {
+      background-color: var(--white-color);
+    }
+
+    .donate-link {
+      @include landing-theme-green-band(-90deg);
+      padding: 16px 32px;
+      border-radius: 30px;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--white-color);
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      box-shadow: var(--box-shadow);
+
+      &:hover {
+        background-color: var(--green-dark);
+      }
+    }
+  }
+
+  &--surface-b {
+    background-color: var(--text-blue-light);
+    padding-block: clamp(40px, 6vh, 88px);
+  }
+}
+
+html:has(.landing-page) {
+  overflow-x: auto;
+}
