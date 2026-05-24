@@ -1,5 +1,3 @@
-/* One-page shell: below min viewport width the page keeps min width and scrolls horizontally. */
-
 @mixin landing-band-split {
   display: flex;
   flex-direction: column;
@@ -39,9 +37,10 @@
 
 .landing-page {
   --landing-content-max: 1366px;
-  --landing-content-min: 800px;
+  --landing-split-media-max: 650px;
 
-  min-width: var(--landing-content-min);
+  width: 100%;
+  min-width: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -50,6 +49,8 @@
 
 .landing-main {
   flex: 1;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -57,7 +58,7 @@
 .landing-container {
   width: 100%;
   max-width: var(--landing-content-max);
-  min-width: var(--landing-content-min);
+  min-width: 0;
   margin-inline: auto;
   padding-inline: clamp(16px, 3vw, 40px);
   box-sizing: border-box;
@@ -67,20 +68,14 @@
   }
 }
 
-/* Two-column band: text + image. DOM is always text column then media column; grid areas swap for --media-left. */
+/* Stacked by default; two columns from the common 768px tablet breakpoint up. */
 .landing-split {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: clamp(16px, 3vw, 32px);
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "text media";
-
-  &--media-left {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas: "media text";
-  }
 
   &__text {
-    grid-area: text;
+    flex: 1 1 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -107,28 +102,51 @@
   }
 
   &__media {
-    grid-area: media;
+    flex: 1 1 0;
+    width: 100%;
+    max-width: var(--landing-split-media-max);
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
+    min-width: 0;
+    margin-inline: auto;
   }
 
   &--media-left &__media {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   &__img {
     display: block;
-    width: 650px;
-    max-width: 100%;
+    width: 100%;
+    max-width: var(--landing-split-media-max);
     height: auto;
     max-height: 100%;
     object-fit: contain;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: stretch;
+
+    &--media-left {
+      flex-direction: row-reverse;
+    }
+
+    &__media {
+      justify-content: flex-end;
+      margin-inline: 0;
+    }
+
+    &--media-left &__media {
+      justify-content: flex-start;
+    }
   }
 }
 
 .landing-section {
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 
   &__content {
@@ -183,12 +201,47 @@
     }
   }
 
+  &--footer {
+    @include landing-band-split;
+    background-color: var(--main-color);
+    color: var(--white-color);
+
+    .landing-footer {
+      &__brand {
+        justify-content: center;
+      }
+
+      &__logo {
+        display: block;
+        width: clamp(180px, 22vw, 320px);
+        height: auto;
+      }
+
+      &__contact {
+        text-align: center;
+      }
+
+      .landing-split__copy {
+        color: var(--white-color);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .landing-footer {
+        &__brand {
+          justify-content: flex-start;
+        }
+
+        &__contact {
+          justify-content: flex-start;
+          text-align: left;
+        }
+      }
+    }
+  }
+
   &--surface-b {
     background-color: var(--text-blue-light);
     padding-block: clamp(40px, 6vh, 88px);
   }
-}
-
-html:has(.landing-page) {
-  overflow-x: auto;
 }

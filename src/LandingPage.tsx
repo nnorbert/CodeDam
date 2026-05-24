@@ -1,4 +1,5 @@
 import { Header } from "./components/Header";
+import codedamLogo from "./assets/theme/CodeDam/images/codedam.webp";
 import devicesImage from "./assets/theme/CodeDam/images/landing_page/devices.webp";
 import partnerImage from "./assets/theme/CodeDam/images/landing_page/ikca-logo.webp";
 import helpingHandsImage from "./assets/theme/CodeDam/images/landing_page/helping_hands.webp";
@@ -98,8 +99,30 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="landing-section landing-section--surface-b" aria-label="Section">
-          <div className="landing-container landing-section__content" />
+        <section className="landing-section landing-section--footer" aria-label="Footer">
+          <div className="landing-container landing-section__content">
+            <div className="landing-split landing-footer">
+              <div className="landing-split__media landing-footer__brand">
+                <img
+                  src={codedamLogo}
+                  alt="CodeDam"
+                  className="landing-footer__logo"
+                />
+              </div>
+              <div className="landing-split__text landing-footer__contact">
+                <div className="landing-split__text-inner">
+                  <strong className="landing-split__title">Contact</strong>
+                  <p className="landing-split__copy">...@codedam.com</p>
+                  <p className="landing-split__copy">You also can contact us via our social media accounts.</p>
+                  {/* <p className="landing-split__copy">
+                    <a href="https://www.facebook.com/codedam" target="_blank" rel="noreferrer">Facebook</a><br />
+                    <a href="https://www.twitter.com/codedam" target="_blank" rel="noreferrer">Twitter</a><br />
+                    <a href="https://www.instagram.com/codedam" target="_blank" rel="noreferrer">Instagram</a><br />
+                  </p> */}
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </div>
