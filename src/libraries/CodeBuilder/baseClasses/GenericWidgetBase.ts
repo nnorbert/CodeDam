@@ -38,8 +38,8 @@ export abstract class GenericWidgetBase implements IGenericWidget {
 
     public inExecution: boolean = false;
 
-    constructor(executor: Executor) {
-        this.id = nanoid();
+    constructor(executor: Executor, options?: { id?: string }) {
+        this.id = options?.id ?? executor.consumePendingWidgetId() ?? nanoid();
         this.executor = executor;
     }
 

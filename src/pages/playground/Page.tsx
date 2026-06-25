@@ -26,68 +26,21 @@ import CustomCollisionDetector from "../../libraries/CodeBuilder/CustomCollision
 import { Executor } from "../../libraries/CodeBuilder/Executor";
 import { ExecutionController, type ExecutionState } from "../../libraries/CodeBuilder/ExecutionController";
 import type { ExecutionStackSnapshot } from "../../libraries/CodeBuilder/ExecutionTypes";
-import { CreateVarWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateVarWidget/CreateVarWidget";
-import { UseVarWidget } from "../../libraries/CodeBuilder/widgets/variables/UseVarWidget/UseVarWidget";
+import { getAllWidgetClasses } from "../../libraries/CodeBuilder/widgetRegistry";
 import { CANVAS_ID, DroppableTypes, WidgetRoles } from "../../utils/constants";
-import { UsePrimitiveValueWidget } from "../../libraries/CodeBuilder/widgets/variables/UsePrimitiveValueWidget/UsePrimitiveValueWidget";
-import { IfWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfWidget/IfWidget";
-import { IfElseWidget } from "../../libraries/CodeBuilder/widgets/decisions/IfElseWidget/IfElseWidget";
-import { WhileLoopWidget } from "../../libraries/CodeBuilder/widgets/loops/WhileLoop/WhileLoop";
-import { RepeatNWidget } from "../../libraries/CodeBuilder/widgets/loops/RepeatN/RepeatN";
-import { CreateConstWidget } from "../../libraries/CodeBuilder/widgets/variables/CreateConstWidget/CreateConstWidget";
-import { SetVarWidget } from "../../libraries/CodeBuilder/widgets/variables/SetVarWidget/SetVarWidget";
-import { AdditionWidget } from "../../libraries/CodeBuilder/widgets/operations/AdditionWidget/AdditionWidget";
-import { SubtractionWidget } from "../../libraries/CodeBuilder/widgets/operations/SubtractionWidget/SubtractionWidget";
-import { MultiplicationWidget } from "../../libraries/CodeBuilder/widgets/operations/MultiplicationWidget/MultiplicationWidget";
-import { DivisionWidget } from "../../libraries/CodeBuilder/widgets/operations/DivisionWidget/DivisionWidget";
-import { ModuloWidget } from "../../libraries/CodeBuilder/widgets/operations/ModuloWidget/ModuloWidget";
-import { NegationWidget } from "../../libraries/CodeBuilder/widgets/conditions/NegationWidget/NegationWidget";
-import { GreaterThanWidget } from "../../libraries/CodeBuilder/widgets/conditions/GreaterThanWidget/GreaterThanWidget";
-import { GreaterOrEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/GreaterOrEqualWidget/GreaterOrEqualWidget";
-import { LessThanWidget } from "../../libraries/CodeBuilder/widgets/conditions/LessThanWidget/LessThanWidget";
-import { LessOrEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/LessOrEqualWidget/LessOrEqualWidget";
-import { EqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/EqualWidget/EqualWidget";
-import { StrictEqualWidget } from "../../libraries/CodeBuilder/widgets/conditions/StrictEqualWidget/StrictEqualWidget";
-import { AndWidget } from "../../libraries/CodeBuilder/widgets/conditions/AndWidget/AndWidget";
-import { OrWidget } from "../../libraries/CodeBuilder/widgets/conditions/OrWidget/OrWidget";
-import { UserInputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserInputWidget/UserInputWidget";
-import { UserOutputWidget } from "../../libraries/CodeBuilder/widgets/interactions/UserOutputWidget/UserOutputWidget";
-import { TextBuilderWidget } from "../../libraries/CodeBuilder/widgets/text/TextBuilderWidget/TextBuilderWidget";
-import { TextLengthWidget } from "../../libraries/CodeBuilder/widgets/text/TextLengthWidget/TextLengthWidget";
 import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
 import { Header } from "../../components/Header";
+import { ProjectToolbar } from "../../components/ProjectToolbar";
+import { saveProjectModal } from "../../components/SaveProjectModal";
+import { loadProjectModal } from "../../components/LoadProjectModal";
+import { serializeProject } from "../../libraries/CodeBuilder/persistence/serialize";
+import { downloadJsonFile } from "../../utils/fileDownload";
+import { sanitizeFilename } from "../../utils/sanitizeFilename";
+import { restoreProject } from "./restoreProject";
 
 // ------------------ Playground ------------------
 export default function Playground() {
-  const activeWidgets = [
-    CreateVarWidget,
-    CreateConstWidget,
-    SetVarWidget,
-    UsePrimitiveValueWidget,
-    UseVarWidget,
-    IfWidget,
-    IfElseWidget,
-    WhileLoopWidget,
-    RepeatNWidget,
-    AdditionWidget,
-    SubtractionWidget,
-    MultiplicationWidget,
-    DivisionWidget,
-    ModuloWidget,
-    TextBuilderWidget,
-    TextLengthWidget,
-    NegationWidget,
-    GreaterThanWidget,
-    GreaterOrEqualWidget,
-    LessThanWidget,
-    LessOrEqualWidget,
-    EqualWidget,
-    StrictEqualWidget,
-    AndWidget,
-    OrWidget,
-    UserInputWidget,
-    UserOutputWidget
-  ];
+  const activeWidgets = getAllWidgetClasses();
   const mainExecutorRef = useRef<Executor>(null);
   const executionControllerRef = useRef<ExecutionController>(null);
 
@@ -104,6 +57,9 @@ export default function Playground() {
   const [executionStack, setExecutionStack] = useState<ExecutionStackSnapshot>([]);
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguageType>(CodeLanguages.JAVASCRIPT);
   const [activeLineKeys, setActiveLineKeys] = useState<Set<string>>(new Set());
+  const [lastProjectName, setLastProjectName] = useState("");
+  const [loadWarnings, setLoadWarnings] = useState<string[]>([]);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   // Subscribe to executor changes for re-rendering
   useEffect(() => {
@@ -169,6 +125,55 @@ export default function Playground() {
 
   const handleStep = useCallback(async () => {
     await executionControllerRef.current?.step();
+  }, []);
+
+  const handleSaveClick = useCallback(async () => {
+    if (!mainExecutorRef.current) return;
+
+    const result = await saveProjectModal.open({ initialName: lastProjectName });
+    if (!result) return;
+
+    const project = serializeProject(mainExecutorRef.current, {
+      codeLanguage,
+      name: result.name,
+    });
+    downloadJsonFile(`${sanitizeFilename(result.name)}.codedam.json`, project);
+    setLastProjectName(result.name);
+  }, [codeLanguage, lastProjectName]);
+
+  const handleLoadClick = useCallback(async () => {
+    if (!mainExecutorRef.current || !executionControllerRef.current) return;
+
+    const hasExisting = mainExecutorRef.current.getWidgets().length > 0;
+    const result = await loadProjectModal.open({ hasExistingProject: hasExisting });
+    if (!result) return;
+
+    setLoadWarnings([]);
+    setIsRestoring(true);
+    try {
+      const warnings = restoreProject({
+        file: result.project,
+        mainExecutor: mainExecutorRef.current,
+        executionController: executionControllerRef.current,
+        resetUiState: () => {
+          setExecutionStack([]);
+          setActiveLineKeys(new Set());
+          setActiveOverId(null);
+          setOverPosition(null);
+          setActiveWidget(null);
+          setIsToolboxDrag(false);
+        },
+        setCodeLanguage,
+        setLastProjectName,
+        forceUpdate: () => forceUpdate((n) => n + 1),
+      });
+
+      if (warnings.length > 0) {
+        setLoadWarnings(warnings);
+      }
+    } finally {
+      setIsRestoring(false);
+    }
   }, []);
 
   const sensors = useSensors(
@@ -302,10 +307,35 @@ export default function Playground() {
                 <div className="main-canvas-container">
                   <div className="main-canvas-header flex items-center justify-between">
                     <h2>Build Your Dam</h2>
-                    <p>Drag planks from the workshop to build your program!</p>
+                    <ProjectToolbar
+                      executionState={executionState}
+                      onSave={handleSaveClick}
+                      onLoad={handleLoadClick}
+                    />
                   </div>
+                  {loadWarnings.length > 0 && (
+                    <div className="load-warnings-banner" role="status">
+                      <p>
+                        Project loaded with warnings: {loadWarnings.join(" ")}
+                      </p>
+                      <button
+                        type="button"
+                        className="load-warnings-dismiss"
+                        onClick={() => setLoadWarnings([])}
+                        aria-label="Dismiss warnings"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
                   {/* The droppable area now expands to fill available height */}
-                  <div className="main-canvas-content p-4 pt-0">
+                  <div className="main-canvas-content p-4 pt-0 relative">
+                    {isRestoring && (
+                      <div className="canvas-restoring-overlay" aria-busy="true" aria-label="Loading project">
+                        <span className="canvas-restoring-spinner" />
+                        <span>Restoring project…</span>
+                      </div>
+                    )}
                     <DroppableCanvas id={CANVAS_ID} executor={mainExecutorRef.current}>
                       <SortableContext
                         items={mainExecutorRef.current.getWidgets().map((w) => w.id)}

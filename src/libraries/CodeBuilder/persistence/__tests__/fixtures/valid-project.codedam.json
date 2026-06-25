@@ -1,0 +1,35 @@
+{
+  "format": "codedam-project",
+  "version": 1,
+  "metadata": {
+    "name": "Browser test",
+    "updatedAt": "2026-06-25T12:00:00.000Z"
+  },
+  "preferences": {
+    "codeLanguage": "javascript"
+  },
+  "runners": {
+    "canvas": {
+      "id": "canvas",
+      "kind": "main",
+      "label": "Main",
+      "statements": [
+        {
+          "id": "browser-var",
+          "type": "createVar",
+          "config": { "name": "greeting" },
+          "slots": {
+            "valueSlot": {
+              "id": "browser-prim",
+              "type": "usePrimitiveValue",
+              "config": {
+                "activeTab": "text",
+                "textValue": "Hi"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

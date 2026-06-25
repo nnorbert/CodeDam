@@ -3,6 +3,8 @@ import type { IGenericWidget } from "./interfaces/IGenericWidget";
 import type { IVariable } from "./interfaces/IVariable";
 import type { ExecutionGenerator, ExecutionVariable, ExecutionScope, ExecutionStackSnapshot } from "./ExecutionTypes";
 import { CodeLanguages, type CodeLanguageType } from "../../utils/constants";
+import type { GenericWidgetBase } from "./baseClasses/GenericWidgetBase";
+import { applyWidgetConfig } from "./persistence/widgetConfig";
 
 export class Executor {
 
@@ -17,6 +19,7 @@ export class Executor {
     private onChange: (() => void) | null = null;
     private onExecutionStackChange: (() => void) | null = null;
     private parentExecutor: Executor | undefined;
+    private pendingWidgetId: string | undefined;
 
     // Execution stack for runtime variable tracking
     private executionVariables: Map<string, ExecutionVariable> = new Map();
@@ -180,10 +183,83 @@ export class Executor {
         return this.containerId;
     }
 
-    createWidget(widgetClass: new (executor: Executor) => IGenericWidget): IGenericWidget {
+    /**
+     * Consumes a pending widget ID set by createWidgetWithId.
+     * Called from GenericWidgetBase during construction.
+     */
+    consumePendingWidgetId(): string | undefined {
+        const id = this.pendingWidgetId;
+        this.pendingWidgetId = undefined;
+        return id;
+    }
+
+    createWidget(widgetClass: new (executor: Executor, options?: { id?: string }) => IGenericWidget): IGenericWidget {
         const widget = new widgetClass(this);
         this.widgetMap.set(widget.id, widget);
         return widget;
+    }
+
+    createWidgetWithId(
+        widgetClass: new (executor: Executor, options?: { id?: string }) => IGenericWidget,
+        id: string
+    ): IGenericWidget {
+        this.pendingWidgetId = id;
+        return this.createWidget(widgetClass);
+    }
+
+    /**
+     * Create a widget with a preserved ID and apply config without opening modals.
+     * Registers createVar/createConst widgets in the variable stack.
+     */
+    loadWidgetSilent(
+        widgetClass: new (executor: Executor, options?: { id?: string }) => IGenericWidget,
+        id: string,
+        config?: Record<string, unknown>
+    ): IGenericWidget {
+        const widget = this.createWidgetWithId(widgetClass, id);
+
+        if (config) {
+            const applied = applyWidgetConfig(widget, config);
+            if (!applied) {
+                const type = (widgetClass as unknown as typeof GenericWidgetBase).getType();
+                console.warn(`Failed to apply config for widget ${id} (${type})`);
+            }
+        }
+
+        const type = (widgetClass as unknown as typeof GenericWidgetBase).getType();
+        if (type === "createVar" || type === "createConst") {
+            this.registerVariable(widget as IGenericWidget & IVariable);
+        }
+
+        return widget;
+    }
+
+    /** Add a top-level statement widget to this executor's canvas. */
+    appendStatementWidget(widget: IGenericWidget): void {
+        this.widgets.push(widget);
+    }
+
+    /** Record slot ownership for a widget placed in a parent's slot. */
+    linkSlotWidget(slotWidgetId: string, parentWidgetId: string, slotId: string): void {
+        this.slotMap.set(slotWidgetId, { widgetId: parentWidgetId, slotId });
+    }
+
+    clear(): void {
+        const topLevelWidgets = [...this.widgets];
+        for (const widget of topLevelWidgets) {
+            try {
+                widget.cleanup();
+            } catch (e) {
+                console.error(`Error cleaning up widget ${widget.id} during clear:`, e);
+            }
+        }
+
+        this.widgets = [];
+        this.widgetMap.clear();
+        this.variableStack = {};
+        this.slotMap.clear();
+        this.clearExecutionStack();
+        this.notifyChange();
     }
 
     deleteWidget(widgetId: string, silent: boolean = false) {
@@ -213,7 +289,7 @@ export class Executor {
     }
 
     async registerWidget(
-        widgetClass: new (executor: Executor) => IGenericWidget,
+        widgetClass: new (executor: Executor, options?: { id?: string }) => IGenericWidget,
         overId: string,
         overPosition: string
     ): Promise<void> {
@@ -252,8 +328,12 @@ export class Executor {
         return [...this.widgets];
     }
 
+    getWidget(widgetId: string): IGenericWidget | undefined {
+        return this.widgetMap.get(widgetId);
+    }
+
     async registerSlot(
-        widgetClass: new (executor: Executor) => IGenericWidget,
+        widgetClass: new (executor: Executor, options?: { id?: string }) => IGenericWidget,
         widgetId: string,
         slotId: string
     ): Promise<void> {
