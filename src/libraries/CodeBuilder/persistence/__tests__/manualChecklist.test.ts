@@ -225,7 +225,7 @@ describe("manual checklist — restore & round-trip", () => {
       activeTab: "number",
       numberValue: "5",
     });
-    const ifWidget = appendStatement(source, IfWidget, "if1") as IfWidget;
+    appendStatement(source, IfWidget, "if1");
     const eq = linkSlot(source, "if1", "conditionSlot", EqualWidget, "eq1");
     linkSlot(source, eq.id, "leftOperand", UseVarWidget, "uv1", { selectedVariableId: "v1" });
     linkSlot(source, eq.id, "rightOperand", UsePrimitiveValueWidget, "p2", {
