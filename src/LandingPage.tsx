@@ -1,5 +1,7 @@
 import { Header } from "./components/Header";
 import codedamLogo from "./assets/theme/CodeDam/images/codedam.webp";
+import beavyMainImage from "./assets/theme/CodeDam/images/landing_page/beavy_main.webp";
+import bubbleImage from "./assets/theme/CodeDam/images/landing_page/bubble.webp";
 import devicesImage from "./assets/theme/CodeDam/images/landing_page/devices.webp";
 import partnerImage from "./assets/theme/CodeDam/images/landing_page/ikca-logo.webp";
 import helpingHandsImage from "./assets/theme/CodeDam/images/landing_page/helping_hands.webp";
@@ -11,6 +13,26 @@ export default function LandingPage() {
       <header className="landing-section landing-section--header">
         <div className="landing-container landing-container--flush-y">
           <Header activeMenuItem="home" showBeavy={false} />
+          <div className="landing-hero">
+            <div className="landing-hero__group">
+              <img
+                src={beavyMainImage}
+                alt="Beavy"
+                className="landing-hero__img"
+              />
+              <div className="landing-hero__bubble">
+                <img
+                  src={bubbleImage}
+                  alt=""
+                  className="landing-hero__bubble-img"
+                  aria-hidden="true"
+                />
+                <p className="landing-hero__bubble-text">
+                  Every great coder started with a single curious question.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
