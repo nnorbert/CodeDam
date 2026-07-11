@@ -1,3 +1,4 @@
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { Header } from "./components/Header";
 import codedamLogo from "./assets/theme/CodeDam/images/codedam.webp";
 import beavyMainImage from "./assets/theme/CodeDam/images/landing_page/beavy_main.webp";
@@ -59,6 +60,15 @@ export default function LandingPage() {
       </header>
 
       <main className="landing-main">
+        <section className="landing-section landing-section--intro" aria-label="About CodeDam">
+          <div className="landing-container">
+            <p className="landing-intro__copy">
+              CodeDam is a free visual coding playground for kids. Learn loops, variables, and logic
+              by snapping blocks together — then see real JavaScript or Python code appear as you build.
+            </p>
+          </div>
+        </section>
+
         <section className="landing-section landing-section--devices" aria-label="Devices">
           <div className="landing-container landing-section__content">
             <div className="landing-split">
@@ -194,6 +204,11 @@ export default function LandingPage() {
                   <p className="landing-split__copy">
                     <i>Every contribution helps — thank you!</i>
                   </p>
+                  <p className="landing-donation-disclaimer">
+                    This is a personal, independently operated educational project and is not a registered charity
+                    or nonprofit organisation. Contributions are voluntary and help cover hosting, domain and maintenance costs.
+                    No goods or services are provided in exchange for a contribution.
+                  </p>
                 </div>
               </div>
               <div className="landing-split__media">
@@ -220,8 +235,13 @@ export default function LandingPage() {
               <div className="landing-split__text landing-footer__contact">
                 <div className="landing-split__text-inner">
                   <strong className="landing-split__title">Contact</strong>
-                  <p className="landing-split__copy">...@codedam.com</p>
-                  <p className="landing-split__copy">You also can contact us via our social media accounts.</p>
+                  <p className="landing-split__copy">
+                    <a className="landing-footer__email" href="mailto:contact@codedam.eu">
+                      <EnvelopeIcon className="landing-footer__email-icon" aria-hidden="true" />
+                      contact@codedam.eu
+                    </a>
+                  </p>
+                  {/* <p className="landing-split__copy">You also can contact us via our social media accounts.</p> */}
                   {/* <p className="landing-split__copy">
                     <a href="https://www.facebook.com/codedam" target="_blank" rel="noreferrer">Facebook</a><br />
                     <a href="https://www.twitter.com/codedam" target="_blank" rel="noreferrer">Twitter</a><br />
