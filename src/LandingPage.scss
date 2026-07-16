@@ -24,7 +24,7 @@
   }
 }
 
-// Green band — same stops everywhere; $angle: 0 for sections, 90 for .donate-link.
+// Green band — same stops everywhere; $angle rotates the gradient direction.
 @mixin landing-theme-green-band($angle: 0deg) {
   background: linear-gradient(
     $angle,
@@ -384,7 +384,8 @@
 
     .donate-link {
       @include landing-theme-green-band(-90deg);
-      padding: 16px 32px;
+      display: inline-block;
+      padding: 16px 48px;
       border-radius: 30px;
       font-size: 22px;
       font-weight: 900;

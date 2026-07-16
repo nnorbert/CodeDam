@@ -8,6 +8,7 @@ import bubble2Image from "./assets/theme/CodeDam/images/landing_page/bubble_2.we
 import devicesImage from "./assets/theme/CodeDam/images/landing_page/devices.webp";
 import partnerImage from "./assets/theme/CodeDam/images/landing_page/ikca-logo.webp";
 import helpingHandsImage from "./assets/theme/CodeDam/images/landing_page/helping_hands.webp";
+import { PayPalDonateButton } from "./components/PayPalDonateButton";
 import "./LandingPage.scss";
 
 const narrowBubbleMediaQuery = "(max-width: 859px)";
@@ -197,9 +198,7 @@ export default function LandingPage() {
                     supporting their non-profit work to teach children around the world.
                   </p>
                   <p className="landing-split__donate-cta">
-                    <a className="donate-link" href="" target="_blank" rel="noreferrer">
-                      Donate
-                    </a>
+                    <PayPalDonateButton />
                   </p>
                   <p className="landing-split__copy">
                     <i>Every contribution helps — thank you!</i>
