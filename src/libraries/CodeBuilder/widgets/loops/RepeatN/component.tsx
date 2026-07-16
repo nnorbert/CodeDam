@@ -33,7 +33,8 @@ const RepeatNComponent = ({ widget }: { widget: RepeatNWidget }) => {
               {widget.slots.countSlot.render()}
             </div>
           )}
-          <span className="text-brown-light"> times</span>
+          <span className="text-brown-light"> times using </span>
+          <span className="text-green-light">index</span>
         </div>
 
         {/* Body: { content } */}

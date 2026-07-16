@@ -6,21 +6,7 @@ import { SaveProjectModal } from './components/SaveProjectModal';
 import { LoadProjectModal } from './components/LoadProjectModal';
 import { PageViewTracker } from './analytics/PageViewTracker';
 import { AnalyticsConsentBanner } from './components/AnalyticsConsentBanner';
-import { Header } from './components/Header';
-
-function HomePage() {
-  return (
-    <div className="page-wrapper">
-      <Header activeMenuItem="home" showBeavy={false} />
-
-      <div className="page-content">
-
-        <h1 className="text-3xl font-bold mb-4">Home 🏠</h1>
-        <p className="text-lg">This is the homepage of CodeDam.</p>
-      </div>
-    </div>
-  );
-}
+import LandingPage from './LandingPage';
 
 function App() {
   return (
@@ -28,7 +14,7 @@ function App() {
       <PageViewTracker />
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/playground" element={<Playground />} />
       </Routes>
 
