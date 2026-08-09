@@ -24,12 +24,13 @@ const ControlPanel = ({ executionState, onPlay, onPause, onStop, onStep }: Props
   };
 
   return (
-    <div className="control-panel h-16 border-t border-gray-200 bg-gray-100 flex items-center justify-center gap-4">
+    <div className="control-panel h-16 border-t border-gray-200 bg-gray-100 flex items-center justify-center gap-4" data-testid="control-panel">
       {/* Play/Pause Button - slightly bigger */}
       <button
         className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-md hover:shadow-lg cursor-pointer"
         onClick={handlePlayPause}
         title={isRunning ? "Pause" : "Play"}
+        data-testid="play-pause-button"
       >
         {isRunning ? (
           <PauseIcon className="w-7 h-7" />

@@ -46,6 +46,7 @@ const ToolBoxItem = ({ widget, disabled }: Props) => {
       style={style}
       {...(!isDisabled ? attributes : {})}
       {...(!isDisabled ? listeners : {})}
+      data-testid={`tool-${widget.getType()}`}
       className={[
         'toolbox-item',
         isStatement ? "toolbox-item-statement" : "toolbox-item-expression",

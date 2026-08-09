@@ -43,7 +43,13 @@ const DroppableSlot = (props: Props) => {
     ].filter(Boolean).join(" ");
 
     return (
-        <div ref={setNodeRef} className={slotClasses}>
+        <div
+            ref={setNodeRef}
+            data-testid={props.id}
+            data-droppable="slot"
+            data-slot-name={props.slotName}
+            className={slotClasses}
+        >
             {props.children}
         </div>
     );

@@ -31,6 +31,9 @@ const DroppableCanvas = (props: Props) => {
   return (
     <div
       ref={setNodeRef}
+      data-testid={props.id}
+      data-droppable="canvas"
+      data-nested={props.isNested ? "true" : undefined}
       className={[
         "droppable-canvas-area",
         props.isNested ? "nested" : "",

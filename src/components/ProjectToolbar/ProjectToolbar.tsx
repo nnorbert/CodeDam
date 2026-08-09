@@ -20,6 +20,7 @@ export default function ProjectToolbar({ executionState, onSave, onLoad }: Proje
         disabled={isDisabled}
         title={isDisabled ? LOCKED_TOOLTIP : "Save project"}
         className="main-canvas-header-btn"
+        data-testid="save-project-button"
       >
         <ArrowDownTrayIcon className="h-4 w-4" aria-hidden="true" />
         Save
@@ -30,6 +31,7 @@ export default function ProjectToolbar({ executionState, onSave, onLoad }: Proje
         disabled={isDisabled}
         title={isDisabled ? LOCKED_TOOLTIP : "Load project"}
         className="main-canvas-header-btn"
+        data-testid="load-project-button"
       >
         <ArrowUpTrayIcon className="h-4 w-4" aria-hidden="true" />
         Load
